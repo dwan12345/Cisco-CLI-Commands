@@ -12,7 +12,6 @@ switchport access vlan <vlan#>
 shut
 no shut
 end
-
 ```
 
 

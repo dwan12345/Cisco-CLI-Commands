@@ -1,16 +1,17 @@
 
-```
+```js
 conf t
 int <interface>
-no shutdown
+shut
+no shut
 
 ! repeat next section for however many subinterfaces
 int <interface>.<vlan#>
+desc <description>
 encapsulation dot1q <vlan#>
 ip address <default gateway of subnet> <subnet mask>
 
 end
-
 ```
 
 
