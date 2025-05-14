@@ -1,6 +1,7 @@
 
 ## Basic setup
 ```js
+! setting up some access ports
 conf t
 int range <interface range> 
 desc <desciption>

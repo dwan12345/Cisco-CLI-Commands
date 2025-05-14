@@ -1,6 +1,7 @@
 
 ## Basic Interface
 ```js
+! standard routed interface
 conf t
 int <interface>
 desc <description>
@@ -12,6 +13,7 @@ end
 
 ## Static Route
 ```js
+! creates a static route
 conf t
 ip route <dest network address> <subnet mask> <next hop ip address>
 end

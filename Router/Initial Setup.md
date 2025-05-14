@@ -1,6 +1,7 @@
 
 ## On Bootup
 ```js
+! initial router setup
 enable
 conf t
 enable secret <password>
@@ -17,7 +18,15 @@ hostname <hostname>
 end
 ```
 
-
+## Loopback Address
+```js
+! loopback address
+conf t
+int loopback <loopback number>
+ip address <ip address> 255.255.255.255
+desc <description or MGMT>
+end
+```
 
 
 
