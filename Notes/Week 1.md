@@ -26,31 +26,34 @@ Cables
 - single mode fiber - slower than multi mode, long distance, smaller core
 - multimode fiber - shorter distance, higher throughput, larger core
 
+Carrier sense multiple access, with collision detection
+- When collision is detected, one device tells the other device that collision has happened, so both stop transmitting. both devices pick a random time to start transmitting again, so that they do not collide again.
+
+Collision and broadcast domains
+- hub: same collision and broadcast domain
+- switch: separate collision, same broadcast
+- router: separate collision and broadcast
+
+MAC Address Table
+- binds port to MAC address
+- show mac address-table
+
+ARP Table
+- Binds mac address to ip address
+- show ip arp
+
+3 Basic Methods of Connecting Subnets
+- router connected to 3 switches
+- inter vlan routing using L3 switch
+- router on a stick
 
 
 
 
-routers
-- basic device config
-- physical interfaces
-int g0/2
-desc &description&
-ip address &ip address& &subnet&
-shut
-no shut
-end
-
-int g0/3
-desci
-- logical interfaces
-int g0/3.1671
-desc &description& 
 
 
-- routing
 
 
-show run interface <interface>.<vlan#>
 
 
 
