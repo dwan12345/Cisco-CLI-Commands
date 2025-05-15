@@ -21,7 +21,7 @@ end
 - to the same port, can apply 1 ACL in, and 1 ACL out.
 ```js
 ! apply ACL to a port
-onf t
+conf t
 int <interface>
 ip access-group <ACL name> <in | out>
 end
@@ -37,10 +37,17 @@ end
 ## Add Rules to Standard ACL
 ```js
 ! add rules to standard ACL
-<permit | deny> <source ip> <wildcard mask>
+conf t
+access-list <ACL name> <permit | deny> <source ip> <wildcard mask>
+end
 ```
 
 
-
+## Show
+```js
+show ip access-lists
+show running | section access-lists
+show running | include ip access-group
+```
 
 

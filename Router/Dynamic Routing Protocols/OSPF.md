@@ -1,5 +1,3 @@
-
-
 ## Basic Setup
 ```js
 ! sets up OSPF
@@ -9,7 +7,6 @@ router ospf <process id>
 network <network address> <wildcard mask> area <area id>
 end
 ```
-
 ## Advertise Default Route
 ```js
 ! advertise the default route
@@ -18,8 +15,6 @@ router ospf <process id>
 default-info originate
 end
 ```
-
-
 ## Reset OSPF Process
 ```js
 clear ip ospf process
@@ -35,10 +30,23 @@ router-id <router id ip address>
 end
 ```
 
+## Share Routes from BGP
+```js
+! advertises routes learned from BGP
+conf t
+router ospf <ospf process id>
+redistribute bgp <AS number on this router>
+end
+```
 
-
-
-
+## Show
+```js
+show ip ospf
+show ip ospf neighbor
+show ip ospf int brief
+show ip route ospf
+show running-config | section ospf
+```
 
 
 

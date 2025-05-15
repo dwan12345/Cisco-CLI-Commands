@@ -20,6 +20,9 @@ end
 ```
 
 
-
+## Show
+```js
+show run interface <interface>.<vlan#>
+```
 
 

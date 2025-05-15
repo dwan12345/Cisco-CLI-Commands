@@ -8,8 +8,6 @@ router eigrp <locally significant AS number>
 network <network address> <wildcard mask>
 end
 ```
-
-
 ## Configure Router ID
 ```js
 ! configure the router id
@@ -28,10 +26,23 @@ redistribute static
 end
 ```
 
+## Share Routes from BGP
+```js
+! advertise routes learned form bgp
+conf t
+ip eigrp <locally significant AS number>
+redistribute bgp <BGP AS number>
+end
+```
 
 
-
-
+## Show
+```js
+show ip eigrp neighbor
+show ip route eigrp
+show ip eigrp
+show running-config | section eigrp
+```
 
 
 

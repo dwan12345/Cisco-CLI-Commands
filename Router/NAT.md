@@ -63,5 +63,8 @@ ip nat inside source static <private ip> <routable ip>
 end
 ```
 
-
-
+## Show
+```js
+show ip nat translations
+show ip nat statistics
+```
