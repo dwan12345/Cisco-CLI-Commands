@@ -27,11 +27,12 @@ end
 ```
 
 ## Share Routes from BGP
+- for metric, use: metric 10000000 1 255 1 1500
 ```js
 ! advertise routes learned form bgp
 conf t
 ip eigrp <locally significant AS number>
-redistribute bgp <BGP AS number>
+redistribute bgp <BGP AS number> metric <bandwidth> <delay> <reliability> <load> <mtu>
 end
 ```
 

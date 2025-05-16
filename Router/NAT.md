@@ -1,4 +1,5 @@
 ## Set Inside and Outside Interfaces
+- do this on loopback interfaces as well
 ```js
 ! sets the inside and outside interfaces
 conf t

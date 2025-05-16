@@ -47,7 +47,50 @@ ARP Table
 - inter vlan routing using L3 switch
 - router on a stick
 
-
+# General Routing
+- list of nex hop IPs for dest
+- list of all networks a router knows about
+	- route entry for each active int
+	- rout entry for each subnet learned form all protocols
+- origin code: how the route was learned.
+- Admin Distance (trust) - lower number is better, determines the preference in a tie
+- First thing router does when it receives packet: do I have this ip directly connected? If not, then check if I have a route
+- longest match rule - send packet to route that has longest match
+- static routes:
+	- con: lack of scalability, redundancy, has human error, high administrative overhead (cost a lot of engineer time which means money)
+	- pros: low cpu usage and a little bit more secure
+- For static route to be valid: valid destination network address, valid subnet, next hope ip must be accessible
+- Static route optional params: name, admin distance
+- ip route _destination network ip_ _subnet mask_ _admin distance_ 
+- ip route _destination network ip_ _subnet mask_ name _name_
+- To see only static routes: show ip route static
+- Show all configured static routes: show running | include ip route
+- L3 switch:
+	- ip routing enabled
+	- no subinterfaces allowed
+	- is not associated with a vlan
+	- has ip address
+	- does not participate in STP
+- show int g0/1 - show single port with physical stats
+- show ip int br - show all port statuses and ips
+- show ip int g0/1 - show single port with ip related info
+- CDP (cisco discovery protocol) - used to mapped a network
+	- on by default on supported devices
+	- info about hostname, connected port id, ip address, type of device
+	- show cdp neighbor
+	- show cdp neighbor detail
+- LLDP (link layer discovery protocol) - same as CDP, but open source
+	- must be enabled, not as detailed as CDP
+	- show LLDP neighbors
+	- show LLDP neighbors detail
+- ICMP (internet control message protocol)
+	- sends error and operational info
+	- ping and tracert
+	- ping 10.1.2.3 loopback 0
+	- ping 10.1.1.1 source 10.2.2.2
+- route summarization - supernet multiple subnets
+	- can black hole unintended traffic
+- 
 
 
 
