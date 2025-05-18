@@ -33,14 +33,10 @@ end
 ```
 
 
-## Management Vlan Interface
+## SVI
+- Make the VLan first
 ```js
-! vlan management interface
-conf t
-vlan <vlan#>
-name <name>
-exit
-
+! Creates SVI
 conf t
 int vlan <vlan#>
 desc <Management interface name>

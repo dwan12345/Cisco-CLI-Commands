@@ -1,39 +1,29 @@
 
 ## Basic Setup
 - Good practice to match group number to vlan
+- switches to HSRP v2
 - The priority number (default is 100) is used to determine which router will be the active router.
 	- Active router will be highest priority, then highest IP address
+- optional prempt in there
 ```js
 ! sets up HSRP
 conf t
 int <interface>
+standby version 2
 standby <group number> ip <virtual IP>
 standby <group number> priority <priority number>
+! standby <group number> preempt
 end
 ```
 
-## Change to HSRP v2
+
+## Show
 ```js
-! change interface to HSRP v2
-conf t
-int <interface>
-standby version 2
-end
+show standby
+show standby int <interface>
+show standby group <group number>
+show standby brief
 ```
-
-
-## Activate Preemption
-- When in preempt, a higher priority router will take active router role forcefully.
-```js
-! activates preemption for HSRP
-conf t
-int <interface>
-stanby <group number> preempt
-end
-```
-
-
-
 
 
 
