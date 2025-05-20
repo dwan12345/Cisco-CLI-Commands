@@ -7,14 +7,16 @@ ip access-list extended <ACL name>
 end
 ```
 ## Add Rules to Extended ACL
+- Replace protocol with ip to catch all protocols
 - Replace protocol with: tcp, udp, ip, icmp, etc.
 - Can replace IP and wildcard mask with "any"
 - Replace operator with: eq, gt, lt, neq (not equal), range
+- sequence number is the height of the rule
 ```js
 ! add rules to extended ACL
 conf t
 ip access-list extended <ACL name>
-<permit | deny> <protocol> <source ip> <source wildcard mask> <dest ip> <dest windcard mask> <operator> <port number>
+[<sequence number>] <permit | deny> <protocol> <source ip> <source wildcard mask> <dest ip> <dest windcard mask> [<operator> <port number>] 
 end
 ```
 ## Apply ACL to Interface
@@ -46,6 +48,7 @@ end
 ## Show
 ```js
 show ip access-lists
+show ip access-lists int <interface>
 show running | section access-lists
 show running | include ip access-group
 ```

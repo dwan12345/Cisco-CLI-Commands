@@ -21,6 +21,15 @@ clear ip ospf process
 yes
 ```
 
+## Passive Interface
+```js
+! configures OSPF
+conf t
+router ospf <process id>
+passive-int <interface>
+end
+```
+
 ## Configure Router ID
 ```js
 ! configure the router id
@@ -46,6 +55,7 @@ show ip ospf neighbor
 show ip ospf int brief
 show ip route ospf
 show running-config | section ospf
+show ip ospf rib
 ```
 
 

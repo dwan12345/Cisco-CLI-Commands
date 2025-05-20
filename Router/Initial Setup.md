@@ -25,6 +25,7 @@ conf t
 int loopback <loopback number>
 ip address <ip address> 255.255.255.255
 desc <description or MGMT>
+! ip nat inside
 end
 ```
 

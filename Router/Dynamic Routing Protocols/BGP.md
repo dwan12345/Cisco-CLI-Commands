@@ -7,11 +7,13 @@ end
 ```
 
 ## Creates BGP Neighbor
+- soft-reconfig inbound makes it so you do not have to clear ip bgp for reconfigurations to take effect immediately
 ```js
 ! creates BGP neighbor
 conf t
 router bgp <AS number>
 neighbor <neighbor ip> remote-as <neighbor AS number>
+neighbor <neighbor ip> soft-reconfiguration inbound
 end
 ```
 
@@ -52,13 +54,27 @@ end
 ```
 
 
-## ????
+## Apply Route Map
 ```js
-aggregate-address <ip address> <subnet mask> summary-only
+! applies a route map
+conf t
+router bgp <AS number>
+neighbor <neighbors interface ip> route-map <route map name> <in | out>
+end
+```
+
+## Reset BGP
+- Clears the current BGP connections. The router will attempt to form neighborships again.
+- To be done after altering BGP configs
+- Will make the connection go down
+```js
+! clears the bgp connection
+clear ip bgp <neighbors interface ip>
 ```
 
 ## Remote Neighborship
 - need to configure this on both routers to work
+- router needs a route to the neighbor ip for bgp to form neighborship
 ```js
 ! forms remote neighborship
 conf t
@@ -72,8 +88,10 @@ end
 show ip bgp summary
 show ip bgp neighbors
 show running | section bgp
+show ip bgp neighbor <neighbor ip> advertised-routes (self explanatory)
+show ip bgp neighbor <neighbor ip> routes (shows filtered routes)
+show ip bgp neighbor <neighbor ip> received-routes (shows all routes received)
 ```
-
 
 
 
