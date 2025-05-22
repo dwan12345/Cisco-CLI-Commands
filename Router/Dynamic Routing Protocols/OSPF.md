@@ -48,6 +48,16 @@ redistribute bgp <AS number on this router>
 end
 ```
 
+
+## Configure Metric Bandwidth
+```js
+! configure ospf metric speed
+conf t
+router ospf <process id>
+auto-cost reference-bandwidth <bandwidth mbps>
+end
+```
+
 ## Show
 ```js
 show ip ospf
