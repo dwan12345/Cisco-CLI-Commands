@@ -8,7 +8,7 @@
 ```js
 ! sets up HSRP
 conf t
-int <interface>
+int <default gateway>
 standby version 2
 standby <group number> ip <virtual IP>
 standby <group number> priority <priority number>
