@@ -44,7 +44,7 @@ end
 ! advertises routes learned from BGP
 conf t
 router ospf <ospf process id>
-redistribute bgp <AS number on this router>
+redistribute bgp <AS number on this router> subnets
 end
 ```
 
@@ -55,6 +55,7 @@ show ip ospf neighbor
 show ip ospf int brief
 show ip route ospf
 show running-config | section ospf
+! Show all known routes to ospf
 show ip ospf rib
 ```
 

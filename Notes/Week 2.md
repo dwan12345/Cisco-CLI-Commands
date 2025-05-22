@@ -52,5 +52,66 @@
 	- router eigrp 50, passive-int g0/1
 	- router eigrp 50, passive-int default, no passive-int g0/3
 - to do default route, must already have default route in routing table. Then you can redistribute. 
-- 
 
+
+## OSPF
+- link stae protocol, admin distance of 110
+- each router has complete map of network topology, each router will calculate the best path for each packet
+- Process ID is locally significant identifier
+- OSPF Areas: segment network in hierarchy 
+	- Limit impact of network changes: only routers in an area will have to make the change
+	- area 0 is backbone, it must exist, all other areas must attach to area 0
+- Backbone router: any router in area 0
+- area border router: sits between area 0 and other areas
+- internal router: router in an area other than area 0
+- AS boundary router: has 2 routing protocols, between different dynamic routing protocols
+- Network states: which ints accept traffic in, which ints to send out traffic, and which subnets to advertise.
+- OSPF neighbors: connected L3 devices share their routes
+	- relationship formed through matching network statements
+	- parameters must match: process ID, area ID, subnet mask
+- Database: composed of LSA (link state advertisements)
+	- shared via LSU (link state updates)
+	- for each area: unique database, each router has a copy, ABRs have database for each area
+- Passive interfaces: ints that do not form neighbors
+	- interface will not send hellos
+	- interface subnet will still be added to OSPF database
+	- router ospf 50, passive-int g0/1
+	- to do default passive ints
+		- router ospf 50, passive-int default, no passive-int g0/3
+- Default route: must have default route in routing table, via static, bgp, whatever
+	- default route injected as type 5 LSA
+	- only need to do this on one router in the area
+	- router ospf 50, default-info originate
+- ospf has redistribution metric by default
+	- use "subnets" keyword
+	- router ospf 100, redistribute static subnets
+	- router ospf 100, redistribute eigrp 75 subnets
+- LSA
+	- type 1 router LSA: represents a router and connected interfaces, intra area
+	- type 3 summary LSA: a network between two routers, inter area
+	- type 5 external LSA: a route imported into OSPF from another protocol
+	- type 7 NSSA-external LSA: used in NSSA in place of type 5. used by ASBR
+- Stub area: 
+	- no external type 5 routes
+	- replaced with default routes
+	- wont accept routes from a different domain
+	- redistribution is not allowed
+- Totally stubby area:
+	- no external type 5 or inter area type 3 routes
+	- replaced with default route
+	- redistribution not allowed
+- NSSA: not so stubby area
+	- cisco proprietary
+	- normal stub area, but redistribution is allowed
+- totally NSSA:
+	- cisco proprietary
+	- like totally stubby area, but redistribution is allowed
+- path selection:
+	- based on cumulative cost in dest
+	- cost is based on interface bandwidth
+	- default reference bandwidth is 100 mbps, but can be changed
+	- cost = reference bandwidth / interface bandwidth
+- tie breaker: if there is a tie, then choose based on below
+	- intra area: choose this first
+	- inter area: then this
+	- external: then this
