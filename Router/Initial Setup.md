@@ -6,11 +6,13 @@ enable
 conf t
 enable secret <password>
 username <username> secret <password>
-line con 0
+line console 0
+exec-timeout <timeout minutes>
 logging synchronous
 login local
 exit
 line vty 0 4
+exec-timeout <timeout minutes>
 logging synchronous
 login local
 exit
