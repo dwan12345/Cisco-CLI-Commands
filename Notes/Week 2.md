@@ -115,3 +115,49 @@
 	- intra area: choose this first
 	- inter area: then this
 	- external: then this
+
+
+# BGP
+- exterior gateway protocol
+- routering protocol of the internet
+- TCP port 179
+- path vector protocol
+- exchange layer 3 reachability info with other peers
+- AS numbers: 0-65535
+	- 0 reserved
+	- 1-64495: public AS numbers
+	- 64496-64511: reserved to use in documentation
+	- 64512-65534: private AS, for IGP
+	- 65535: reserved
+- Must get AS number from a regional internet registry, and they get them from IANA
+- BGP table
+	- list of prefixes known by bgp
+	- prefixes shared to peers
+	- add new routes from routing table
+- network statements
+	- must match an exact prefix
+	- add/inject route to bgp table form routing table
+	- doesn't interfere with neighbors like IGPs
+	- no wildcard logic
+- to advertise summary networks: use a null route to create exact match
+- BGP neighborships
+	- manually configured, not dynamicalled discovered
+	- same AS number as iBGP
+	- different AS number as eBGP
+	- neighbor states
+		- idle: neighbor not responding
+		- active, attempting to connect
+		- connect, TCP session is established
+		- open sent, open message sent
+		- open confirm, response received
+		- established, adjacency established
+	- need neighbor statements to form neighbor ship, peer must have mirror statement
+- mutual redistribution: advertise routes learned form different sources on same router
+	- when a router redistrbutes bgp into ospf and ospf into bgp
+- eBGP: admin dist of 20, between routers in different AS
+- iBGP: bgp peering in routers in same AS, admin distance of 200
+	- must be in full mesh: every router needs to be connected to each other
+
+# PAT
+- PAT is translation ip addresses from private to public while minimizing public ip usage
+- 

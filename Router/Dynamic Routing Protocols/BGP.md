@@ -18,29 +18,15 @@ end
 ```
 
 ## Advertise a Network
+- For BGP to advertise a route, the network command must have an exact match for the route already in the routing table
+- the static route to null0 creates the exact match in the routing table, which allows bgp to advertise the route. More specific routes will work fine, but routes that do not exist will get caught by the null0 and will disappear
 ```js
 ! advertise bgp network
 conf t
 router bgp <AS number>
 network <network IP> mask <subnet mask>
-end
-```
-
-## Advertise OSPF Routes
-```js
-! advertise ospf routes to bgp neighbors
-conf t
-router bgp <AS number>
-redistribute ospf <ospf process id>
-end
-```
-
-## Advertise EIGRP Routes
-```js
-! advertise eigrp routes to bgp neighbors
-conf t
-router bgp <AS number>
-redistribute eigrp <eigrp AS number>
+exit
+ip route <network IP> <subnet mask> null0
 end
 ```
 
@@ -83,8 +69,16 @@ neighbor <neighbor ip> remote-as <neighbor AS number>
 neighbor <neighbor ip> ebgp-multihop <max # of hops you allow>
 end
 ```
+
+## Clear BGP
+- soft reset will not tear the entire adjacency down, but will redo the routes
+```js
+clear ip bgp * soft
+```
+
 ## Show
 ```js
+show ip bgp
 show ip bgp summary
 show ip bgp neighbors
 show running | section bgp
@@ -92,9 +86,6 @@ show ip bgp neighbor <neighbor ip> advertised-routes (self explanatory)
 show ip bgp neighbor <neighbor ip> routes (shows filtered routes)
 show ip bgp neighbor <neighbor ip> received-routes (shows all routes received)
 ```
-
-
-
 
 
 

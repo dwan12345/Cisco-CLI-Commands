@@ -1,9 +1,11 @@
 
 ## Basic Setup
+- The default metric is used for redistributing stuff that I did not specify the metrics for
 ```js
 ! sets up EIGRP
 conf t
 router eigrp <eigrp AS number>
+default-metric 10000 10 255 1 1500
 ! add multiple network commands to advertise more networks
 network <network address> <wildcard mask>
 end
@@ -18,12 +20,10 @@ end
 ```
 
 ## Advertise All Static Routes, Including Default
-- the default-metric is used for default routes
 ```js
 ! advertise default route
 conf t
 router eigrp <locally significant AS number>
-default-metric 10000 10 255 1 1500
 redistribute static
 end
 ```
@@ -57,6 +57,15 @@ passive-int <interface>
 end
 ```
 
+## Redistribute Connected
+- advertises directly connected routes that are not covered by network commands
+```js
+! redistribute connected EIGRP routes
+conf t
+router eigrp <eigrp AS>
+redistribute connected
+end
+```
 
 ## Show
 ```js
