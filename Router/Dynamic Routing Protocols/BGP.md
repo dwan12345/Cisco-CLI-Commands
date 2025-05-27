@@ -60,7 +60,7 @@ clear ip bgp <neighbors interface ip>
 
 ## Remote Neighborship
 - need to configure this on both routers to work
-- router needs a route to the neighbor ip for bgp to form neighborship
+- router needs a route to the neighbor ip for bgp to form neighborship, such as a static route
 ```js
 ! forms remote neighborship
 conf t
@@ -68,6 +68,17 @@ router bgp <AS number>
 neighbor <neighbor ip> remote-as <neighbor AS number>
 neighbor <neighbor ip> ebgp-multihop <max # of hops you allow>
 end
+```
+
+## Route Summarization
+- Effectively the same as using network command along with static null route. The difference is that null route method is always advertised while route summarization is only advertised if there is at least one route that matches summary network.
+- the "summary-only" option blocks all more specific routes from being advertised
+```js
+! route summarization on BGP
+conf t
+router bgp <AS num>
+	aggregate-address <summary network IP> <summary mask> summary-only
+	end
 ```
 
 ## Clear BGP

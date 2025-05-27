@@ -1,6 +1,6 @@
 
 ## WLC
-- WLC connects to switch via LAG (Link Aggregation Group). WLC only supports static LAG, no PAgP or LACP. The port channel should be a trunk with all of the VLANs allowed
+- WLC connects to switch via LAG (Link Aggregation Group). WLC only supports static LAG, no PAgP or LACP. The port channel should be a trunk with all of the VLANs
 - Make sure there is a reachable DHCP server
 - LAPs connect to switch interface that is set to access and with the management VLAN. Should be portfast as well
 - 

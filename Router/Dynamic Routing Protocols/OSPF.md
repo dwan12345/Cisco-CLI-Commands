@@ -1,3 +1,12 @@
+- Designated router (DR) - the router that connects with every other router. The other routers will grab the LSA table from this
+- Backup designated router (BDR) - also connects with every other router, takes over DR role if DR ever goes down.
+- Election of DR and BRD is based on:
+	- Priority: higher wins. Default is 1. Set priority to 0 to make sure this router is not DR
+	- Router ID: higher wins.
+- LSA types:
+	- Type 1: router LSA. contains info about directly connected routes. It is a self description. every router creates one and floods it to the area
+	- Type 2: network LSA. Only from DR. Floods to area. It describes the network. This simplifies the LSDB and SPF algorithm.
+	- Type 3: Summary LSA or inter-area LSA. Floods an entire area, a type 3 LSA from area 0 would flood area 1. Only from ABRs. Summarizes the area by advertising the network prefixes so that LSDBs in other areas are smaller.
 ## Basic Setup
 ```js
 ! sets up OSPF
@@ -58,6 +67,17 @@ auto-cost reference-bandwidth <bandwidth mbps>
 end
 ```
 
+
+## Configure OSPF Priority
+- Done in interface config mod for some reason
+```js
+! configure the OSPF priority
+conf t
+int <interface>
+	ip ospf priority <0-255>
+	end
+```
+
 ## Show
 ```js
 show ip ospf
@@ -68,6 +88,7 @@ show running-config | section ospf
 ! Show all known routes to ospf
 show ip ospf rib
 ```
+
 
 
 
