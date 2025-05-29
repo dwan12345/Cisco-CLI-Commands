@@ -1,8 +1,5 @@
 
 # Cloud
-
-	
-	
 - COLO: colocation. hardware owned by company , self managed
 - Virtualization: hardware is divided into different computers. hypervisor is software to fun multiple VMs into single machine
 - Type 1 hypervisor: bare metal. Software installed directly on the physical computer. It interacts directly with the physical hardware
@@ -58,3 +55,42 @@
 	- Most cost savings are from removing unused resources
 	- EC2 instances have specialized pricing: on demand, reserved, spot, 
 	- use CSP price calculators
+
+# Redundancy
+- Port channels: bundle many physical channels into a single logical link
+	- provides port redundancy, extra bandwidth
+	- port channels, etherchannel, LAG link aggregate
+	- Usually the max amount of physical ports bundled together is 8
+	- STP sees a single logical link
+	- Manual: mode "on"
+	- Dynamic: using LACP
+		- dynamically negotiates ether channel
+		- Active: actively initiates negotiation
+		- passive: only responds to negotiation
+		- must have exact same configs: duplex, speed, allowed vlans, trunk or access
+- First host redundancy protocol
+	- provides default gateway redundancy
+	- requires layer 2 communication between devices
+	- Virtual IP (VIP): must be in the same subnet, sometimes called standby IP. 
+	- standby group: logical group of routers participating in an HSRP process. Numbered from 0-255. Must match on all devices. 
+	- Higher priority wins, default is 100
+	- preempt: allow higher priority router to take over automatically
+	- preempt delay: timer before preempt occurs.
+- DHCP
+	- client: the device requesting the info
+	- relay agent: device that helps facilitate communication between the client and the DHCP server
+	- server: the DHCP server that supplies the IP and gateway
+	- when running DHCP on router, the helper IP is the IP address of the loopback interface on the DHCP router
+	- Steps
+		- discover: client send out broadcast, which eventually reaches the server
+		- offer: server responds with an offer, to see if client wants it
+		- request: client says yes to offer
+		- acknowledge: server says yes, you can use the IP
+	- config: conf t, service dhcp, etc.
+
+
+
+
+
+
+

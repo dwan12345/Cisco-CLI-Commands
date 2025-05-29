@@ -1,5 +1,5 @@
 
-## Basic Setup
+## HSRP
 - Good practice to match group number to vlan
 - switches to HSRP v2
 - The priority number (default is 100) is used to determine which router will be the active router.
@@ -13,6 +13,7 @@ standby version 2
 standby <group number> ip <virtual IP>
 standby <group number> priority <priority number>
 ! standby <group number> preempt
+! stanby <group number> preempt delay <seconds>
 end
 ```
 
