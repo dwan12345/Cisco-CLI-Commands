@@ -4,6 +4,7 @@
 - real world destination ip must be a real routable ip with an actual destination in the real world
 - interface is the interface to leave out of to reach the end of the tunnel
 - the square brackets are for attaching an IPsec profile
+- Should use static route for the tunnel
 ```js
 ! creates GRE tunnel
 conf t
