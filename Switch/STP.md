@@ -36,6 +36,7 @@ end
 
 ## Enable Portfast and BPDU Guard on an Interface
 ```js
+! enables portfast and BPDU guard on an interface
 conf t
 int <interface>
 	spanning-tree portfast

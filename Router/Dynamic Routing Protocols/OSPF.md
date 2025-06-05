@@ -48,7 +48,7 @@ yes
 
 ## Passive Interface
 ```js
-! configures OSPF
+! configures OSPF passive interface
 conf t
 router ospf <process id>
 passive-int <interface>
