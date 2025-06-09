@@ -44,6 +44,11 @@ access-list <ACL name> <permit | deny> <source ip> <wildcard mask>
 end
 ```
 
+## Standard Numbered ACL
+```js
+! 
+access-list <acl-number> {permit | deny} <source-ip> [wildcard-mask]
+```
 
 ## Show
 ```js
