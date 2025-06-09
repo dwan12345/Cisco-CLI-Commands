@@ -34,8 +34,22 @@ spanning-tree portfast bpduguard default
 end
 ```
 
+
+## Disable Portfast and BPDU Guard
+- If using those settings by default, disable on these interfaces: to other switches, to routers, routed interfaces, anything other than end hosts
+```js
+! disable portfast and BPDU guard
+conf t
+int [interface]
+	no spanning-tree portfast
+	no spanning-tree bpduguard
+	end
+```
+
+
 ## Enable Portfast and BPDU Guard on an Interface
 ```js
+! enable portfast and BPDU guard
 conf t
 int <interface>
 	spanning-tree portfast
