@@ -24,6 +24,9 @@ show standby
 show standby int <interface>
 show standby group <group number>
 show standby brief
+
+show vrrp brief
+show glbp brief
 ```
 
 

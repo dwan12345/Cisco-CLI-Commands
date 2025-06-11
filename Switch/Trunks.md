@@ -13,3 +13,7 @@ end
 ```
 
 
+## Show
+```js
+show interfaces trunk
+```
