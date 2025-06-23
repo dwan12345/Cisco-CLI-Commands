@@ -1,0 +1,4 @@
+- IPSLA: monitor something past ISP
+- VXLan
+- BFD: use instead of IPSLA (bidirectional forwarding detection)
+- 
