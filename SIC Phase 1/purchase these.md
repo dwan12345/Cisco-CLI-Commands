@@ -1,25 +1,4 @@
- Cisco Catalyst 9200L 48 Ports: [https://www.insight.com/en_US/shop/product/C9200L-48P-4X-E/cisco%20systems/C9200L-48P-4X-E/Cisco-Catalyst-9200L-Network-Essentials-switch-48-ports-managed-rackmountable/](https://www.insight.com/en_US/shop/product/C9200L-48P-4X-E/cisco%20systems/C9200L-48P-4X-E/Cisco-Catalyst-9200L-Network-Essentials-switch-48-ports-managed-rackmountable/)
-C9200L-48P-4X
-$3600
-14 needed
-48 1gb ethernet, 4 10gb sfp
-30 W POE
-fixed redundant fan
-Comes with 1 PSU, have to order the second
-switch backup PSU: https://www.insight.com/en_US/shop/product/PWR-C5-1KWAC=/CISCO%20SYSTEMS/PWR-C5-1KWAC=/Cisco-Config-5--power-supply--hotplug--1000-Watt/
-PWR-C5-1KWAC
-$3100
-14 needed
 
-Another Access Switch: https://www.insight.com/en_US/shop/product/C9200-48T-E/cisco%20systems/C9200-48T-E/Cisco-Catalyst-9200-Network-Essentials-switch-48-ports-managed-rackmountable/
-C9200-48T-E
-$3,333.99
-48 1gb ethernet, modular uplink
-10 needed
-no POE
-power supply: https://www.insight.com/en_US/shop/product/PWR-C6-125WAC=/Cisco/PWR-C6-125WAC=/CiscoConfig6-powersupply/
-PWR-C6-125WAC
-$755.99
 
 Another Access switch: https://www.insight.com/en_US/shop/product/C9200-48PL-E/cisco%20systems/C9200-48PL-E/Cisco-Catalyst-9200-Network-Essentials-switch-48-ports-rackmountable/
 C9200-48PL-E
@@ -43,6 +22,7 @@ $260
 
 Cisco Nexus 93180YC: [https://www.insight.com/en_US/shop/product/N9K-C93180YC-FX3/cisco%20systems/N9K-C93180YC-FX3/Cisco-Nexus-93180YCFX3-switch-48-ports-managed-rackmountable/](https://www.insight.com/en_US/shop/product/N9K-C93180YC-FX3/cisco%20systems/N9K-C93180YC-FX3/Cisco-Nexus-93180YCFX3-switch-48-ports-managed-rackmountable/)
 N9K-C93180YC-FX3
+600 watts
 $13,290.99
 2 needed
 Nexus switch backup PSU: https://www.insight.com/en_US/shop/product/NXA-PAC-650W-PE=/CISCO%20SYSTEMS/NXA-PAC-650W-PE=/Cisco--power-supply--hotplug--redundant--650-Watt/
@@ -54,39 +34,19 @@ forever
 $12,269.99
 2 needed
 
-WLC: https://www.insight.com/en_US/shop/product/C9800-L-F-K9-RF/cisco%20systems/C9800-L-F-K9-RF/Cisco-Catalyst-9800L-Wireless-Controller-network-management-device-WiFi-6/
-C9800-L-F-K9-RF
-$6600
-2 needed
-5 gbps throughput
-license: https://www.insight.com/en_US/shop/product/C9500-NW-1A/cisco%20systems/C9500-NW-1A/Cisco-Network-Advantage-License-for-Catalyst-9500/
-Cisco Network Advantage 
-$4,367.99
 
-AP: [https://www.insight.com/en_US/shop/product/C9130AXI-B/cisco%20systems/C9130AXI-B/Cisco-Catalyst-9130AXI-wireless-access-point-Bluetooth-WiFi-6/](https://www.insight.com/en_US/shop/product/C9130AXI-B/cisco%20systems/C9130AXI-B/Cisco-Catalyst-9130AXI-wireless-access-point-Bluetooth-WiFi-6/)
-$1,972.99
-Need about 8
-25.5 W needed for POE
-Has one 1, 2.5, 5 g RJ45
-Supports cisco catalyst 9800 WLC
-license: Cisco DNA Advantage 1 year
-$1
 
-Firewall: https://www.insight.com/en_US/shop/product/PAN-PA-850/palo%20alto%20networks/PAN-PA-850/Palo-PA850-security-appliance/
-PAN-PA-850
-$12,274.99
-2 needed
-PSU: https://www.zones.com/site/product/index.html?id=106422373&page_name=product_tech_spec
-PAN-PWR-500W-AC
-$688.99
-threat prevention license: $2000
-1 year
-2 needed
+edge firewall: https://www.ebay.com/itm/356764209167?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item&gQT=2
+PA-460
+50 watts
+
+
 
 SFP 10g LC/PC MM: https://www.insight.com/en_US/shop/product/SFP-10G-SR-S=/CISCO+SYSTEMS/SFP-10G-SR-S=/Cisco---SFP--transceiver-module---10-GigE/
 $380
 48 needed
 52 buy?
+SFP-10G-SR-S
 
 SFP for firewall: https://www.insight.com/en_US/shop/product/PAN-SFP-PLUS-SR-AX/AXIOM%20MEMORY/PAN-SFP-PLUS-SR-AX/Axiom-Palo-Alto-PANSFPPLUSSR-Compatible--SFP+-transceiver-module--10-GigE/#tab-specifications
 PAN-SFP-PLUS-SR-AX
@@ -105,4 +65,44 @@ buy 9
 so far 218024
 
 
+female st to male lc: https://www.insight.com/en_US/shop/product/N457-001-62/Tripp%20Lite/N457-001-62/TrippLite0.3MDuplexMultimo/
 
+palo alto 820: https://www.insight.com/en_US/shop/product/PAN-PA-820/PALO+ALTO+NETWORKS/PAN-PA-820/Palo-PA-820---security-appliance/
+$5827.99
+PAN-PA-820
+120 watts
+
+
+ap Cisco Catalyst 9105AXI: https://www.insight.com/en_US/shop/product/C9105AXI-B/CISCO+SYSTEMS/C9105AXI-B/Cisco-Catalyst-9105AXI---wireless-access-point-Bluetooth--Wi-Fi-6/
+$369.99
+C9105AXI-B
+
+WLC: https://www.insight.com/en_US/shop/product/C9800-L-C-K9/CISCO+SYSTEMS/C9800-L-C-K9/Cisco-Catalyst-9800-L-Wireless-Controller---network-management-device---Wi-Fi-6/
+C9800-L-C-K9
+$6,668.99
+90 watts
+license: https://www.insight.com/en_US/shop/product/C9500-NW-1A/cisco%20systems/C9500-NW-1A/Cisco-Network-Advantage-License-for-Catalyst-9500/
+Cisco Network Advantage 
+$4,367.99
+
+
+female ST to LC: https://www.insight.com/en_US/shop/product/N457-001-62/Tripp%20Lite/N457-001-62/TrippLite0.3MDuplexMultimo/
+N457-001-62
+$35.99
+40
+
+LC to LC: https://www.insight.com/en_US/shop/product/N320-03M/TRIPP+LITE/N320-03M/Tripp-Lite-3M-Duplex-Multimode-62-5-125-Fiber-Optic-Patch-Cable-LC-LC-10--10ft-3-Meter---patch-cable---3-m/
+N320-03M
+$17.99
+28
+
+
+ups 1500w: https://www.insight.com/en_US/shop/product/SMX1500RMI2U/APC/SMX1500RMI2U/APC-SmartUPS-X-1500-RackTower-LCD--UPS--1200-Watt--1500-VA/
+SMX1500RMI2U
+$1505.99
+12 needed
+
+
+ups 1000w: https://www.insight.com/en_US/shop/product/PR1000RTXL2UC/CYBERPOWER+SYSTEMS/PR1000RTXL2UC/CyberPower-Sine-Wave-UPS---1000VA-1000W/
+PR1000RTXL2UC
+$979.95
