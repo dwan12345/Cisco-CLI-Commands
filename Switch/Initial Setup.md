@@ -43,6 +43,7 @@ desc <Management interface name>
 ip address <ip address> <subnet mask>
 shut
 no shut
+ip default-gateway <default gateway of management vlan>
 end
 ```
 
