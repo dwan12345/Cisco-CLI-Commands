@@ -1,0 +1,1276 @@
+/**
+ * 
+ */
+
+$(document)
+		.ready(
+				function() {
+					$(".select-wrapper span.caret")
+							.html(
+									"<i style='font-size:16px;' class='fa fa-caret-down'></i>");
+
+					window.onscroll = function() {
+						common.resetScrollHeader();
+						common.changeDivHeight();
+					};
+					window.onresize = function() {
+
+						common.changeDivHeight();
+					};
+				});
+
+$(document).click(
+		function(e) {
+			var targetId = $(e.target).attr("id");
+			if (targetId != "menuChannel"
+					&& $(e.target).parents('#menuChannel').length == 0) {
+				$("#menuChannelSub").hide();
+				$('#menuChannelTitle').removeClass('active');
+			}
+			if (targetId != "menuLayer"
+					&& $(e.target).parents('#menuLayer').length == 0) {
+				$("#menuLayerSub").hide();
+				$('#menuLayer').removeClass('active');
+			}
+			if (targetId != "menuLabel"
+					&& $(e.target).parents('#menuLabel').length == 0) {
+				$("#menuLabelSub").hide();
+				$('#menuLabel').removeClass('active');
+			}
+			if (targetId != "btnDownloadMenu"
+					&& targetId != "btnDownloadMenu_i") {
+				$("#dropdown_report_type").hide();
+			}
+		});
+var common = {
+	resetScrollHeader : function() {
+		if ($('.project_list.projectpanel').css("display") != 'none') {
+			var top = $(window).scrollTop();
+			if (top == 0) {
+				$('.projectBar').show();
+				$('.projectWraper').hide();
+				if(searchProjectText!=""){
+					$(".S.btnSearch").hide();$('#search_div').show();
+					$('#search_div input').val(searchProjectText);
+				}else{
+					$('#search_div input').val("");
+					$('#seach_div').hide();$('.S.btnSearch').show();
+				}
+			}
+			if (top > 170) {
+				$('.projectBar').hide();
+				$('.projectWraper').show();
+				if(searchProjectText!=""){
+					$(".B.btnSearch").hide();$('#bseach_div').show();
+					$('#bseach_div input').val(searchProjectText);
+				}else{
+					$('#bseach_div input').val("");
+					$('#bseach_div').hide();$('.B.btnSearch').show();
+				}
+			}
+		}
+	},
+	changeDivHeight : function() {
+		/*
+		 * if($("#apPropertyDiv").css("display")!='none'){ return; }
+		 */
+		var height = $("#leftmenu").height();
+		if (document.body.scrollHeight > document.body.offsetHeight) {
+			if (navigator.userAgent.indexOf('Firefox') >= 0) {
+				height = height + 19.4;
+			} else {
+				height = height + 9.4;
+			}
+			// height = height + 9.4;
+		}
+		var width = $("#floor_listview").outerWidth();
+		if (document.body.scrollWidth > document.body.offsetWidth) {
+			if (navigator.userAgent.indexOf('Firefox') >= 0) {
+				width = width + 15;
+			} else {
+				width = width + 5;
+			}
+			// width = width + 5;
+
+		}
+		if ($("#leftmenu").css("display") == 'none') {
+			$("#rightContainer").css("width", width);
+		} else {
+			$("#rightContainer").css("width", width - 220);
+		}
+
+		/*
+		 * if ($("#setscaleStart").css("display") != 'none' ||
+		 * $("#scalepanel").css("display") != 'none') {
+		 * $("#canvasdiv").css("height", height - 71); } else if
+		 * ($(".floor_topmenu").css("display") != 'none') {
+		 * $("#canvasdiv").css("height", height - 81); } else if
+		 * ($(".floor_topmenu_min").css("display") != 'none') {
+		 * $("#canvasdiv").css("height", height - 41); }
+		 */
+		if ($("#setscaleStart").css("display") != 'none'
+				|| $("#scalepanel").css("display") != 'none') {
+			$("#canvasdiv").css("top", 120);
+		} else if ($(".floor_topmenu").css("display") != 'none') {
+			$("#canvasdiv").css("top", 110);
+
+		} else if ($(".floor_topmenu_min").css("display") != 'none') {
+			$("#canvasdiv").css("top", 91);
+		}
+		$(".floorlist_left .collection").css("height", height - 41);
+		var reportheight = $(".report_left").height();
+		var reportwidth = $(".report_listview").outerWidth();
+		$(".report_left .collection").css("height", reportheight - 41);
+		$(".report_content").css("height", reportheight - 82);
+		$("#report_container").css("width", reportwidth - 220);
+
+		if (global.currentFloor && global.currentFloor.floorType == 0) {
+			canvasAutoresize();
+		}
+
+		var height = $("#canvasdiv").height();
+		$("#PropertyDivMain").css("height", height - 36 + "px");
+
+		//$("#floorCreate").css("height", height + 75 + "px");
+	},
+
+};
+
+function showDialog(target, ready_callback) {
+	global.selectedAP = '';
+
+	if (target == "exportPDFModal") {
+		$('.modal').modal({
+			dismissible : false, // Modal can be dismissed by clicking
+			// outside of the modal
+			opacity : 0.5, // Opacity of modal background
+			inDuration : 300, // Transition in duration
+			outDuration : 200, // Transition out duration
+			starting_top : '4%', // Starting top style attribute
+			ending_top : '40px'
+		});
+	} else if (target == "waitingPModal") {
+		$('.modal').modal({
+			dismissible : false, // Modal can be dismissed by clicking
+			// outside of the modal
+			opacity : 0.5, // Opacity of modal background
+			inDuration : 300, // Transition in duration
+			outDuration : 200, // Transition out duration
+			starting_top : '4%', // Starting top style attribute
+			ending_top : '50%'
+		});
+	} else {
+		$('.modal').modal({
+			dismissible : false, // Modal can be dismissed by
+			// clicking
+			// outside of the modal
+			opacity : 0.5, // Opacity of modal background
+			inDuration : 300, // Transition in duration
+			outDuration : 200, // Transition out duration
+			starting_top : '4%', // Starting top style
+			// attribute
+			ending_top : '80px',
+			ready : function(modal, trigger) { // Callback for
+				// Modal open.
+				// Modal
+
+			}
+		});
+	}
+	$('#' + target).modal('open');
+	/*
+	 * var height = $("#leftmenu").height(); var width = $("#floortop").width();
+	 * if ($(".floor_topmenu").css("display") != 'none') {
+	 * $('.modal-overlay').css("top", 131); $('.modal-overlay').css("height",
+	 * height - 121); } if ($(".floor_topmenu_min").css("display") != 'none') {
+	 * $('.modal-overlay').css("top", 91); $('.modal-overlay').css("height",
+	 * height - 81); } $('.modal-overlay').css("width", width); if
+	 * (global.showSideBar == true) { $('.modal-overlay').css("left", "221px"); }
+	 * else { $('.modal-overlay').css("left", "0"); }
+	 */
+
+}
+
+function closeDialog(sender) {
+	// $("#customOver").hide();
+	if (sender == 'waitingPModal') {
+		setTimeout(function() {
+			$('#' + sender).modal('close');
+			$('.floor_topmenu div.active').removeClass('active');
+			$('.floor_topmenu_min div.active').removeClass('active');
+			if (resetHeatMap) {
+				resetHeatMap();
+			}
+		}, 100);
+		return;
+	}
+	$('#' + sender).modal('close');
+	$('.floor_topmenu div.active').removeClass('active');
+	$('.floor_topmenu_min div.active').removeClass('active');
+	if (resetHeatMap) {
+		resetHeatMap();
+	}
+}
+function toggleTopMenu(flag) {
+
+	if (flag == "min") {
+		$('.floor_topmenu').hide();
+		$('.floor_topmenu_min').show();
+		global.showToolPanel = false;
+	} else {
+		$('.floor_topmenu').show();
+		$('.floor_topmenu_min').hide();
+		global.showToolPanel = true;
+	}
+	changeMenuStatus();
+	common.changeDivHeight();
+}
+
+function goHome() {
+	$("#floorCreate").hide();
+	toggleCard('.project_list', '#floor_listview');
+	$(".report_listview").hide();
+	project.getProjectList();
+}
+function goBack() {
+	toggleCard('.project_list', '#floor_listview');
+}
+function collapseSideBar() {
+	$("#leftmenu").hide();
+	$("#rightContainer").css("margin-left", "0px");
+	/*
+	 * var width = $("#floor_listview").outerWidth(); if
+	 * (document.body.scrollWidth > document.body.offsetWidth) { width = width +
+	 * 5; }
+	 */
+	$("#rightContainer").css("width", "100%");
+	$("#canvasdiv").css("left", 0);
+	$("#right_bottom").css("left", 0);
+	$("#expander").css("display", "block");
+	canvasAutoresize();
+	global.showSideBar = false;
+}
+function expandSideBar() {
+	$("#leftmenu").show();
+	$("#rightContainer").css("margin-left", "220px");
+	var width = $("#floor_listview").outerWidth();
+	/*
+	 * if (document.body.scrollWidth > document.body.offsetWidth) { width =
+	 * width + 5; }
+	 */
+	$("#rightContainer").css("width", width - 220);
+	$("#canvasdiv").css("left", 220);
+	$("#right_bottom").css("left", 221);
+	$("#expander").css("display", "none");
+	canvasAutoresize();
+	global.showSideBar = true;
+}
+function getEnabled(pre) {
+	var dataList = [];
+	dataList[0] = {
+		text : pre + " On",
+		value : "0"
+	};
+	dataList[1] = {
+		text : pre + " Off",
+		value : "1"
+	};
+	return JSON.stringify(dataList);
+}
+function getProtocol(ap) {
+	var protocol = "";
+	var ppstring = "";
+	for (var i = 0; i < ap.bandList.length; i++) {
+		if (i >= 1) {
+			ppstring += "/";
+		}
+		ppstring += ap.bandList[i].protocol;
+
+	}
+	protocol = ppstring.replace(new RegExp("802.11 ", "gm"), "").replace(
+			new RegExp("802.11", "gm"), "");
+	protocol = protocol.replace(",", "/");
+	var ar = protocol.split("/");
+	// ar.sort();
+	ar.sort(function(a, b) {
+		if (a.length > b.length) {
+			return 1;
+		} else if (a.length == b.length) {
+			return a > b ? 1 : -1;
+		} else {
+			return -1;
+		}
+	});
+	protocol = "";
+	for (var t = 0; t < ar.length; t++) {
+		if (protocol.indexOf(ar[t]) == -1)
+			protocol += ar[t] + "/";
+	}
+	protocol = protocol.substring(0, protocol.length - 1);
+	return "802.11 " + protocol;
+}
+function getChannel5(channelSize, apType) {
+	var chs;
+	if (apType == 0) {
+
+		chs = global.channel['ch5str' + channelSize].split(",");
+	} else {
+		chs = global.channel['ch5Outstr' + channelSize].split(",");
+	}
+	var dataList = [];
+	dataList[0] = {
+		text : "Auto",
+		value : "Auto"
+	};
+
+	for (var t = 0; t < chs.length; t++) {
+		dataList[t + 1] = {
+			text : chs[t],
+			value : chs[t]
+		};
+	}
+	return JSON.stringify(dataList);
+}
+
+function getChannel6(channelSize, apType) {
+	var chs;
+	if (apType == 0) {
+		chs = global.channel['ch6str' + channelSize].split(",");
+	} else {
+		chs = global.channel['ch6Outstr' + channelSize].split(",");
+	}
+	var dataList = [];
+	dataList[0] = {
+		text : "Auto",
+		value : "Auto"
+	};
+
+	for (var t = 0; t < chs.length; t++) {
+		dataList[t + 1] = {
+			text : chs[t],
+			value : chs[t]
+		};
+	}
+	return JSON.stringify(dataList);
+}
+
+function getCurrentChannel(current, channelSize, apType) {
+	if (current == "Auto")
+		return "Auto";
+	var chs;
+	if (apType == 0) {
+		chs = global.channel['ch5str' + channelSize].split(",");
+	} else {
+		chs = global.channel['ch5Outstr' + channelSize].split(",");
+	}
+	if (chs.indexOf(current) != -1) {
+		return current;
+	} else {
+		return chs[0];
+	}
+}
+function getChannelByContry() {
+	var jsondata = {
+		countryCode : global.currentProject.countryCode
+	};
+	doActionParam(loader.Request.SystemGetChannelByCCode, jsondata, function(
+			data) {
+		if (data && data.success) {
+			var dimchannel = data.data;
+			if (dimchannel != null) {
+				if (dimchannel.channelIndoor20 == "") {
+					global.support.band5In = false;
+				} else {
+					global.support.band5In = true;
+				}
+				if (dimchannel.channelOutdoor20 == "") {
+					global.support.band5Out = false;
+				} else {
+					global.support.band5Out = true;
+				}
+				if (!global.support.band5In && !global.support.band5Out) {
+					$('#band5radio').attr("disabled", true);
+				} else {
+					$('#band5radio').attr("disabled", false);
+				}
+
+				if (dimchannel.channel6gIndoor20 == "") {
+					global.support.band6In = false;
+				}
+				else {
+					global.support.band6In = true;
+				}
+				if (dimchannel.channel6gOutdoor20 == "") {
+					global.support.band6Out = false;
+				}
+				else {
+					global.support.band6Out = true;
+				}
+
+				if (!global.support.band6In && !global.support.band6Out) {
+					$('#band6radio').attr("disabled", true);
+				} else {
+					$('#band6radio').attr("disabled", false);
+				}
+
+				global.channel.ch24str = dimchannel.channel24;
+
+				global.channel.ch5str20 = dimchannel.channelIndoor20;
+				global.channel.ch5Outstr20 = dimchannel.channelOutdoor20;
+				global.channel.ch5str40 = dimchannel.channelIndoor40;
+				global.channel.ch5Outstr40 = dimchannel.channelOutdoor40;
+				global.channel.ch5str80 = dimchannel.channelIndoor80;
+				global.channel.ch5Outstr80 = dimchannel.channelOutdoor80;
+
+				global.channel.ch6str20 = dimchannel.channel6gIndoor20;
+				global.channel.ch6str40 = dimchannel.channel6gIndoor40;
+				global.channel.ch6str80 = dimchannel.channel6gIndoor80;
+				global.channel.ch6str160 = dimchannel.channel6gIndoor160;
+				global.channel.ch6str320 = dimchannel.channel6gIndoor320;
+				global.channel.ch6Outstr20 = dimchannel.channel6gOutdoor20;
+				global.channel.ch6Outstr40 = dimchannel.channel6gOutdoor40;
+				global.channel.ch6Outstr80 = dimchannel.channel6gOutdoor80;
+				global.channel.ch6Outstr160 = dimchannel.channel6gOutdoor160;
+				global.channel.ch6Outstr320 = dimchannel.channel6gOutdoor320;
+
+			}
+		}
+	});
+}
+function getChannel24() {
+	var dataList = [];
+	dataList[0] = {
+		text : "Auto",
+		value : "Auto"
+	};
+	var chs = global.channel.ch24str.split(",");
+	for (var t = 0; t < chs.length; t++) {
+		dataList[t + 1] = {
+			text : chs[t],
+			value : chs[t]
+		};
+	}
+	return JSON.stringify(dataList);
+}
+function getAPMode() {
+	var dataList = [];
+	dataList[0] = {
+		text : "AP",
+		value : "AP"
+	};
+
+	dataList[1] = {
+		text : "WDS",
+		value : "WDS"
+	};
+
+	return JSON.stringify(dataList);
+}
+function getChannelSize() {
+	var dataList = [];
+	dataList[0] = {
+		text : "20	MHz",
+		value : "20"
+	};
+	dataList[1] = {
+		text : "40	MHz",
+		value : "40"
+	};
+	return JSON.stringify(dataList);
+}
+function get5GChannelSize(flag, apType) {
+	var dataList = [];
+	dataList[0] = {
+		text : "20	MHz",
+		value : "20"
+	};
+	if (apType == 0) {
+
+		if (global.channel['ch5str40'] != "") {
+			dataList[1] = {
+				text : "40	MHz",
+				value : "40"
+			};
+			if (flag.indexOf('ac') != -1 && global.channel['ch5str80'] != "") {
+				dataList[2] = {
+					text : "80	MHz",
+					value : "80"
+				};
+			}
+		} else {
+			if (flag.indexOf('ac') != -1 && global.channel['ch5str80'] != "") {
+				dataList[1] = {
+					text : "80	MHz",
+					value : "80"
+				};
+			}
+		}
+
+	} else {
+		if (global.channel['ch5Outstr40'] != "") {
+			dataList[1] = {
+				text : "40	MHz",
+				value : "40"
+			};
+			if (flag.indexOf('ac') != -1 && global.channel['ch5Outstr80'] != "") {
+				dataList[2] = {
+					text : "80	MHz",
+					value : "80"
+				};
+			}
+		} else {
+			if (flag.indexOf('ac') != -1 && global.channel['ch5Outstr80'] != "") {
+				dataList[1] = {
+					text : "80	MHz",
+					value : "80"
+				};
+			}
+		}
+
+	}
+
+	return JSON.stringify(dataList);
+}
+
+function get6GChannelSize(flag, apType) {
+	var dataList = [];
+	dataList[0] = {
+		text : "20	MHz",
+		value : "20"
+	};
+
+	const bandStr = apType === 0 ? 'ch6str' : 'ch6OutStr';
+
+	// 'be' upto 320, 'ax' upto 160, 'ac' upto 80
+	const channelSizeArray = [ 40, 80, 160, 320 ];
+	channelSizeArray.forEach((chVal) => {
+		if (global.channel[`${bandStr}${chVal}`] !== "") {
+			if ((chVal === 80 && flag.indexOf('ac') === -1)
+				||(chVal === 160 && flag.indexOf('ax') === -1)
+				||(chVal === 320 && flag.indexOf('be') === -1)) {
+				return;
+			}
+			else {
+				dataList.push({
+					text: `${chVal} MHz`,
+					value: chVal
+				})
+			}
+		}
+	});
+
+	return JSON.stringify(dataList);
+}
+
+function getPt(pt) {
+	var dataList = [];
+	var i = 0;
+	for (i = 0; i < pt; i++) {
+		dataList[i] = {
+			text : (i + 1) + " dBm",
+			value : i + 1
+		};
+	}
+	if ((i - 1) < pt && pt < i) {
+		dataList[i] = {
+			text : (pt) + " dBm",
+			value : pt
+		};
+	}
+	return JSON.stringify(dataList);
+}
+function getPtOptions(power) {
+	var option = "";
+	option += "<option value='" + power + "'>Full Power </option>";
+	option += "<option value='" + (power - 3) + "'>Half  </option>";
+	option += "<option value='" + (power - 6) + "'>Quarter  </option>";
+	option += "<option value='" + (power - 9) + "'>Eighth  </option>";
+	return option;
+}
+// 阻止冒泡的方法
+
+function stopPP(evt) {
+
+	var e = (evt) ? evt : window.event;
+	if (window.event) {
+		e.cancelBubble = true;
+	} else {
+		e.stopPropagation();
+	}
+
+}
+Date.prototype.pattern = function(fmt) {
+	var o = {
+		"M+" : this.getMonth() + 1, // 月份
+		"d+" : this.getDate(), // 日
+		"h+" : this.getHours() % 12 == 0 ? 12 : this.getHours() % 12, // 小时
+		"H+" : this.getHours(), // 小时
+		"m+" : this.getMinutes(), // 分
+		"s+" : this.getSeconds(), // 秒
+		"q+" : Math.floor((this.getMonth() + 3) / 3), // 季度
+		"S" : this.getMilliseconds()
+	// 毫秒
+	};
+	var week = {
+		"0" : "/u65e5",
+		"1" : "/u4e00",
+		"2" : "/u4e8c",
+		"3" : "/u4e09",
+		"4" : "/u56db",
+		"5" : "/u4e94",
+		"6" : "/u516d"
+	};
+	if (/(y+)/.test(fmt)) {
+		fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "")
+				.substr(4 - RegExp.$1.length));
+	}
+	if (/(E+)/.test(fmt)) {
+		fmt = fmt
+				.replace(
+						RegExp.$1,
+						((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? "/u661f/u671f"
+								: "/u5468")
+								: "")
+								+ week[this.getDay() + ""]);
+	}
+	for ( var k in o) {
+		if (new RegExp("(" + k + ")").test(fmt)) {
+			fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k])
+					: (("00" + o[k]).substr(("" + o[k]).length)));
+		}
+	}
+	return fmt;
+};
+function getFormatDate(d) {
+	if (d) {
+		d = d.time;
+	}
+	var mm = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+			'Oct', 'Nov', 'Dec' ];
+	var dt = new Date(d);
+	var month = dt.getMonth();
+	var date = dt.pattern("d, yyyy");
+	return mm[month] + " " + date;
+}
+function showLoading() {
+	$("#mywaiting").modal("show");
+	resetModalWindowLocation("mywaiting");
+}
+function hideLoading() {
+	$("#mywaiting").modal("hide");
+}
+function HtmlEncode(theString) {
+	theString = theString.replace(">", "&gt;");
+	theString = theString.replace("<", "&lt;");
+	theString = theString.replace(" ", " &nbsp;");
+	theString = theString.replace(" ", " &nbsp;");
+	theString = theString.replace("\"", "&quot;");
+	theString = theString.replace("\'", "&#39;");
+	theString = theString.replace("\n", "<br/> ");
+	return theString;
+}
+function HtmlDiscode(theString) {
+
+	theString = theString.replace(/&gt;/g, ">");
+	theString = theString.replace(/&lt;/g, "<");
+	theString = theString.replace(/&amp;/g, "&");
+	theString = theString.replace(/&nbsp;/g, " ");
+	theString = theString.replace(/ &nbsp;/g, " ");
+	theString = theString.replace(/&quot;/g, "\"");
+	theString = theString.replace(/&#39;/g, "\'");
+	theString = theString.replace(new RegExp("<br/> ", 'gm'), "\n");
+	return theString;
+}
+function doAction(url, jsondata, callback) {
+
+	$.ajax({
+		url : url,
+		dataType : "json",
+		contentType : "application/json",
+		type : "post",
+		cache : false,
+		/*
+		 * data : { json : JSON.stringify(jsondata) },
+		 */
+		data : JSON.stringify(jsondata),
+		success : function(data, textStatus) {
+
+			if (callback != undefined) {
+				callback(data);
+			}
+
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			// hideLoading();
+			/*
+			 * showNoticeWindow("error", "Connection error, Please try again
+			 * later.");
+			 */
+		}
+	});
+}
+
+function doActionParam(url, data, callback) {
+	$.ajax({
+		url : url,
+		dataType : "json",
+		type : "post",
+		cache : false,
+		data : data,
+		success : function(data, textStatus) {
+			if (callback != undefined) {
+				callback(data);
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			/*
+			 * showNoticeWindow("error", "Connection error, Please try again
+			 * later.");
+			 */
+		}
+	});
+}
+/*
+ * 读取国家区域列表
+ */
+function getCountry() {
+	var jsondata = {};
+	doAction(loader.Request.SystemGetCountry, jsondata, function(result) {
+		if (!result || !result.success) {
+			return;
+		}
+		var currentch = result.data;
+		global.userinfo = result.user;
+		var channellist = result.dimChannels;
+		if (channellist != null) {
+			var html = "";
+			var html1 = "";
+			for (var i = 0; i < channellist.length; i++) {
+
+				html1 += "<li ><a onclick='changeProjectStatus(this,\""
+						+ channellist[i].countryCode + "\");'><img alt='"
+						+ channellist[i].countryCode
+						+ "' src='resource/Country_Flags/"
+						+ channellist[i].countryCode + ".svg'>"
+						+ channellist[i].country + "</a></li>";
+			}
+			$("#dropdown_country_p").html(html1);
+			userCountryCode = currentch.countryCode;
+			if (userCountryCode == "US") {
+				userCountryCode = "NA";
+			}
+			if (userCountryCode == "GB") {
+				userCountryCode = "EU";
+			}
+			$('#dropdown_country_p li').bind(
+					'click',
+					function(e) {
+						$('.project_country_div a.dropdown-button').html(
+								$(this).children('a').html()
+										+ '<i class="fa fa-caret-down"></i>');
+					});
+
+		}
+	});
+}
+function initObstructionList() {
+	var jsondata = {};
+	doAction(loader.Request.SystemGetDims, jsondata, function(data) {
+		if (!data || !data.success) {
+			return;
+		}
+		global.apList = data.dimAps;
+		global.atList = data.dimAts;
+		initapList(data.dimAps);
+		initobList(data.dimObs);
+		initapListForAdvisor(data.dimAps);
+
+	});
+}
+function initapList(aplist) {
+	if (aplist) {
+		var len = aplist.length;
+		var indoor = "";
+		var outdoor = "";
+		var indoorCount = 0;
+		var outdoorCount = 0;
+		for (var i = 0; i < len; i++) {
+			var protocol = aplist[i].protocol.replace(
+					new RegExp("802.11 ", "gm"), "").replace(
+					new RegExp("802.11", "gm"), "");
+			protocol = protocol.replaceAll(",", "/");
+			var ar = protocol.split("/");
+			// ar.sort();
+			ar.sort(function(a, b) {
+				if (a.length > b.length) {
+					return 1;
+				} else if (a.length == b.length) {
+					return a > b ? 1 : -1;
+				} else {
+					return -1;
+				}
+			});
+			protocol = "";
+			for (var t = 0; t < ar.length; t++) {
+				if (protocol.indexOf(ar[t]) == -1)
+					protocol += ar[t] + "/";
+			}
+			protocol = protocol.substring(0, protocol.length - 1);
+			var option = "<div><div class='dimtop' value='ap_"
+					+ aplist[i].apModelName + "' onclick='selectAP(this)'>"
+					+ "<p>" + aplist[i].apModelName
+					+ "</p><img src='resource/AP/Image/"
+					+ aplist[i].apModelName + ".png'></div>"
+					+ "<div class='dimbottom'>";
+			if (aplist[i].bandName.indexOf('2.4') != -1) {
+				option += "<span class='span_24'>2.4GHz</span>";
+			}
+			if (aplist[i].apType == 0) {
+				if (global.support.band5In) {
+					if (aplist[i].bandName.indexOf('5.0') != -1) {
+						option += "<span class='span_5'>5GHz</span>";
+					}
+				} else {
+					if (aplist[i].bandName.indexOf('2.4') == -1) {
+						continue;
+					}
+				}
+
+				if (global.support.band6In) {
+					if (aplist[i].bandName.indexOf('6.0') != -1) {
+						option += "<span class='span_6'>6GHz</span>";
+					}
+				}
+			} else {
+				if (global.support.band5Out) {
+					if (aplist[i].bandName.indexOf('5.0') != -1) {
+						option += "<span class='span_5'>5GHz</span>";
+					}
+				} else {
+					if (aplist[i].bandName.indexOf('2.4') == -1) {
+						continue;
+					}
+				}
+
+				if (global.support.band6Out) {
+					if (aplist[i].bandName.indexOf('6.0') != -1) {
+						option += "<span class='span_6'>6GHz</span>";
+					}
+				}
+			}
+
+			option += "<div class='span_AC' title='" + protocol + "'>"
+					+ protocol + "</div>";
+			option += "</div></div>";
+			if (aplist[i].apType == 0) {
+				indoor += option;
+				indoorCount += 1;
+			} else {
+				outdoor += option;
+				outdoorCount += 1;
+			}
+		}
+		$("#title_indoor").html("INDOOR(" + indoorCount + ")");
+		$("#title_outdoor").html("OUTDOOR(" + outdoorCount + ")");
+		if (indoorCount == 0) {
+			indoor = "<p class='noresult bigp'>Whoops!</p>";
+			indoor += "<p class='noresult smallp'>No result found</p>";
+		}
+		if (outdoorCount == 0) {
+			outdoor = "<p class='bigp'>Whoops!</p>";
+			outdoor += "<p class='smallp'>No result found</p>";
+		}
+		$('#adap_indoor_list').html(indoor);
+		$('#adap_outdoor_list').html(outdoor);
+		$('ul.tabs').tabs('select_tab', 'indoor-div');
+	}
+}
+function initapListForAdvisor(aplist) {
+	if (aplist) {
+		var len = aplist.length;
+		var auto = "<option value='Auto'>Auto</option>";
+		var indoor = "<optgroup label='InDoor------------------'>";
+		var outdoor = "<optgroup label='OutDoor------------------'>";
+		var selectop = "";
+		for (var i = 0; i < len; i++) {
+			var option = "<option value='" + aplist[i].apModelName + "'>"
+					+ aplist[i].apModelName + "</option>";
+			if (aplist[i].advisor == 0) {
+				continue;
+			}
+			if (aplist[i].apType == 0 && aplist[i].antennaType == 0) {
+				if (!global.support.band5In) {
+					if (aplist[i].bandName.indexOf('2.4') == -1) {
+						continue;
+					}
+				}
+				indoor += option;
+			} else if (aplist[i].antennaType == 0) {
+				if (!global.support.band5Out) {
+					if (aplist[i].bandName.indexOf('2.4') == -1) {
+						continue;
+					}
+				}
+				outdoor += option;
+			}
+		}
+		indoor += "</optgroup>";
+		outdoor += "</optgroup>";
+		$('#ad_ap_list').html(auto + indoor + outdoor);
+		$('select').material_select();
+	}
+}
+
+function selectAP(sender) {
+	if ($(sender).hasClass('active')) {
+
+		return;
+
+	} else {
+		if (global.selectedAP != "") {
+			/*
+			 * var all=$(".dimtop"); all.forEach(function(el){
+			 * if(el.attr("value")==global.selectedAP){
+			 * el.removeClass('active'); } });
+			 */
+			$("#addAPModal div[value='" + global.selectedAP + "']")
+					.removeClass('active');
+		}
+
+		$(sender).addClass('active');
+		global.selectedAP = $(sender).attr('value');
+	}
+	if (global.selectedAP == "") {
+		$('#btn_addap').addClass("disabled");
+	} else {
+		$('#btn_addap').removeClass("disabled");
+	}
+}
+function initobList(oblist) {
+	var wallul = $("#dropdown_obs");
+	var areaul = $("#dropdown_area");
+	var zoneul = $("#dropdown_zone");
+	var wallulmin = $("#dropdown_obs_min");
+	var areaulmin = $("#dropdown_area_min");
+	var zoneulmin = $("#dropdown_zone_min");
+	if (oblist != null) {
+		var wall = "";
+		var door = "";
+		var wind = "";
+		var ob = "";
+		var area = "";
+		var zone = "";
+		var len = oblist.length;
+		var zonelist = [];
+		for (var i = 0; i < len; i++) {
+			if (oblist[i].obType == "obstacle") {
+				if (oblist[i].obClass == "wall") {
+					wall += getObstacle(oblist[i], "obstacle");
+				}
+
+				if (oblist[i].obClass == "window") {
+					wind += getObstacle(oblist[i], "obstacle");
+
+				}
+				if (oblist[i].obClass == "door") {
+					door += getObstacle(oblist[i], "obstacle");
+				}
+
+			}
+			if (oblist[i].obType == "zone") {
+				zonelist.push(oblist[i]);
+
+			}
+			if (oblist[i].obType == "area") {
+				area += getObstacle(oblist[i], "area");
+
+			}
+		}
+		for (var i = zonelist.length - 1; i >= 0; i--) {
+			zone += getObstacle(zonelist[i], "zone");
+		}
+		/*
+		 * ob = wall + "<li style='width:450px;height:1px;border-bottom:1px dashed #ccc;margin-top:6px;margin-bottom:6px;'></li>" +
+		 * door + "<li></li><li style='width:450px;height:1px;border-bottom:1px dashed #ccc;margin-top:6px;margin-bottom:6px;'></li>" +
+		 * wind;
+		 */
+		ob = wall + door + wind;
+		wallul.html(ob);
+		areaul.html(area);
+		zoneul.html(zone);
+		wallulmin.html(ob);
+		areaulmin.html(area);
+		zoneulmin.html(zone);
+	}
+
+}
+function getObstacle(ob, type) {
+	var zone = "";
+	var drawtype = "";
+	if (type == "zone") {
+		drawtype = "drawzone(\"" + ob.obField + "\");";
+	} else if (type == "area") {
+		drawtype = "drawarea(\"" + ob.obField + "\",\"" + ob.rate + "\");";
+	} else {
+		drawtype = "drawwall(\"" + ob.obField + "\",\"" + ob.rate + "\");";
+	}
+	zone += "<li><a href='javascript:void(0);' onclick='" + drawtype
+			+ "'><div>";
+	if (type == "zone") {
+		if (ob.obField == "zone") {
+			zone += "<i class='fa fa-plus'></i>";
+		}
+		if (ob.obField == "nonap") {
+			zone += "<i class='fa fa-minus'></i>";
+		}
+	}
+	zone += "<span id='" + ob.obField + "'>"
+			+ obText[ob.obField].replace("%s", ob.rate)
+			+ "</span></div></a></li>";
+
+	return zone;
+}
+function initDropdownEvent() {
+	$('#dropdown_search_p li').bind(
+			'click',
+			function(e) {
+				$('#project_search_div a.dropdown-button').html(
+						$(this).children('a').html()
+								+ '<i class="fa fa-caret-down"></i>');
+			});
+}
+// 右键菜单处理
+var _curobj;
+var _sourceobj;
+// var closetimer = 0;
+function ShowCkAuto(destID, source, e) {
+	/*
+	 * if (closetimer) { clearTimeout(closetimer); closetimer = null; }
+	 */
+	if (_curobj) {
+		_curobj.hide();
+	}
+	if (_sourceobj) {
+		_sourceobj.removeClass("icon-active");
+	}
+	var souEle = $(source);
+	var sWidth = souEle.outerWidth();
+	var sHeight = souEle.outerHeight();
+	var x = e.clientX;
+	// var sOffsetL = souEle.offset().left + sWidth + 1;
+	var sOffsetL = x;
+	// souEle.css("top");
+	var sOffsetT = souEle.offset().top + sHeight - 1;
+	var sOffsetB = souEle.offset().top - 110;
+	var leftHeight = $("#leftmenu").height();
+	var destEle = $("#" + destID);
+	souEle.addClass("icon-active ");
+	if (sOffsetT + 20 > leftHeight) {
+		destEle.css("left", sOffsetL);
+		destEle.css("top", sOffsetB);
+	} else {
+		destEle.css("left", sOffsetL);
+		destEle.css("top", sOffsetT);
+	}
+	destEle.show();
+	_curobj = destEle;
+	_sourceobj = souEle;
+	/* isout = true; */
+	// 先解除上次绑定的事件。
+	/*
+	 * souEle.unbind("mouseleave"); destEle.unbind("mouseover");
+	 * destEle.unbind("mouseleave"); destEle.unbind("mouseout");
+	 */
+	// 加上source的mouseleave事件
+	/*
+	 * souEle.mouseleave(function() { closetimer = window.setTimeout(function() {
+	 * destEle.hide(); souEle.removeClass("icon-active "); }, 50); });
+	 */
+	// 加上destEle的mouseover事件
+	/*
+	 * destEle.mouseover(function() { if (closetimer) {
+	 * window.clearTimeout(closetimer); closetimer = null; } });
+	 */
+
+	// 加上destEle的mouseleaves事件
+	/*
+	 * destEle.mouseleave(function() { hideRightmenu(); });
+	 * destEle.mouseout(function() { hideRightmenu(); });
+	 */
+
+}
+function hideRightmenu() {
+	if (_curobj) {
+		_curobj.hide();
+		if (_sourceobj.hasClass("focused"))
+			_sourceobj.removeClass("focused");
+		_sourceobj.removeClass("icon-active");
+	}
+
+	/*
+	 * closetimer = window.setTimeout(function() { _curobj.hide(); if
+	 * (_sourceobj.hasClass("focused")) _sourceobj.removeClass("focused");
+	 * _sourceobj.removeClass("icon-active"); }, 50);
+	 */
+}
+function getXmlHttp() {
+	var xmlHttp = null;
+	if (window.XMLHttpRequest) {
+		// 针对FirFox，Mozilla，Opera，Safari，IE7，IE8
+		xmlHttp = new XMLHttpRequest();
+		if (xmlHttp.overrideMimeType) {
+			// 针对Mozilla不同版本差别
+			xmlHttp.overrideMimeType("text/xml");
+		}
+	} else if (window.ActiveXObject) {
+		var activexml = [ "MSXML2.XMLHTTP", "Microsoft.XMLHTTP" ];
+		for (var i = 0; i < activexml.length; i++) {
+			try {
+				// 取出一个空间进行创建，如果创建成功，则终止
+				// 如果创建失败，回抛出异常，然后继续循环，继续创建
+				xmlHttp = new ActiveXObject(activexml[i]);
+				break;
+			} catch (e) {
+
+			}
+		}
+	}
+	return xmlHttp;
+}
+// 大概意思是，chrome浏览器下面的XMLHttpRequest没有sendAsBinary,所以就自己给XMLHttpRequest原型定义一个这样的属性，并且这个属性是一个方法
+if (!XMLHttpRequest.prototype.sendAsBinary) {// 如果XMLHttpRequest没有sendAsBinary
+	XMLHttpRequest.prototype.sendAsBinary = function(datastr) {
+		function byteValue(x) {
+			return x.charCodeAt(0) & 0xff;
+		}
+		var ords = Array.prototype.map.call(datastr, byteValue);
+		var ui8a = new Uint8Array(ords);
+		this.send(ui8a.buffer);
+	};
+}
+function login(data, callback) {
+	var uuid = (new UUID()).toString();
+	var name = $("#name").val();
+	var pass = $("#password").val();
+	var jsondata = {
+		"userName" : name,
+		"password" : pass,
+		"uid" : uuid
+	};
+	var param = {
+		"json" : JSON.stringify(jsondata)
+	};
+	doActionParam(loader.Request.UserLogin, param, function(data) {
+		var obj = data;
+		if (obj && obj.success) {
+
+			// location.href = loader.Request.SystemInit;
+
+		} else {
+			alert(obj.msgCode);
+		}
+		callback();
+	});
+}
+function getCookie(c_name) {
+	if (document.cookie.length > 0) {
+		c_start = document.cookie.indexOf(c_name + "=");
+		if (c_start != -1) {
+			c_start = c_start + c_name.length + 1;
+			c_end = document.cookie.indexOf(";", c_start);
+			if (c_end == -1)
+				c_end = document.cookie.length;
+			return unescape(document.cookie.substring(c_start, c_end));
+		}
+	}
+	return "";
+}
+function getUserInitial(name) {
+	var nArr = name.split(/\s+/);
+	if (!nArr || nArr.length <= 0) {
+		return 'NN';
+	}
+	if (nArr.length === 1) {
+		return nArr[0].charAt(0).toUpperCase();
+	}
+	return (nArr[0].charAt(0) + nArr[1].charAt(0)).toUpperCase();
+}
+function getProfile(callback) {
+	var userId = getCookie('USERID');
+	if (!userId) {
+		$.ajax({
+			url : "logout",
+			dataType : "json",
+			type : "post",
+			cache : false,
+			data : {},
+			success : function(data, textStatus) {
+				location.href = data.data;
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+
+			}
+		});
+	} else {
+		var html = '<i class="fa fa-user" style="margin-right:8px;font-size:16px;"></i>'
+				+ userId;
+		var html = getUserInitial(global.userinfo.firstName + " "
+				+ global.userinfo.lastName);
+		$("#username span").html(html);
+		callback();
+	}
+}
+function logout() {
+	doActionParam(loader.Request.UserLogout, "", function(data) {
+		location.href = data.data
+	});
+}
+
+function initMapKey() {
+
+	doActionParam(loader.Request.getGoogleMapKey, "", function(data) {
+		global.googleAPIKey = data.data;
+		doActionParam(loader.Request.getGoogleMapDomain, "", function(data) {
+			global.googleAPIDomain = data.data;
+			var scriptStr = "https://" + global.googleAPIDomain
+					+ "/maps/api/js?key=" + global.googleAPIKey
+					+ "&sensor=false&libraries=places&callback=initMap";
+
+			var script = document.createElement('script');
+			script.type = "text/javascript";
+			script.src = scriptStr;
+			document.body.appendChild(script);
+		});
+	});
+}
+
+(function initSystem() {
+
+	getProfile(function() {
+		initMapKey();
+		getCountry();
+		initObstructionList();
+		initDropdownEvent();
+		$('#aVersion').html(global.version);
+		window.onload = function() {
+			var table = document.getElementById('leftmenu');
+			if (table) {
+				table.oncontextmenu = function() {
+					return false;
+				};
+			}
+
+		};
+		document.onclick = function(e) {
+			hideRightmenu();
+			if ($('.itemicon').hasClass('active')) {
+				return;
+			}
+			/*
+			 * if (!$(e.target).hasClass("collection-item")) { }
+			 */
+
+		};
+	});
+
+})();

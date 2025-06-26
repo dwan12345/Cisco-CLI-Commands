@@ -1,0 +1,49 @@
+/**
+ * 
+ */
+
+function autoChannelAdvisor() {
+	var jsondata = {
+		floorId : global.currentFloor.floorId
+	};
+	global.showheatmap = true;
+	resetHeatMap();
+	showHeatmapPercent("5%");
+	doActionParam(loader.Request.FloorAutoChannelAdvisor2, jsondata, function(
+			data) {
+		if (data && data.success) {
+			showHeatmapPercent("30%");
+			autoRefresh(data.data, null, "autochannel");
+			showHeatMapModal(false, 30);
+
+		}
+	});
+}
+function autoPlacementAdvisor() {
+
+	var jsondata = {
+		floorId : global.currentFloor.floorId,
+		band : global.currentBand
+	};
+
+	global.showheatmap = true;
+	resetHeatMap();
+	global.currentChannel = "All";
+	$("#menuChannel span").html("All");
+	showHeatmapPercent("10%");
+	doActionParam(loader.Request.FloorAdvisorReplacement, jsondata, function(
+			data) {
+		if (data && data.success) {
+			showHeatmapPercent(30 + "%");
+			showHeatmapPercent(40 + "%");
+			autoRefresh(data.advisorResult.addAPList,
+					data.advisorResult.addAtList, "replacement");
+		
+			showHeatMapModal(true, 50);
+		}else{
+			showHeatMapModal(true, 50);
+		}
+
+	});
+
+}

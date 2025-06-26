@@ -1,0 +1,139 @@
+/**
+ * 
+ */
+
+function toggleCard(showcs, hidecs) {
+	$(hidecs).hide();
+	$(showcs).show();
+
+	if (showcs == '.project_list') {
+		var top = $(window).scrollTop();
+		if (top >= 100) {
+			$('.projectBar').hide();
+			$('.projectWraper').show();
+			if(searchProjectText!=""){
+				$(".B.btnSearch").hide();$('#bseach_div').show();
+				$('#bseach_div input').val(searchProjectText);
+			}else{
+				$('#bseach_div input').val("");
+				$('#bseach_div').hide();$('.B.btnSearch').show();
+			}
+		} else {
+			$('.projectBar').show();
+			$('.projectWraper').hide();
+			if(searchProjectText!=""){
+				$(".S.btnSearch").hide();$('#search_div').show();
+				$('#search_div input').val(searchProjectText);
+			}else{
+				$('#search_div input').val("");
+				$('#seach_div').hide();$('.S.btnSearch').show();
+			}
+		}
+
+	}
+	if (showcs == ".project_list") {
+		$('.logo').show();
+		$(".nav-ul").hide();
+		$('.ezHeader').removeClass('floor');
+		$('.report').hide();
+		$('html').css({
+	        overflow: 'auto'
+	      });
+	} else {
+		$('.logo').hide();
+		$(".nav-ul").show();
+		$('.ezHeader').addClass('floor');
+		$('html').css({
+	        overflow: 'hidden'
+	      });
+	}
+	if (showcs == '#floorCreate') {
+		$('.report').hide();
+		$('html').css({
+	        overflow: 'auto'
+	      });
+	}
+	
+
+};
+function getProjectNav() {
+	var project = global.currentProject;
+	var htmlstr = "<li style='margin-top:5px;'><a title='Back Home' onclick='goHome();'><img src='resource/image/icon_nav_home.png'></a></li><li><a style='cursor:default;'><i class='fa fa-angle-right'></i>"
+			+ project.projectName + "</a></li>";
+	$(".nav-ul").html(htmlstr);
+}
+function getReportNav() {
+	var project = global.currentProject;
+	var htmlstr = "<li style='margin-top:5px;'><a title='Back Home' onclick='goHome();'><img src='resource/image/icon_nav_home.png'></a></li><li><a style='cursor:default;'><i class='fa fa-angle-right'></i><span style='opacity:1;'>"
+			+ project.projectName + "</span></a></li>";
+	$(".nav-ul").html(htmlstr);
+}
+function getFloorPlanNav(floor) {
+	var htmlstr = "";
+	var project = global.currentProject;
+	htmlstr += "<li style='margin-top:5px;'><a title='Back Home' onclick='goHome();'><img src='resource/image/icon_nav_home.png'></a></li><li><a style='cursor:default;'><i class='fa fa-angle-right'></i><span>"
+			+ project.projectName + "</span></a></li>";
+	if(floor)
+	{
+		htmlstr += "<li style='margin-right:0;'><a  style='cursor:default;'><i class='fa fa-angle-right'></i><span style='opacity:1;' ondblclick='header_showRenameFloor(this);'>"
+			+ floor.floorName + "</span></a></li>";
+	htmlstr+="<li><input maxlength=16 style='display:none;width:160px;font-size:24px;color:#fff;height:24px;line-height:24px;border-bottom:1px dashed #fff;' type='text' id='header_input_"
+		+ floor.floorId
+		+ "' value='"
+		+ floor.floorName
+		+ "' onblur='saveFloorName_Header(this,\""
+		+ floor.floorId
+		+ "\");' onkeyup='monitorFloorNameHeader(this,\""
+		+ floor.floorId + "\");'></li>";
+	}
+	
+	$(".nav-ul").html(htmlstr);
+}
+function getAddFloorPlanNav(floor) {
+	var htmlstr = "";
+	var project = global.currentProject;
+	var htmlstr = "<li style='margin-right:0;'><a title='Back Home' onclick='goHome();'><i class='fa fa-home'></i></a></li><li><a style='cursor:default;'><i class='fa fa-angle-right'></i>"
+		+ project.projectName + "</a></li>";
+	htmlstr += "<li><a  style='cursor:default;'><i class='fa fa-angle-right'></i>Create new floor plan</a></li>";
+	$(".nav-ul").html(htmlstr);
+}
+function monitorFloorNameHeader(sender,floorId) {
+	var name = $(sender).val();
+	if (!name || $.trim(name).length == 0) {
+		$("#header_input_" + floorId).show();
+		var error = "<span  class='help-inline tfrename'>"
+				+ "*Name can't be empty" + "</span>";	
+
+		$("#header_input_" + floorId).after(error);
+		return;
+	} else {
+		$(".help-inline.tfrename").remove();
+	}
+}
+function saveFloorName_Header(sender, floorId) {
+	var name = $(sender).val();
+	if (!name || $.trim(name).length == 0) {
+		$(".help-inline.tfrename").remove();
+		$(sender).hide();
+		var pp = $("#" + floorId + ">p");
+		pp.show();
+		$(sender).val(pp.text());
+		return;
+	}
+	var jsondata = {
+		"floorId" : floorId,
+		"floorName" : name
+	};
+	$(sender).hide();
+	if(global.showIcon){
+		$("#" + floorId + ">p").text(name);
+	}else{
+		$("#" + floorId).text(name);
+	}
+	updateFloor(jsondata);
+
+}
+function header_showRenameFloor(sender){
+	$(sender).hide();
+	$("#header_input_" +  global.currentFloor.floorId).show();
+}

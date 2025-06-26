@@ -1,0 +1,297 @@
+/**
+ * 
+ */
+var loader;
+if (!loader) {
+	loader = {};
+};
+var webspace = "web/";
+loader.Request = {
+	UserLogin : webspace + "login",
+	UserUpdateTip : webspace + "updateUserTip",
+	UserUpdate : webspace + "updateUser",
+	UserLogout : "logout",
+	SystemInit : "init",
+	SystemGetDims : webspace + "loadMenus",
+	SystemGetAp : webspace + "SystemGetAP",
+	SystemGetAt : webspace + "SystemGetAt",
+	SystemGetSettings : webspace + "getSettings",
+	SystemUpdateSettings : webspace + "updateSettings",
+	SystemGetCountry : webspace + "SystemGetCountryChannel",
+	SystemGetChannelByCCode : webspace + "SystemGetChannelByCCode",
+	SystemGetChannelByobuid : webspace + "SystemGetCountryByOBUID",
+
+	ProjectLoad : webspace + "loadProject",
+	ProjectInsert : webspace + "addProject",
+	ProjectUpdate : webspace + "updateProject",
+	ToggleFavorite : webspace + "toggleFavorite",
+	ProjectDelete : webspace + "deleteProject",
+	ProjectGet : webspace + "getProject",
+	ProjectGetDetails : webspace + "getProjectDetail",
+	GetAllFloors : webspace + "getAllFloors",
+	FloorGetDetails : webspace + "getFloor",
+	GeneralReport : webspace + "getReport",
+	GeneralWordReport : "report/generateWordSummary",
+	GeneralSingleReport : "report/generateSingleReport",
+	GeneralPDFReport : "report/generatePDFSummary",
+	UpdateHeatImage : webspace + "heatImage",
+	FloorOutdoorCoverage : webspace + "outdoorCoverage",
+	FloorShowHeap : webspace + "showHeap",
+	FloorShowHeapProcessing : webspace + "showHeapProcessing",
+	FloorAdvisorHeatMap : webspace + "advisorHeatMap",
+	FloorAdvisorProcessing : webspace + "advisorProcessing",
+	FloorAutoChannelAdvisor : webspace + "autoChannelAdvisor",
+	FloorAutoChannelAdvisor2 : webspace + "autoChannelAdvisor2",
+	FloorAdvisorReplacement : webspace + "AdvisorReplacement",
+	FloorReplacementProcess : webspace + "replacementProcessing",
+	InsertFloorBo : webspace + "insertFloorBo",
+	FloorInsert : webspace + "addFloor",
+	FloorUpdate : webspace + "updateFloor",
+	FloorDelete : webspace + "deleteFloor",
+	RemoveAllAPs : webspace + "removeAllAPs",
+	RemoveAllObs : webspace + "removeAllObs",
+	CopyProject : webspace + "copyProject",
+	CopyFloor : webspace + "copyFloor",
+	FloorGetApInfo : webspace + "getFloorAp",
+	FloorGetAtInfo : webspace + "getFloorAt",
+	FloorInsertAp : webspace + "insertAp",
+	FloorUpdateAp : webspace + "updateAp",
+	FloorUpdateApRadio : webspace + "updateApRadio",
+	CopyAp : webspace + "copyAp",
+	ExportCSV : webspace + "exportCSV",
+	FloorDeleteAp : webspace + "deleteAp",
+	FloorDeleteAps : webspace + "deleteAps",
+	FloorInsertAt : webspace + "insertAntenan",
+	FloorUpdateAt : webspace + "updateAntenan",
+	FloorDeleteAt : webspace + "deleteAntenan",
+	FloorInsertOb : webspace + "insertObstacle",
+	FloorUpdateOb : webspace + "updateObstacle",
+	FloorDeleteOb : webspace + "deleteObstacle",
+	FloorInsertWds : webspace + "insertWDSLine",
+	FloorDeleteWds : webspace + "deleteWDSLine",
+	getWDSWeight : webspace + "getWDSWeight",
+	getOutdoorWDSWeight : webspace + "getOutdoorWDSWeight",
+	FloorGetChannels : webspace + "getChannelsByFloorId",
+	FileUpload : "fileUpload",
+	checkProjectName : webspace + "checkProjectName",
+	checkFloorName : webspace + "checkFloorName",
+	GetUnReadMsg : webspace + "getUnReadMsg",
+	GetReadMsg : webspace + "getReadMsg",
+	AddReadMsg : webspace + "addReadMsg",
+	ResortProjectFloorPlan : webspace + "resortProjectFloorPlan",
+	SaveReportImage : "report/SaveReportImage",
+	getFloorForReport : "report/getFloorForReport",
+	getProjectForReport : "report/getProjectForReport",
+	FloorInsertMeshGroup : webspace + "insertMeshGroup",
+	FloorGetMeshGroups : webspace + "getMeshGroupsByFloorId",
+	FloorDeleteMeshGroup : webspace + "deleteMeshGroup",
+	FloorUpdateMeshGroup : webspace + "updateMeshGroup",
+	FloorUpdateAPMeshs : webspace + "updateAPMeshs",
+	getGoogleMapKey : webspace + "getGoogleMapKey",
+	getGoogleMapDomain : webspace + "getGoogleMapDomain"
+};
+var global = {
+	version : 'v.2.1.12',
+	locallang : '',
+	userinfo : {},
+	userCountryCode : 'US',
+	projectSort : "updateTime",
+	apList : [],
+	floorList : [],
+	projectList : [],
+	currentProject : {},
+	currentFloor : {},
+	selectedAP : '',
+	menuFloor : '',
+	channel : {
+		ch5str20 : '',
+		ch5str40 : '',
+		ch5str80 : '',
+		ch5Outstr20 : '',
+		ch5Outstr40 : '',
+		ch5Outstr80 : '',
+		ch24str : '',
+		ch6str20: '',
+		ch6str40: '',
+		ch6str80: '',
+		ch6str160: '',
+		ch6str320: '',
+		ch6Outstr20: '',
+		ch6Outstr40: '',
+		ch6Outstr80: '',
+		ch6Outstr160: '',
+		ch6Outstr320: '',
+	},
+	support : {
+		band5In : true,
+		band5Out : true,
+		band6In : true,
+		band6Out: true,
+	},
+	currentBand : '5',
+	currentChannel : 'All',
+	objshow : {
+		ap : true,
+		zone : true,
+		obstacle : true,
+		area : true,
+		map : true
+	},
+	labelshow : {
+		name : false,
+		modelName : true,
+		channel : false,
+		operationMode : false
+	},
+	showheatmap : false,
+	showWDS : false,
+	showIcon : false,
+	showToolPanel : true,
+	showSideBar : true,
+	/**
+	 * 画布坐标放大倍数
+	 */
+	canvasScale : 1,
+	/**
+	 * 画布X方向坐标偏移量
+	 */
+	translateOffX : 0,
+	/**
+	 * 画布Y方向坐标偏移量
+	 */
+	translateOffY : 0,
+	/**
+	 * 比例尺 :stepPX/meter "0"表示尚未设置
+	 */
+	rulescale : 0,
+	/**
+	 * 网格单元格的宽度，单位像素,受比例尺影响
+	 */
+	stepPX : 100,
+	/**
+	 * 比例尺单位0米1英尺
+	 */
+	ruleunit : 0,
+	/**
+	 * 单元比例尺代表的米数或英尺数,受比例尺影响
+	 */
+	stepmeterfeet : 25,
+	mouseoverId : null,
+	/**
+	 * 记录鼠标事件执行动作
+	 */
+	canvasaction : "none",
+	// ditu.google.cn
+	// maps.googleapis.com
+	googleAPIDomain : "maps.googleapis.com",
+	colorOpp : false
+
+};
+var obStyleArray = {
+	DryWall : {
+		color : "#ce93d8",
+		border : "#ce93d8"
+	},
+	WoodWall : {
+		color : "#ce93d8",
+		border : "#ce93d8"
+	},
+	PlasterboardWall : {
+		color : "#ce93d8",
+		border : "#ce93d8"
+	},
+	MetalFramedGlassWall : {
+		color : "#ab47bc",
+		border : "#ab47bc"
+	},
+	BrickWall : {
+		color : "#ab47bc",
+		border : "#ab47bc"
+	},
+	ConcreteWall : {
+		color : "#7b1fa2",
+		border : "#7b1fa2"
+	},
+	LightDoor : {
+		color : "#cddc39",
+		border : "#cddc39"
+	},
+	MetalDoor : {
+		color : "#8bc34a",
+		border : "#8bc34a"
+	},
+	HeavyDoor : {
+		color : "#388e3c",
+		border : "#388e3c"
+	},
+	ThinWindow : {
+		color : "#81d4fa",
+		border : "#81d4fa"
+	},
+	ThickWindow : {
+		color : "#039be5",
+		border : "#039be5"
+	},
+	Cubicle : {
+		color : "#c69c6d",
+		border : "#c69c6d"
+	},
+	wificoverage : {
+		color : "#754c24",
+		border : "#754c24"
+	},
+	elevator : {
+		color : "#42210b",
+		border : "#42210b"
+	},
+	lowstock : {
+		color : "#80deea",
+		border : "#80deea"
+	},
+	mediumstock : {
+		color : "#00acc1",
+		border : "#00acc1"
+	},
+	highstock : {
+		color : "#00838f",
+		border : "#00838f"
+	},
+	zone : {
+		color : "#2196f3",
+		border : "#2196f3"
+	},
+	nonap : {
+		color : "#f06292",
+		border : "#f06292"
+	}
+};
+var obText = {
+	DryWall : 'Dry Wall (%s dB)',
+	WoodWall : 'Wood Wall (%s dB)',
+	PlasterboardWall : 'Plasterboard Wall (%s dB)',
+	MetalFramedGlassWall : 'Metal Framed Glass Wall (%s dB)',
+	BrickWall : 'Brick Wall (%s dB)',
+	ConcreteWall : 'Concrete Wall (%s dB)',
+	LightDoor : 'Light Door (%s dB)',
+	MetalDoor : 'Metal Door (%s dB)',
+	HeavyDoor : 'Heavy Door (%s dB)',
+	ThinWindow : 'Thin Window (%s dB)',
+	ThickWindow : 'Thick Window (%s dB)',
+	Cubicle : 'Cubicle Office Area  (%s dB)',
+	wificoverage : 'Closed Office Area  (%s dB)',
+	elevator : 'Elevator Shaft  (%s dB)',
+	lowstock : 'Warehouse Stock Low  (%s dB)',
+	mediumstock : 'Warehouse Stock Medium  (%s dB)',
+	highstock : 'Warehouse Stock High  (%s dB)',
+	zone : 'Wi-Fi Coverage zone',
+	nonap : 'AP Exclusion Zone'
+};
+var message = {};
+message.project = {
+	nameIsExist : "The name already exists.",
+	ssidIsExist : "The Mesh Group already exists.",
+	upto10 : "Failed to upload picture since the maximum size is 10M.",
+	invalidFileType : "Failed to upload picture since invalid file type",
+	s3Error : "Failed to upload picture to s3.",
+	imagenull : "Uploa Error!"
+};

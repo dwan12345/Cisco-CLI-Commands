@@ -1,0 +1,1678 @@
+/**
+ * zhiyuan
+ */
+var maxFloor = 10;
+function maxFloorNumLimitTipStr() {
+	return "Max floormap is "
+		+ (global.floorList.length < global.userinfo.perProject
+			? global.userinfo.totalProject + " for all projects"
+			: global.userinfo.perProject + " for one project");
+}
+function loadFloors() {
+	// common.changeDivHeight();
+
+	showDialog('waitingPModal');
+		var param = {
+				"projectId" : global.currentProject.projectId
+			};
+			doActionParam(loader.Request.GetAllFloors, param, function(data) {
+				global.floorList = [];
+				if (!data || !data.success) {
+					closeDialog('waitingPModal');
+					return;
+				}
+
+				if (data.floorList) {
+					for (var i = 0; i < data.floorList.length; i++) {
+						var floor = {
+							floorId : data.floorList[i].floorId,
+							floorType : data.floorList[i].floorType,
+							latitude : data.floorList[i].latitude,
+							longitude : data.floorList[i].longitude,
+							zoom : data.floorList[i].zoom
+						};
+						floor.floorName = data.floorList[i].floorName;
+						floor.path = data.floorList[i].path;
+						if (data.floorList[i].apList) {
+							floor.apCount = data.floorList[i].apList.length;
+						} else {
+							floor.apCount = 0;
+						}
+						if (data.floorList[i].atList) {
+							floor.atCount = data.floorList[i].atList.length;
+						} else {
+							floor.atCount = 0;
+						}
+						global.floorList.push(floor);
+					}
+				}
+
+				if (data.floorList && data.floorList.length > 0) {
+					if (!global.currentFloor || !global.currentFloor.floorId) {
+						global.currentFloor = data.floorList[0];
+					}
+					$("#rightContainer").show();
+
+					$("#floor_listview .collection a").removeClass("active");
+					$("#floor_listview .collection-item-icon").removeClass("active");
+					if (global.currentFloor)
+						$("#" + global.currentFloor.floorId).addClass('active');
+					reInitialTools();
+					changeShowHeatMap("Off");
+					showFloor();
+					getFloorPlanNav(global.currentFloor);
+					common.changeDivHeight();
+
+					$('#left_bottom span').html(data.floorList.length + " Floor Plan");
+					if(!checkFloorNumLimit()) {
+						$(".floorplan").addClass("disabled");
+						$(".floorplan.disabled a").attr("title", maxFloorNumLimitTipStr());
+					} else {
+						$(".floorplan.disabled").removeClass("disabled");
+						$(".floorplan a").attr("title", "New floor plan");
+					}
+				} else {
+					global.currentFloor = null;
+					$("#floor_listview .collection").html("");
+					$("#rightContainer").hide();
+					$(".floorplan.disabled").removeClass("disabled");
+					$(".floorplan a").attr("title", "New floor plan");
+				}
+				if (global.showIcon) {
+					showICONItem();
+				} else {
+					showListItem();
+				}
+				closeDialog('waitingPModal');
+			});
+	
+}
+function getFloorDetail(floorId) {
+	showDialog('waitingPModal');
+	var jsondata = {
+		floorId : floorId
+	};
+	doAction(loader.Request.FloorGetDetails, jsondata, function(result) {
+		if (result && result.success) {
+			global.currentFloor = result.data;
+			global.currentFloor.apCount=result.data.apList.length;
+			$("#floor_listview .collection a").removeClass("active");
+			$("#floor_listview .collection-item-icon").removeClass("active");
+			if (global.currentFloor)
+				$("#" + global.currentFloor.floorId).addClass('active');
+			reInitialTools();
+			hideMeshPane();
+			changeShowHeatMap("Off");
+			showFloor();
+			getFloorPlanNav(global.currentFloor);
+			common.changeDivHeight();
+
+		}
+		closeDialog('waitingPModal');
+	});
+}
+
+function refreshFloorDetail(callback) {
+	var jsondata = {
+		floorId : global.currentFloor.floorId
+	};
+	doAction(loader.Request.FloorGetDetails, jsondata, function(result) {
+		if (result && result.success) {
+			global.currentFloor = result.data;
+			global.currentFloor.apCount=result.data.apList.length;
+			if (global.currentFloor.floorType == 0) {
+				canvasResetData();
+			} else {
+				googleMap.bind = global.currentFloor;
+				refreshDataDraw();
+			}
+
+		}
+		if (callback)
+			callback();
+
+	});
+}
+
+var dclip = null;
+var sourceFlag;
+function showaddFloor() {
+	if ($(".floorplan").hasClass('disabled')) {
+		return;
+	}
+
+	toggleCard('#floorCreate', '#floor_listview');
+	getAddFloorPlanNav();
+	document.getElementById("floorfile").value = "";
+	$('#floorName').unbind('input');
+	$("#floorName").on("input", function() {
+		var pname = $(this).val();
+		if (pname && $.trim(pname).length > 0) {
+			$(".help-inline").remove();
+			if ($("#useGoogle").prop("checked")) {
+				if ($("#apHeight").val() == "") {
+					$("#floorsave .btn").attr("disabled", "disabled");
+				} else {
+					$("#floorsave .btn").removeAttr("disabled");
+				}
+
+			} else {
+				if (dclip.image != null) {
+					$("#floorsave .btn").removeAttr("disabled");
+
+				} else {
+					$("#floorsave .btn").attr("disabled", "disabled");
+				}
+			}
+
+		} else {
+			$("#floorsave .btn").attr("disabled", "disabled");
+		}
+	});
+
+	$("#apHeight").on(
+			"input",
+			function() {
+				if ($("#useGoogle").prop("checked")) {
+					var pname = $("#floorName").val();
+					var height = $("#apHeight").val();
+					if (!pname || $.trim(pname).length <= 0 || !height
+							|| height > 9999 || height < 0) {
+						$("#floorsave .btn").attr("disabled", "disabled");
+					} else {
+						$("#floorsave .btn").removeAttr("disabled");
+					}
+
+				}
+			});
+
+	useImageClick();
+
+	$("#useGoogle").prop("checked", false);
+	$("#useImage").prop("checked", true);
+	$("#floorName").val("");
+	$("#apHeight").val("10");
+	$("#apHeightUnit").val("2");
+	$("#pac-input").val(mapLocation);
+	$('#fileName').hide();
+	$('#fileok').hide();
+	dclip.image = null;
+	dclip.dragLeaved();
+
+	$(".help-inline").remove();
+
+}
+function showaddFloorCard() {
+	var listHtml = "";
+	listHtml += '<div class="collection-item-icon" href="javascript:void(0)" >';
+	listHtml += '<div class="addFloorPlus"><a onclick="showaddFloor();"><i class="fa fa-plus-circle"></i></a></div>';
+
+	listHtml += '</div>';
+
+	$("#floor_listview .collection").html(listHtml);
+}
+var curFile = null;
+var curfType = '';
+function dragfileChangeCallback(files) {
+	if (!files)
+		return;
+	var file = files[0];
+	if (!file)
+		return;
+	curFile = file;
+	$(".help-inline").remove();
+
+	if (file.size > 1024 * 1024 * 10) {
+		var error = "<span for='floorName' class='help-inline'>"
+				+ message.project["upto10"] + "</span>";
+		$('#floorName').parent().append(error);
+		return;
+	}
+
+	var fType = file.name.substring(file.name.lastIndexOf("."),
+			file.name.length).toLowerCase();
+	if (fType != ".png" && fType != ".jpg" && fType != ".jpeg"
+			&& fType != ".gif") {
+
+		var error = "<span for='floorName' class='help-inline'>"
+				+ message.project["invalidFileType"] + "</span>";
+		$('#floorName').parent().append(error);
+		return;
+	}
+	curfType = fType;
+	$('#fileName').show();
+	$('#fileName').html(file.name);
+	$('#fileok').show();
+	$("#clip #dragImage").hide();
+	$("#clip a").hide();
+	var pname = $("#floorName").val();
+	if (pname && $.trim(pname).length > 0) {
+		$("#floorsave .btn").removeAttr("disabled");
+	} else {
+		$("#floorsave .btn").attr("disabled", "disabled");
+	}
+
+	var reader = new FileReader();
+	reader.onload = onLoadFile;
+	reader.readAsDataURL(file);
+
+	function onLoadFile(event) {
+		var img = new Image();
+		img.onload = function(e) {
+			dclip.imageLoaded(this);
+		};
+		img.src = event.target.result;
+	}
+
+	// document.getElementById("floorfile").value = "";
+
+}
+
+function dragEnteredCallback() {
+	$("#clip #dragImage").show();
+	$("#clip a").show();
+	$("#clip #dragImage").css("color", "#ced7db");
+	$("#clip a").addClass("disabled");
+	var pname = $("#floorName").val();
+	if (pname && $.trim(pname).length > 0) {
+		$("#floorsave .btn").removeAttr("disabled");
+	} else {
+		$("#floorsave .btn").attr("disabled", "disabled");
+	}
+
+}
+
+function dragLeavedCallback(image) {
+	if (image) {
+		$("#clip #dragImage").hide();
+		$("#clip a").hide();
+		var pname = $("#floorName").val();
+		if (pname && $.trim(pname).length > 0) {
+			$("#floorsave .btn").removeAttr("disabled");
+		} else {
+			$("#floorsave .btn").attr("disabled", "disabled");
+		}
+	} else {
+		$("#clip #dragImage").show();
+		$("#clip a").show();
+		$("#clip #dragImage").css("color", "#778f9b");
+		$("#clip a").removeClass("disabled");
+		$("#floorsave .btn").attr("disabled", "disabled");
+	}
+}
+
+function createFloor() {
+	var name = $("#floorName").val();
+
+	if (global.floorList) {
+		for (var i = 0; i < global.floorList.length; i++) {
+			if (name == global.floorList[i].floorName) {
+				var error = "<span for='floorName' class='help-inline'>"
+						+ message.project.nameIsExist + "</span>";
+				$('#floorName').parent().append(error);
+				$("#floorsave .btn").attr("disabled", "disabled");
+				return;
+			}
+		}
+	}
+
+	var param = {
+		floorName : name,
+		parentId : global.currentProject.projectId,
+		floorType : 0
+	};
+
+	if ($("#useGoogle").prop("checked")) {
+
+		var center = mapNew.getCenter().toJSON();
+
+		param.floorType = 1;
+		param.longitude = center.lng;
+		param.latitude = center.lat;
+		param.zoom = mapNew.getZoom();
+		param.apHeight = $("#apHeight").val();
+		param.apHeightUnit = $("#apHeightUnit").val();
+		param.location = mapLocation;
+	} else {
+		param.imgData = dclip.getImageDataURL();
+	}
+
+	$("#floorsave .btn").attr("disabled", "disabled");
+	doActionParam(loader.Request.FloorInsert, param, function(data) {
+		if (data && data.success) {
+			toggleCard('#floor_listview', '#floorCreate');
+			global.currentFloor = data.data;
+			global.currentFloor.apCount=0;
+			loadFloors();
+		} else {
+			var error = "<span for='floorName' class='help-inline'>"
+					+ message.project[data.msgCode] + "</span>";
+			$('#floorName').parent().append(error);
+			$("#floorsave .btn").attr("disabled", "disabled");
+		}
+
+	});
+
+}
+
+function createFloor1() {
+	var name = $("#floorName").val();
+
+	if (global.floorList) {
+		for (var i = 0; i < global.floorList.length; i++) {
+			if (name == global.floorList[i].floorName) {
+				var error = "<span for='floorName' class='help-inline'>"
+						+ message.project.nameIsExist + "</span>";
+				$('#floorName').parent().append(error);
+				$("#floorsave .btn").attr("disabled", "disabled");
+				return;
+			}
+		}
+	}
+	var reader = new FileReader();
+	reader.onloadend = function() {
+
+		if (reader.error) {
+			alert(reader.error);
+		} else {
+
+			var xhr = new getXmlHttp();
+			xhr.open("POST", loader.Request.FloorInsert + "?format=" + curfType
+					+ "&floorName=" + name + "&parentId="
+					+ global.currentProject.projectId, true);
+			xhr.overrideMimeType("application/octet-stream");
+
+			var binary = "";
+			var bytes = new Uint8Array(reader.result);
+			var length = bytes.byteLength;
+			for (var i = 0; i < length; i++) {
+				binary += String.fromCharCode(bytes[i]);
+			}
+
+			xhr.sendAsBinary(binary);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == 4) {
+					if (xhr.status == 200 || xhr.status == 201) {
+						var result = JSON.parse(xhr.responseText);
+						if (result && result.success) {
+							toggleCard('#floor_listview', '#floorCreate');
+							global.currentFloor = result.data;
+							global.currentFloor.apCount=0;
+							loadFloors();
+						} else {
+							var error = "<span for='floorName' class='help-inline'>"
+									+ message.project[result.msgCode]
+									+ "</span>";
+							$('#floorName').parent().append(error);
+							$("#floorsave .btn").attr("disabled", "disabled");
+						}
+					}
+				}
+			};
+		}
+	};
+
+	reader.readAsArrayBuffer(curFile);
+	$("#floorsave .btn").attr("disabled", "disabled");
+
+}
+function toggleCardForPlan() {
+	/*
+	 * if (sourceFlag == "projectlist") { toggleCard('.project_list',
+	 * '#floorCreate'); } else { toggleCard('#floor_listview', '#floorCreate'); }
+	 */
+	getFloorPlanNav(global.currentFloor);
+	toggleCard('#floor_listview', '#floorCreate');
+
+	common.changeDivHeight();
+}
+function reShowRightMenuDuplicate() {
+	if (!checkFloorNumLimit()) {
+		var menuhtml = '<a onclick="hideRightmenu();showRenameFloor();">Rename</a> <a title="' + maxFloorNumLimitTipStr() +'" style="opacity:0.5">Duplicate</a> <a onclick="hideRightmenu();showFloorDelTip_list();">Delete</a><a id="rightMenu_height" onclick="hideRightmenu();setHeight();">Set Height</a> <a id="rightMenu_location" onclick="hideRightmenu();setLocation();">Reset Location</a>';
+		$("#floor-rightmenu").html(menuhtml);
+	} else {
+		var menuhtml = '<a onclick="hideRightmenu();showRenameFloor();">Rename</a> <a onclick="hideRightmenu();showDuplicateFloor();">Duplicate</a> <a onclick="hideRightmenu();showFloorDelTip_list();">Delete</a><a id="rightMenu_height" onclick="hideRightmenu();setHeight();">Set Height</a> <a id="rightMenu_location" onclick="hideRightmenu();setLocation();">Reset Location</a>';
+		$("#floor-rightmenu").html(menuhtml);
+	}
+}
+function showListItem() {
+	global.showIcon = false;
+	hideDeleteFloorTip();
+	$('.itemicon').removeClass('active');
+	$('.itemlist').addClass('active');
+	var listHtml = "";
+	var apCount=0;
+	if (global.floorList && global.floorList.length > 0) {
+		for (var i = 0; i < global.floorList.length; i++) {
+
+			var icon = "";
+			if (global.floorList[i].floorType == 1) {
+				icon = '<img src ="resource/image/icon_google map.svg" style="width:16px;height:16px;float:right">';
+			}
+
+			listHtml += '<a href="javascript:void(0)" class="collection-item" id=\''
+					+ global.floorList[i].floorId
+					+ '\' onclick="getFloorDetail(\''
+					+ global.floorList[i].floorId
+					+ '\')" onmousedown="showFloorMenu(event);">'
+					+ global.floorList[i].floorName + icon + "</a>";
+			listHtml += '<input  maxlength=16 type="text" id=\'input_'
+					+ global.floorList[i].floorId
+					+ '\' style="display:none;" value="'
+					+ global.floorList[i].floorName
+					+ '" onblur="saveFloorName_List(this,\''
+					+ global.floorList[i].floorId
+					+ '\');" onkeyup="monitorFloorName(this,\'list\',\''
+					+ global.floorList[i].floorId + '\');">';
+			apCount+=global.floorList[i].apCount;
+		}
+		$("#floor_listview .collection").html(listHtml);
+		$("#floor_listview .collection a").removeClass("active");
+		if (global.currentFloor)
+			$("#" + global.currentFloor.floorId).addClass('active');
+		reShowRightMenuDuplicate();
+	}
+	global.apCount=apCount;
+	if(global.apCount>0){
+		$('#showReport').show();
+	}else{
+		$('#showReport').hide();
+	}
+}
+function showICONItem() {
+	global.showIcon = true;
+	hideDeleteFloorTip_list();
+	$('.itemlist').removeClass('active');
+	$('.itemicon').addClass('active');
+	var listHtml = "";
+	var apCount=0;
+	if (global.floorList && global.floorList.length > 0) {
+		for (var i = 0; i < global.floorList.length; i++) {
+			listHtml += '<div class="collection-item-icon" href="javascript:void(0)"  id="'
+					+ global.floorList[i].floorId + '" >';
+			var imagePath = "";
+			if (global.floorList[i].floorType == 0) {
+				imagePath = global.floorList[i].path;
+				listHtml += '<div style="width:180px;height:120px;" onmouseenter="showFloorDetails(\''
+						+ global.floorList[i].floorId
+						+ '\');"><img src="'
+						+ imagePath + '"></img></div>';
+			} else {
+
+				imagePath = "https://" + global.googleAPIDomain
+						+ "/maps/api/staticmap?center="
+						+ global.floorList[i].latitude + ","
+						+ global.floorList[i].longitude + "&zoom="
+						+ global.floorList[i].zoom + "&size=600x400&key="
+						+ global.googleAPIKey;
+				listHtml += '<div style="width:180px;height:120px;position:relative;" onmouseenter="showFloorDetails(\''
+						+ global.floorList[i].floorId
+						+ '\');"><img src="'
+						+ imagePath
+						+ '"></img><img src="resource/image/icon_google map.svg" style="width:16px ;height:16px;position:absolute;top:8px;right:8px;"></img></div>';
+			}
+
+			listHtml += '<div id="delTip_' + global.floorList[i].floorId
+					+ '" class="deleteTip">';
+			listHtml += '<p>Delete this?</p>';
+			listHtml += '<a  class="waves-effect waves-light  btn-red btn" onclick="deleteFloor(\''
+					+ global.floorList[i].floorId + '\');">YES,DELETE.</a>';
+			listHtml += '<a class="btn btn-flat" onclick="hideDeleteFloorTip(\''
+					+ global.floorList[i].floorId + '\');">Cancel</a>';
+			listHtml += "</div>";
+
+			listHtml += '<div id="view_'
+					+ global.floorList[i].floorId
+					+ '" style="display:none;" class="card-content-hover-view card-action"  onmouseleave="hideFloorDetails(\''
+					+ global.floorList[i].floorId
+					+ '\')" onclick="getFloorDetail(\''
+					+ global.floorList[i].floorId
+					+ '\')" onmousedown="showICONFloorMenu(event,\''
+					+ global.floorList[i].floorId + '\');">';
+			apCount+=global.floorList[i].apCount;
+			if (global.floorList[i].apCount > 0) {
+			
+				listHtml += ' <p class="app">' + global.floorList[i].apCount
+						+ ' APs</p>';
+				if (global.floorList[i].atCount > 0) {
+					listHtml += ' <p class="atp">'
+							+ global.floorList[i].atCount + ' Antennas</p>';
+				} else {
+					listHtml += ' <p class="atp" style="display:none;">None Ats</p>';
+				}
+			} else {
+				listHtml += ' <p class="app">None APs</p>';
+				listHtml += ' <p class="atp" style="display:none;">None Ats</p>';
+			}
+			if (!checkFloorNumLimit()) {
+				listHtml += ' <a title="' + maxFloorNumLimitTipStr() + '" class="copy disabled" ><i class="fa fa-files-o" ></i></a>';
+			} else {
+				listHtml += ' <a class="copy" onclick="DuplicateFloor(\''
+						+ global.floorList[i].floorId
+						+ '\');"><i class="fa fa-files-o" ></i></a>';
+			}
+
+			listHtml += ' <a class="del" onclick="showDeleteFloorTip(\''
+					+ global.floorList[i].floorId
+					+ '\');"><i class="fa fa-trash" ></i></a>';
+			listHtml += '</div>';
+			listHtml += '<p id="p_' + global.floorList[i].floorId
+					+ '" ondblclick="showRenameFloorIcon(this,\''
+					+ global.floorList[i].floorId + '\')">'
+					+ global.floorList[i].floorName + '</p>';
+			listHtml += '<input maxlength=16 style="display:none;" type="text" id=\'input_'
+					+ global.floorList[i].floorId
+					+ '\' value="'
+					+ global.floorList[i].floorName
+					+ '" onblur="saveFloorName_Icon(this,\''
+					+ global.floorList[i].floorId
+					+ '\');" onkeyup="monitorFloorName(this,\'icon\',\''
+					+ global.floorList[i].floorId + '\');">';
+			listHtml += '</div>';
+		}
+		$("#floor_listview .collection").html(listHtml);
+		$("#floor_listview .collection a").removeClass("active");
+		$("#" + global.currentFloor.floorId).addClass('active');
+		reShowRightMenuDuplicate();
+	}
+	global.apCount=apCount;
+	if(global.apCount>0){
+		$('#showReport').show();
+	}else{
+		$('#showReport').hide();
+	}
+}
+function monitorFloorName(sender, tag, floorId) {
+	var name = $(sender).val();
+	if (!name || $.trim(name).length == 0) {
+		$("#input_" + floorId).show();
+		var error = "<span  class='help-inline frename'>"
+				+ "*Name can't be empty" + "</span>";
+		if (tag == 'list') {
+			error = "<span style='margin-left:16px;' class='help-inline frename'>"
+					+ "*Name can't be empty" + "</span>";
+		}
+
+		$("#input_" + floorId).after(error);
+		return;
+	} else {
+		$(".help-inline.frename").remove();
+	}
+}
+function saveFloorName_Icon(sender, floorId) {
+	var name = $(sender).val();
+	if (!name || $.trim(name).length == 0) {
+		$(".help-inline.frename").remove();
+		$(sender).hide();
+		var pp = $("#" + floorId + ">p");
+		pp.show();
+		$(sender).val(pp.text());
+		return;
+	}
+	var jsondata = {
+		"floorId" : floorId,
+		"floorName" : name
+	};
+	$(sender).hide();
+	$("#" + floorId + ">p").show().text(name);
+	updateFloor(jsondata);
+
+}
+function saveFloorName_List(sender, floorId) {
+	var name = $(sender).val();
+	if (!name || $.trim(name).length == 0) {
+		$(".help-inline.frename").remove();
+		$(sender).hide();
+		var pp = $("#" + floorId);
+		pp.show();
+		$(sender).val(pp.text());
+		return;
+	}
+	var jsondata = {
+		"floorId" : floorId,
+		"floorName" : name
+	};
+	$(sender).hide();
+	$("#" + floorId).show().text(name);
+	updateFloor(jsondata);
+
+}
+function updateFloor(jsondata) {
+	if (!jsondata.unit) {
+		jsondata.unit = global.ruleunit;
+	}
+	doAction(loader.Request.FloorUpdate, jsondata, function(data) {
+		if (data && data.success) {
+			$("#" + data.data.floorId + ">p").html(data.data.floorName);
+			// $("#"+floorId).show().text(data.data.floorName);
+			for (var i = 0; i < global.floorList.length; i++) {
+				if (global.floorList[i].floorId == data.data.floorId) {
+					global.floorList[i].floorName = data.data.floorName;
+					break;
+				}
+			}
+			if (global.currentFloor.floorId == data.data.floorId) {
+				global.currentFloor.floorName = data.data.floorName;
+				getFloorPlanNav(data.data);
+			}
+		} else {
+			/*
+			 * var error = "<span for='txtProject' class='help-inline'>" +
+			 * data.msgCode + "</span>";
+			 * $('#txtFloorName').parent().append(error); $('#renameFloor
+			 * .btn-primary').attr("disabled", "disabled");
+			 */
+		}
+	});
+}
+// add ap apCount=1,delete ap apCount=-1
+function updateFloorCache(apCount, atCount) {
+	for (var i = 0; i < global.floorList.length; i++) {
+		if (global.floorList[i].floorId == global.currentFloor.floorId) {
+			global.floorList[i].apCount = apCount;
+			global.floorList[i].atCount = atCount;
+			var aphtml = '';
+			var athtml = '';
+			if (global.floorList[i].apCount > 0) {
+				aphtml = global.floorList[i].apCount + ' APs';
+				$("#view_" + global.currentFloor.floorId + " p.app").html(
+						aphtml);
+				if (global.floorList[i].atCount > 0) {
+					athtml = global.floorList[i].atCount + ' Antennas';
+					$("#view_" + global.currentFloor.floorId + " p.atp").show()
+							.html(athtml);
+				} else {
+					$("#view_" + global.currentFloor.floorId + " p.atp").hide();
+				}
+			} else {
+				aphtml = 'None APs';
+				$("#view_" + global.currentFloor.floorId + " p.app").html(
+						aphtml);
+				$("#view_" + global.currentFloor.floorId + " p.atp").hide();
+			}
+			break;
+		}
+	}
+}
+function showICONFloorMenu(e, id) {
+	if (e.which == 3) {
+		var sender = e.target;
+		var souEle = $(sender);
+		global.menuFloor = id;
+		// showProjectMenu(souEle.parent());
+		for (var i = 0; i < global.floorList.length; i++) {
+			if (global.floorList[i].floorId == global.menuFloor) {
+				if (global.floorList[i].floorType == 0) {
+					$("#rightMenu_del").css("border-bottom", "none");
+					$("#rightMenu_height").hide();
+					$("#rightMenu_location").hide();
+				} else {
+					$("#rightMenu_height").show();
+					if (global.currentFloor.floorId == global.floorList[i].floorId) {
+						$("#rightMenu_location").show();
+						$("#rightMenu_height").show();
+					} else {
+						$("#rightMenu_location").hide();
+						$("#rightMenu_height").hide();
+					}
+
+					$("#rightMenu_del").css("border-bottom", "1px solid #aaa");
+				}
+			}
+		}
+		ShowCkAuto("floor-rightmenu", sender, e);
+	}
+}
+function showFloorMenu(e) {
+	if (e.which == 3) {
+		var sender = e.target;
+		var souEle = $(sender);
+		global.menuFloor = sender.id;
+		// showProjectMenu(souEle.parent());
+		for (var i = 0; i < global.floorList.length; i++) {
+			if (global.floorList[i].floorId == global.menuFloor) {
+				if (global.floorList[i].floorType == 0) {
+					$("#rightMenu_del").css("border-bottom", "none");
+					$("#rightMenu_height").hide();
+					$("#rightMenu_location").hide();
+				} else {
+					$("#rightMenu_height").show();
+					if (global.currentFloor.floorId == global.floorList[i].floorId) {
+						$("#rightMenu_location").show();
+						$("#rightMenu_height").show();
+					} else {
+						$("#rightMenu_location").hide();
+						$("#rightMenu_height").hide();
+					}
+
+					$("#rightMenu_del").css("border-bottom", "1px solid #aaa");
+				}
+			}
+		}
+		ShowCkAuto("floor-rightmenu", sender, e);
+	}
+}
+
+function showFloorDetails(floorId) {
+	var status = $("#delTip_" + floorId)[0].style.display;
+	if (status == "block") {
+		return;
+	}
+	$('#view_' + floorId).show();
+	/*
+	 * if (global.floorList && global.floorList.length > 0) { for (var i = 0; i <
+	 * global.floorList.length; i++) { if (global.floorList[i].floorId ==
+	 * floorId) { $('#' + floorId + ' div:first').hide(); $('#' + floorId + '
+	 * div:last').show(); break; } } }
+	 */
+}
+function hideFloorDetails(floorId) {
+	var status = $("#delTip_" + floorId)[0].style.display;
+	if (status == "block") {
+		return;
+	}
+	$('#view_' + floorId).hide();
+	/*
+	 * if (global.floorList && global.floorList.length > 0) { for (var i = 0; i <
+	 * global.floorList.length; i++) { if (global.floorList[i].floorId ==
+	 * floorId) { $('#' + floorId + ' div:last').hide(); $('#' + floorId + '
+	 * div:first').show(); break; } } }
+	 */
+}
+
+// 显示隐藏编辑状态菜单 及 菜单功能
+function showEditToolbar(style, ObType, obDesc) {
+
+	$("#editTool").css("top", "68px");
+
+	if (style) {
+		$("#editTool").css("background", style);
+		$("#actionType").html(ObType);
+		$("#obDescName").html(obDesc);
+		$("#actionType").show();
+		$("#obDescName").show();
+		$("#donebtn").show();
+	}
+	var ww = $("#canvasdiv").outerWidth();
+	var w = $("#editTool").outerWidth();
+	ww = (ww - w) / 2;
+	$("#editTool").css("left", ww + "px");
+
+	$("#editTool").show();
+
+}
+
+function hideEditToolbar() {
+	$("#editTool").hide();
+}
+
+var newdistance;
+var max = MAP_MAX_METER;
+var min = MAP_MIN_METER;
+var currentValue = 0;
+function showScalePanel(distance, bmap) {
+	newdistance = distance;
+	var maxSide = bmap.ph > bmap.pw ? bmap.ph : bmap.pw;
+	var minSide = bmap.ph > bmap.pw ? bmap.pw : bmap.ph;
+
+	$("#scaled").removeAttr("disabled");
+	$("#unit").removeAttr("disabled");
+	$("#scalectl").attr("class", "scalectl_active");
+	$("#redrawscale").css("display", "block");
+	$('#scaled').unbind('input');
+	$("#scaled").on("input", checkStatus);
+
+	function checkStatus() {
+		var dis = parseFloat($("#scaled").val());
+		if (dis == "") {
+			$("#scaleapply").attr("disabled", "disabled");
+			return;
+		}
+
+		if (isNaN(dis)) {
+			$("#scaleapply").attr("disabled", "disabled");
+			return;
+		}
+		if (dis > max || dis < min) {
+			$("#scaleapply").attr("disabled", "disabled");
+			return;
+		}
+		$("#scaleapply").removeAttr("disabled");
+
+	}
+
+	$("#unit").unbind("change");
+	$("#unit").change(unitChange);
+	unitChange();
+	function unitChange() {
+		if ($("#unit").val() == "1") {
+
+			max = (distance * MAP_MAX_FEET / maxSide).toFixed(1);
+			min = (distance * MAP_MIN_FEET / minSide).toFixed(1);
+
+			if (global.ruleunit == 1) {
+				currentValue = (distance * (global.rulescale == 0 ? 0.5
+						: global.rulescale)).toFixed(1);
+			} else {
+				currentValue = (distance * METER_FEET_SCALE * (global.rulescale == 0 ? 0.5
+						: global.rulescale)).toFixed(1);
+			}
+			currentValue = parseFloat(currentValue);
+			if (currentValue < min)
+				currentValue = min;
+			if (currentValue > max)
+				currentValue = max;
+			$("#scaled").val(currentValue);
+			checkStatus();
+			$("#labeldistance").html("(" + min + "~" + max + "ft)");
+
+		} else {
+			max = (distance * MAP_MAX_METER / maxSide).toFixed(1);
+			min = (distance * MAP_MIN_METER / minSide).toFixed(1);
+
+			if (global.ruleunit == 0) {
+				currentValue = (distance * (global.rulescale == 0 ? 0.5
+						: global.rulescale)).toFixed(1);
+			} else {
+				currentValue = (distance * (global.rulescale == 0 ? 0.5
+						: global.rulescale / METER_FEET_SCALE)).toFixed(1);
+			}
+
+			currentValue = parseFloat(currentValue);
+			if (currentValue < min)
+				currentValue = min;
+			if (currentValue > max)
+				currentValue = max;
+			$("#scaled").val(currentValue);
+			checkStatus();
+			$("#labeldistance").html("(" + min + "~" + max + "m)");
+
+		}
+	}
+
+	currObType = "";
+	onMovingState();
+}
+
+function applyScale() {
+
+	var dis = $("#scaled").val();
+	if (dis == "")
+		return;
+	if (isNaN(dis))
+		return;
+	global.ruleunit = parseInt($("#unit").val());
+	global.rulescale = dis / newdistance;
+	calculateStep(global);
+	ruleline = {};
+
+	$(".floor_topmenu").css("display", "block");
+	$(".floor_topmenu_min").css("display", "none");
+	$("#scalepanel").css("display", "none");
+	$("#setscaleStart").css("display", "none");
+	$("#resetscalebtn").show();
+
+	var bmap = mapImages.get(global.currentFloor.floorId);
+	if (bmap) {
+		var jsondata = {
+			"floorId" : global.currentFloor.floorId,
+			"scale" : global.rulescale,
+			"unit" : global.ruleunit,
+			"imagex" : bmap.px,
+			"imagey" : bmap.py,
+			"imagew" : bmap.pw,
+			"imageh" : bmap.ph,
+		};
+		doAction(loader.Request.FloorUpdate, jsondata);
+	}
+
+	common.changeDivHeight();
+	changeMenuStatus();
+	refreshWds();
+	$("#menuDiv").css("display", "block");
+}
+
+function cancelScale() {
+	currObType = "";
+	ruleline = {};
+	onMovingState();
+	resetHeatcontext();
+	resetMaincontext();
+
+	$("#resetscalebtn").show();
+	if (global.rulescale == 0) {
+		$(".floor_topmenu").css("display", "none");
+		$(".floor_topmenu_min").css("display", "none");
+		$("#scalepanel").css("display", "none");
+		$("#setscaleStart").css("display", "block");
+	} else {
+		$(".floor_topmenu").css("display", "block");
+		$(".floor_topmenu_min").css("display", "none");
+		$("#scalepanel").css("display", "none");
+		$("#setscaleStart").css("display", "none");
+	}
+	common.changeDivHeight();
+	$("#menuDiv").css("display", "block");
+}
+
+function showmenuLayerSub(sender) {
+	$("#menuLayerSub").show();
+	$("#menuLayer").addClass("active");
+}
+
+function showmenuLabelSub() {
+	$("#menuLabelSub").show();
+	$("#menuLabel").addClass("active");
+	/*
+	 * if (global.labelshow.name) { $("#labelName").next().attr("style",
+	 * "color:#"); } else { $("#labelName").next().attr("style",
+	 * "color:#5b686d"); } if (global.labelshow.modelName) {
+	 * $("#labelModelName").next().attr("style", "color:#5b686d"); } else {
+	 * $("#labelModelName").next().attr("style", "color:#5b686d"); } if
+	 * (global.labelshow.channel) { $("#labelChannel").next().attr("style",
+	 * "color:#5b686d"); } else { $("#labelChannel").next().attr("style",
+	 * "color:#5b686d"); }
+	 */
+}
+
+function changemenuChannelSub() {
+	const obApList = global.currentFloor.apList;
+	var arr = [];
+	$.each(obApList, function(index, value) {
+		if (value == null)
+			return;
+		if (!value.apId || value.atId)
+			return;
+		for (var i = 0; i < value.bandList.length; i++) {
+			if ((global.currentBand == "24" && value.bandList[i].bandName === "2.4")
+					|| (global.currentBand == "5" && value.bandList[i].bandName === "5.0")
+					|| (global.currentBand == "6" && value.bandList[i].bandName === "6.0")) {
+				if (arr.indexOf(value.bandList[i].channel) == -1)
+					arr.push(value.bandList[i].channel);
+				break;
+			}
+		}
+	});
+
+	var html = '<a onclick="selectChannel(\'All\');">All</a>';
+	var compare = function() {
+		return function(obj1, obj2) {
+			var val1 = obj1;
+			var val2 = obj2;
+			if (obj1 == 'Auto')
+				val1 = 0;
+			if (obj2 == 'Auto')
+				val2 = 0;
+			val1 = parseInt(val1);
+			val2 = parseInt(val2);
+			if (val1 < val2) {
+				return -1;
+
+			} else if (val1 > val2) {
+				return 1;
+			} else {
+				return 0;
+			}
+
+		};
+	};
+	arr = arr.sort(compare());
+	for (var i = 0; i < arr.length; i++) {
+		html += '<a onclick="selectChannel(\'' + arr[i] + '\');">' + arr[i]
+				+ '</a>';
+	}
+	if (!global.currentChannel) {
+		$("#menuChannel span").html("All");
+		global.currentChannel = "All";
+	}
+
+	$("#menuChannelSub").html(html);
+}
+
+function showmenuChannelSub() {
+	changemenuChannelSub();
+	$("#menuChannelSub").show();
+	$("#menuChannelTitle").addClass("active");
+}
+
+function selectChannel(channel) {
+	global.currentChannel = channel;
+	$("#menuChannel span").html(channel);
+	$("#menuChannelSub").hide();
+	showDialog('waitingPModal');
+	showHeatMapModal();
+}
+
+function changeShowLabel(ele, type) {
+	var tag = true;
+	if (type == "name") {
+		global.labelshow.name = !global.labelshow.name;
+		tag = global.labelshow.name;
+	} else if (type == "modelName") {
+		global.labelshow.modelName = !global.labelshow.modelName;
+		tag = global.labelshow.modelName;
+	} else if (type == "channel") {
+		global.labelshow.channel = !global.labelshow.channel;
+		tag = global.labelshow.channel;
+	} else if (type == "operationMode") {
+		global.labelshow.operationMode = !global.labelshow.operationMode;
+		tag = global.labelshow.operationMode;
+	}
+
+	if (tag) {
+		$(ele).next().attr("style", "color:#2196f3");
+	} else {
+		$(ele).next().attr("style", "color:#212121");
+	}
+
+	if (global.currentFloor.floorType == 0) {
+		resetHeatcontext();
+		resetMaincontext();
+	} else {
+		refreshDataDraw();
+	}
+}
+
+function changeShow(ele, type) {
+	var tag = true;
+	if (type == "zone") {
+		global.objshow.zone = !global.objshow.zone;
+		tag = global.objshow.zone;
+	} else if (type == "obstacle") {
+		global.objshow.obstacle = !global.objshow.obstacle;
+		tag = global.objshow.obstacle;
+	} else if (type == "area") {
+		global.objshow.area = !global.objshow.area;
+		tag = global.objshow.area;
+	} else if (type == "ap") {
+		global.objshow.ap = !global.objshow.ap;
+		tag = global.objshow.ap;
+		changeMenuStatus();
+	} else if (type == "map") {
+		global.objshow.map = !global.objshow.map;
+		tag = global.objshow.map;
+	}
+	if (tag) {
+		$(ele).next().attr("style", "color:#2196f3");
+	} else {
+		$(ele).next().attr("style", "color:#212121");
+	}
+	resetHeatcontext();
+	resetMaincontext();
+}
+
+function reInitialTools() {
+	global.showWDS = false;
+	global.showMesh = false;
+	global.objshow = {
+		ap : true,
+		zone : true,
+		obstacle : true,
+		area : true,
+		map : true
+	};
+	$("#menuLayerSub li").each(function() {
+		$(this).children('input').prop("checked", true);
+		$(this).next().next().attr("style", "color:#2196f3");
+	});
+
+	global.labelshow = {
+		name : false,
+		modelName : true,
+		channel : false,
+		operationMode : false
+	};
+	$("#labelModelName").next().attr("style", "color:#2196f3");
+	$("#labelName").next().attr("style", "color:#212121");
+	$("#labelChannel").next().attr("style", "color:#212121");
+	$("#labelModelName").prop("checked", true);
+	$("#labelName").prop("checked", false);
+	$("#labelChannel").prop("checked", false);
+
+	global.currentBand = '5';
+	global.currentChannel = 'All';
+	$("#band5radio").prop("checked", true);
+	$("#menuChannel span").html('All');
+
+	$("#menuRuler").removeClass("active");
+}
+
+$('#band24radio').change(function() {
+	if ($("#band24radio").prop("checked")) {
+		global.currentBand = "24";
+
+		// temp for 6g not support
+		$('#meshMenu').show();
+		$('#wdsMenu').show();
+		$(".floor_topmenu .dev-item").show();
+	}
+	global.currentChannel = null;
+	changemenuChannelSub();
+	showDialog('waitingPModal');
+	showHeatMapModal();
+});
+
+$('#band5radio').change(function() {
+	if ($("#band5radio").prop("checked")) {
+		global.currentBand = "5";
+
+		// temp for 6g not support
+		$('#meshMenu').show();
+		$('#wdsMenu').show();
+		$(".floor_topmenu .dev-item").show();
+	}
+	global.currentChannel = null;
+	changemenuChannelSub();
+	showDialog('waitingPModal');
+	showHeatMapModal();
+});
+
+$('#band6radio').change(function() {
+	if ($("#band6radio").prop("checked")) {
+		global.currentBand = "6";
+
+		// temp for 6g not support
+		$('#meshMenu').hide();
+		$('#wdsMenu').hide();
+		$(".floor_topmenu .zone-item").hide();
+		$('#addApIcon').show();
+	}
+	
+	global.currentChannel = null;
+	changemenuChannelSub();
+	showDialog('waitingPModal');
+	showHeatMapModal();
+});
+
+function hideToolPanelMenu() {
+	$("#menuLayerSub").hide();
+	$("#menuChannelSub").hide();
+	$("#menuLabelSub").hide();
+}
+
+function hideToolPanels() {
+	hideToolPanelMenu();
+	$("#menuLayer").hide();
+	$("#menuBandTitle").hide();
+	$("#menuBand").hide();
+	$("#menuChannelTitle").hide();
+	$("#menuChannel").hide();
+	$("#menusignal").hide();
+	$("#menuLabel").hide();
+	$("#menuRuler").hide();
+	$(".floor_topmenu div.env-item").addClass("disabled");
+	$(".floor_topmenu div.dev-item").addClass("disabled");
+	$(".floor_topmenu div.auto-item").addClass("disabled");
+	$(".floor_topmenu_min div.env-item").addClass("disabled");
+	$(".floor_topmenu_min div.btn-item").addClass("disabled");
+	$(".floor_topmenu_min div.dev-item").addClass("disabled");
+	$("#dropdown_zone").parents(".env-item").removeClass('disabled');
+	$(".floor_topmenu .dropdown-button").removeAttr('data-activates');
+	$(".floor_topmenu_min .dropdown-button").removeAttr('data-activates');
+	$('#dropdown_zonebtn').attr('data-activates', 'dropdown_zone');
+	$("#dropdown_zone_min").parents(".env-item").removeClass('disabled');
+	$('#dropdown_zone_minbtn').attr('data-activates', 'dropdown_zone_min');
+
+}
+function resetDropdown() {
+	$('.dropdown-button').dropdown({
+		inDuration : 300,
+		outDuration : 225,
+		constrainWidth : false, // Does not change width of dropdown to that of
+		// the activator
+		hover : false, // Activate on hover
+		gutter : 0, // Spacing from edge
+		belowOrigin : true, // Displays dropdown below the button
+		alignment : 'left', // Displays dropdown with edge aligned to the left
+		// of button
+		stopPropagation : false
+	// Stops event propagation
+	});
+
+}
+function changeMenuStatus() {
+	hideToolPanels();
+	if(global.apCount>0){
+		$('#showReport').show();
+	}else{
+		$('#showReport').hide();
+	}
+	if (global.showMesh)
+		return;
+	/*
+	 * if (global.showToolPanel == false) { return; }
+	 */
+	if (global.currentFloor.floorType == 1) {
+		$(".floor_topmenu div.zone-item").removeClass("disabled");
+		$(".floor_topmenu_min div.zone-item").removeClass("disabled");
+		$("#menuRuler").show();
+
+		if (global.currentFloor.apList && global.currentFloor.apList.length > 0) {
+			$(".floor_topmenu div.dev-item").removeClass("disabled");
+			$(".floor_topmenu div.auto-item").removeClass("disabled");
+			$(".floor_topmenu_min div.btn-item").removeClass("disabled");
+			$(".floor_topmenu_min div.btn-item").removeClass("disabled");
+
+			$("#menuBandTitle").show();
+			$("#menuBand").show();
+			$("#menuChannelTitle").show();
+			$("#menuChannel").show();
+			$("#menuLabel").show();
+		}
+	} else {
+		if (global.rulescale != 0) {
+			$("#menuRuler").show();
+		}
+		if (global.showheatmap == true) {
+			$("#menusignal").show();
+		}
+		var apCount = 0;
+		var atCount = 0;
+		$.each(obstructions.options, function(index, value) {
+
+			if (value && value.atId) {
+				atCount += 1;
+			} else if (value && value.apId) {
+				apCount += 1;
+			}
+		});
+		updateFloorCache(apCount, atCount);
+		var haszone = false;
+		var hasap = false;
+		$.each(obstructions.options, function(index, value) {
+			if (value == null)
+				return;
+			if (value.obType == TYPE_RECT_ZONE && value.obField == "zone") {
+				haszone = true;
+				return;
+			}
+			if (value.apId) {
+				hasap = true;
+				return;
+			}
+		});
+
+		if (haszone) {
+			// 都可用
+			$(".floor_topmenu div.env-item").removeClass("disabled");
+			$(".floor_topmenu div.zone-item").removeClass("disabled");
+			$(".floor_topmenu_min div.zone-item").removeClass("disabled");
+			$(".floor_topmenu_min div.env-item").removeClass("disabled");
+			$('#dropdown_zonebtn').attr('data-activates', 'dropdown_zone');
+			$('#dropdown_obsbtn').attr('data-activates', 'dropdown_obs');
+			$('#dropdown_areabtn').attr('data-activates', 'dropdown_area');
+			$('#dropdown_zone_minbtn').attr('data-activates',
+					'dropdown_zone_min');
+			$('#dropdown_obs_minbtn')
+					.attr('data-activates', 'dropdown_obs_min');
+			$('#dropdown_area_minbtn').attr('data-activates',
+					'dropdown_area_min');
+			$("#menuLayer").show();
+
+			if (hasap) {
+				$("#menuBandTitle").show();
+				$("#menuBand").show();
+				$("#menuChannelTitle").show();
+				$("#menuChannel").show();
+				$("#menuLayer").show();
+				if (global.objshow.ap)
+					$("#menuLabel").show();
+				else
+					$("#menuLabel").hide();
+				$(".floor_topmenu div.dev-item").removeClass("disabled");
+				$(".floor_topmenu div.auto-item").removeClass("disabled");
+				$(".floor_topmenu_min div.btn-item").removeClass("disabled");
+				$(".floor_topmenu_min div.btn-item").removeClass("disabled");
+				
+			}
+		}
+	}
+	resetDropdown();
+}
+function showRuler() {
+	$("#menuRuler").addClass("active");
+	if (global.currentFloor.floorType == 0) {
+		currObType = TYPE_DRAW_Ruler;
+		rulerline = {};
+		changeShowHeatMap('Off');
+		resetMaincontext();
+		onDrawState();
+	} else {
+		googleRuler.action = "start_draw_ruler";
+		googleMap.setOptions({
+			draggableCursor : "crosshair",
+			draggingCursor : "crosshair"
+		});
+
+		if (googleRuler.marker) {
+			if (googleRuler.marker.infoWindow) {
+				googleRuler.marker.infoWindow.setMap(null);
+				googleRuler.marker.infoWindow = null;
+			}
+			googleRuler.marker.setMap(null);
+			googleRuler.marker = null;
+		}
+	}
+}
+function showRemoveMenu() {
+	if (currObj != null && currObj.apId) {
+		$("#menuRemove").show();
+		$("#menuRemove span").html("AP");
+	} else if (currObj != null && currObj.obField) {
+		$("#menuRemove").show();
+		$("#menuRemove span").html(
+				obText[currObj.obField].replace("%s", currObj.rate));
+	} else {
+		$("#menuRemove").hide();
+	}
+}
+
+function removeAllaps() {
+	if (currObj != null && currObj.apId) {
+		var jsondata = {
+			floorId: global.currentFloor.floorId
+		};
+		doActionParam(loader.Request.RemoveAllAPs, jsondata, function(data) {
+			global.apCount -= global.currentFloor.apCount;
+			changeShowHeatMap('Off');
+			refreshFloorDetail();
+		});
+	}
+	if (currObj != null && currObj.obField) {
+		var jsondata = {
+			floorId: global.currentFloor.floorId,
+			obField: currObj.obField
+		};
+		doActionParam(loader.Request.RemoveAllObs, jsondata, function(data) {
+			refreshFloorDetail();
+			changeShowHeatMap();
+		});
+	}
+
+	$('#menuRemoveTip').hide();
+}
+
+function exportFloorImage() {
+
+	if (global.currentFloor.floorType == 0) {
+		if (currObj != null && !currObj.apId && !currObj.wdsId) {
+			currObj.fill(backcontext, global);
+			currObj.stroke(backcontext, global, false);
+		}
+		backcontext.setTransform(1, 0, 0, 1, 0, 0);
+		if (currObj != null && currObj.apId) {
+			if (currObj.atId) {
+				var parentAP = obstructions.get(currObj.apId);
+				currObj.fill(backcontext, global, parentAP);
+				currObj.stroke(backcontext, global, true);
+			} else {
+
+				var at = getatbyapId(currObj.apId);
+				if (at) {
+					at.fill(backcontext, global, currObj);
+					at.stroke(backcontext, global, false);
+				}
+
+				currObj.fill(backcontext, global, false);
+				currObj.stroke(backcontext, global, false);
+			}
+		}
+		if (currObj != null && currObj.wdsId) {
+			currObj.fill(backcontext, global, false);
+			currObj.stroke(backcontext, global, false);
+		}
+		var a = global.canvasScale, b = 0, c = 0, d = global.canvasScale, e = global.translateOffX, f = global.translateOffY;
+		backcontext.setTransform(a, b, c, d, e, f);
+
+		var imgdata = backcanvas.toDataURL("image/png");
+		var filename = global.currentFloor.floorName + '.jpeg';
+		if (backcanvas.msToBlob) { // for IE
+			var blob = backcanvas.msToBlob();
+			window.navigator.msSaveBlob(blob, filename);
+		} else {
+			var link = document.createElement('a');
+			link.href = imgdata;
+			link.download = filename;
+			var event = document.createEvent('MouseEvents');
+			event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0,
+					false, false, false, false, 0, null);
+			link.dispatchEvent(event);
+		}
+	} else {
+		html2canvas(document.querySelector("#googleMapDiv"), {
+			useCORS : true
+		}).then(
+				function(canvas) {
+
+					var imgdata = canvas.toDataURL("image/png");
+					var filename = global.currentFloor.floorName + '.jpeg';
+					if (backcanvas.msToBlob) { // for IE
+						var blob = backcanvas.msToBlob();
+						window.navigator.msSaveBlob(blob, filename);
+					} else {
+						var link = document.createElement('a');
+						link.href = imgdata;
+						link.download = filename;
+
+						var event = document.createEvent('MouseEvents');
+						event
+								.initMouseEvent('click', true, false, window,
+										0, 0, 0, 0, 0, false, false, false,
+										false, 0, null);
+						link.dispatchEvent(event);
+					}
+				});
+	}
+
+}
+
+function refreshApplyBtn() {
+	var pname = $("#floorName").val();
+	if ($("#useImage").prop("checked")) {
+		if (pname && $.trim(pname).length > 0) {
+			$(".help-inline").remove();
+			if (dclip.image != null) {
+				$("#floorsave .btn").removeAttr("disabled");
+
+			} else {
+				$("#floorsave .btn").attr("disabled", "disabled");
+			}
+
+		} else {
+			$("#floorsave .btn").attr("disabled", "disabled");
+		}
+	} else {
+
+		if (pname && $.trim(pname).length > 0) {
+			$(".help-inline").remove();
+			$("#floorsave .btn").removeAttr("disabled");
+		} else {
+			$("#floorsave .btn").attr("disabled", "disabled");
+		}
+	}
+}
+
+function useImageClick() {
+	$("#googleDiv").hide();
+	$("#heightDiv").hide();
+	$("#heightDivLabel").hide();
+	$("#imageDiv").show();
+
+	if (dclip == null) {
+		dclip = new MapClip('clip', dragfileChangeCallback,
+				dragEnteredCallback, dragLeavedCallback);
+	}
+	refreshApplyBtn();
+}
+var mapNew;
+var mapLocation = "台湾台北市";
+function useGoogleClick() {
+	$("#imageDiv").hide();
+	$("#googleDiv").show();
+	$("#heightDiv").show();
+	$("#heightDivLabel").show();
+
+	if (!mapNew) {
+		var mapProp = {
+			center : {
+				lat : 25.0329694,
+				lng : 121.56541770000001
+			},
+			zoom : 15,
+			mapTypeId : google.maps.MapTypeId.ROADMAP,
+			mapTypeControl : false
+		};
+		mapNew = new google.maps.Map(document.getElementById("googleMap"),
+				mapProp);
+
+		mapNew.addListener('tilesloaded', function() {
+			var searchDiv = document.getElementById("searchDiv");
+			if (searchDiv) {
+				searchDiv.style.display = "block";
+			}
+		});
+
+		var input = document.getElementById('pac-input');
+
+		mapNew.controls[google.maps.ControlPosition.TOP_LEFT].push(document
+				.getElementById("searchDiv"));
+
+		var autocomplete = new google.maps.places.Autocomplete(input);
+		autocomplete.bindTo('bounds', mapNew);
+		autocomplete.setFields([ 'formatted_address', 'geometry', 'icon',
+				'name' ]);
+
+		var placeMarker;
+		var infowindow = new google.maps.InfoWindow();
+
+		autocomplete.addListener('place_changed', function() {
+
+			var place = autocomplete.getPlace();
+			if (!place.geometry)
+				return;
+			mapLocation = place.formatted_address;
+			mapNew.setCenter(place.geometry.location);
+
+			if (!placeMarker) {
+				placeMarker = new google.maps.Marker({
+					map : mapNew,
+					position : place.geometry.location
+				});
+
+				google.maps.event.addListener(placeMarker, 'click', function() {
+					infowindow.setContent(place.name);
+					infowindow.open(mapNew, this);
+				});
+
+			} else {
+				placeMarker.setPosition(place.geometry.location);
+			}
+		});
+	}
+	refreshApplyBtn();
+}
+
+function setHeight() {
+	showDialog('setAPHeightModal');
+
+	$("#apHeightInput").val(global.currentFloor.apHeight);
+	$("#apHeightUnitInput").val(global.currentFloor.apHeightUnit);
+	$('select').material_select();
+}
+
+var newMapLocation;
+function setLocation() {
+	showDialog('setLocationModal');
+
+	newMapLocation = global.currentFloor.location;
+	$("#locationInput").val(newMapLocation);
+
+	var input = document.getElementById('locationInput');
+
+	var autocomplete = new google.maps.places.Autocomplete(input);
+	autocomplete.bindTo('bounds', googleMap);
+	autocomplete.setFields([ 'formatted_address', 'geometry' ]);
+
+	autocomplete.addListener('place_changed', function() {
+
+		var place = autocomplete.getPlace();
+		if (!place.geometry)
+			return;
+		newMapLocation = place.formatted_address;
+		googleMap.setCenter(place.geometry.location);
+
+	});
+
+}
+
+function saveAPHeight() {
+
+	var jsondata = {
+		"floorId" : global.currentFloor.floorId,
+		"unit" : global.ruleunit,
+		"apHeight" : $("#apHeightInput").val(),
+		"apHeightUnit" : $("#apHeightUnitInput").val()
+	};
+	doAction(loader.Request.FloorUpdate, jsondata, function() {
+		refreshFloorDetail();
+	});
+	closeDialog('setAPHeightModal');
+}
+
+function saveLocation() {
+	var center = googleMap.getCenter().toJSON();
+	var jsondata = {
+		"floorId" : global.currentFloor.floorId,
+		"unit" : global.ruleunit,
+		"location" : newMapLocation,
+		"latitude" : center.lat,
+		"longitude" : center.lng
+	};
+	doAction(loader.Request.FloorUpdate, jsondata, function() {
+		refreshFloorDetail();
+	});
+	closeDialog('setLocationModal');
+}
+
+function cancelLocation() {
+	googleMap.setOptions({
+		center : {
+			lat : global.currentFloor.latitude,
+			lng : global.currentFloor.longitude
+		}
+	});
+	closeDialog('setLocationModal');
+}
+
+function showFloor() {
+
+	if (global.currentFloor.floorType == 0) {
+
+		$(".notIndoor").hide();
+		$(".notOutdoor").show();
+
+		$("#backcanvas").show();
+		$("#maincanvas").show();
+		$("#googleMapDiv").hide();
+
+		canvasResetData();
+
+	} else {
+
+		$(".floor_topmenu").css("display", "block");
+		$(".floor_topmenu_min").css("display", "none");
+		$("#scalepanel").css("display", "none");
+		$("#setscaleStart").css("display", "none");
+
+		$(".notOutdoor").hide();
+		$(".notIndoor").show();
+
+		$("#backcanvas").hide();
+		$("#maincanvas").hide();
+		$("#googleMapDiv").show();
+
+		showGoogleMapFloor(global.currentFloor);
+
+	}
+	hideAPSettingPanel();
+}

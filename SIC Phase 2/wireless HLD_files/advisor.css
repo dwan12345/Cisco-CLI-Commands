@@ -1,0 +1,34 @@
+@CHARSET "UTF-8";
+#modediv .dropdown-content>li:first-child >span {
+	margin-left:16px;
+}
+#advisorModal .dropdown-content{
+	max-height:280px;
+	width:208px;
+}
+#advisorModal .dropdown-button{
+	width:208px;
+}
+#strengthdiv .dropdown-content{
+	max-height:150px;
+}
+#advisorModal label{
+	font-size:16px;
+	color:#333;
+	padding:0;
+	margin:0;
+	height:40px;
+	line-height:40px;
+	width:278px;
+}
+#advisorModal .input-field.inline{
+	margin-top:0;
+	float:left;
+}
+
+.strength.select-wrapper input.select-dropdown{
+	width:120px;
+}
+#processingBtn .processing{
+	background:#1464bf;
+}

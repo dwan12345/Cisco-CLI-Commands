@@ -1,0 +1,73 @@
+var MeshLine = function(obj) {
+	
+	this.apId1 = obj.apId1;
+	this.apId2 = obj.apId2;
+	this.band = obj.band;
+	this.x1 = obj.x1;
+	this.y1 = obj.y1;
+	this.x2 = obj.x2;
+	this.y2 = obj.y2;
+	this.distance = obj.distance;
+};
+
+MeshLine.prototype.stroke = function(context, options, selbtn) {
+
+	var color = "#2095f2";
+	if (this.performance == null || this.performance == 0) {
+		color = "#bbb";
+	} else if (parseInt(this.performance) < parseInt(-70)) {
+		color = "#eb3f79";
+	}
+
+	context.save();
+	context.lineWidth = 4;
+
+	context.strokeStyle = color;
+	context.beginPath();
+	var x1 = this.x1 * options.canvasScale + options.translateOffX;
+	var y1 = this.y1 * options.canvasScale + options.translateOffY;
+	var x2 = this.x2 * options.canvasScale + options.translateOffX;
+	var y2 = this.y2 * options.canvasScale + options.translateOffY;
+
+	context.moveTo(x1, y1);
+	context.lineTo(x2, y2);
+	context.stroke();
+	context.restore();
+
+	var p = {
+		x : (this.x2 + this.x1) * options.canvasScale / 2
+				+ options.translateOffX,
+		y : (this.y2 + this.y1) * options.canvasScale / 2
+				+ options.translateOffY
+	};
+
+	context.font = "bold 12px Arial";
+	var unit = (options.ruleunit == 0) ? "m" : "ft";
+	var txt = this.distance + unit + "  " + this.performance + "dBm";
+	if (this.performance == null || this.performance == 0) {
+		txt = this.distance + unit;
+	}
+	var w = context.measureText(txt).width;
+	var angle = Math.atan((this.y2 - this.y1) / (this.x2 - this.x1));
+
+	context.save();
+	context.translate(p.x, p.y);
+	context.rotate(angle);
+
+	var l = 10;
+	
+	context.beginPath();
+	context.moveTo(-w / 2 - 8, l);
+	context.lineTo(w / 2 + 8, l);
+	context.lineTo(w / 2 + 8, -l);
+	context.lineTo(-w / 2 - 8, -l);
+	context.closePath();
+	context.fillStyle = color;
+	context.fill();
+
+	context.fillStyle = "#fff";
+	context.fillText(txt, -w / 2, 4);
+
+	context.restore();
+
+};

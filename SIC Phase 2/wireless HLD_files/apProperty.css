@@ -1,0 +1,255 @@
+#apPropertyDiv {
+	display:none;
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom:0;
+	width: 296px;
+	z-index: 99;
+	font-size:14px;
+}
+#apPropertyDiv .select-wrapper input.select-dropdown,#apPropertyDiv input{
+	font-size:14px;
+}
+
+#PropertyDivMain {
+	overflow: auto;
+	background-color: #EEF3F5;
+	width: 296px;
+	padding: 12px 0;
+}
+#PropertyDivMain .switch{
+	float:left;
+}
+#PropertyDivMain .apMode{
+	padding-top:8px;padding-right:0;
+}
+#PropertyDivMain .apband{
+	    padding-top: 0px;
+    text-align: right;
+    padding-right: 0;
+}
+.apPropertyInnerDiv {
+	border-top: 1px solid #ced7db;
+	margin: 12px 0;
+	border-radius: 2px;
+	padding: 8px 0;
+	padding-top:0;
+}
+
+.Label5g {
+	backGround: #00A38A;
+	color: #fff;
+	padding: 2px 6px;
+	margin-left: 0px;
+	border-radius: 2px;
+}
+
+.Label6g {
+	backGround: #3A5311;
+	color: #fff;
+	padding: 2px 6px;
+	margin-left: 0px;
+	border-radius: 2px;
+}
+
+.Label24g {
+	backGround: #DF3FFB;
+	color: #fff;
+	padding: 2px 6px;
+	margin-left: 0px;
+	border-radius: 2px;
+}
+
+.centerLabel {
+	text-align: center;
+	font-size: 12px;
+	line-height: 14px
+}
+#apPropertyDiv nav {
+	color: #5b686d;
+	background-color: #EEF3F5;
+	width: 100%;
+	height: 39px;
+	line-height: 39px;
+}
+
+#apPropertyDiv nav ul {
+	margin: 0;	
+	background: #EEF3F5;
+	width: 100%;
+    border-bottom: 2px solid #0000004D;
+}
+
+#apPropertyDiv nav ul li {
+	transition: background-color .3s;
+	float: left;
+	padding: 0;
+	background: #EEF3F5;	
+}
+#apPropertyDiv .row .col.s4 {
+	width:80px;
+}
+#apPropertyDiv .row .col.s8 {
+	width:210px;
+	padding: 0;
+}
+#apPropertyDiv nav ul a {
+	transition: background-color .3s;
+	font-size: 13px;
+	color: #5b686d;
+	display: block;
+	padding: 0 10px;
+	cursor: pointer;
+}
+#apPropertyDiv nav ul a:hover{
+	background: #EEF3F5;
+}
+#apPropertyDiv nav ul li.active a{
+	opacity:1;
+	border-bottom: 2px solid #2196F3;
+}
+#apPropertyDivMain input[type=text] {
+	margin: 0;
+	width:165px;
+	height: 32px;
+	border: none;
+    border-radius: 0;
+    border-bottom: 1px dotted #aaa;
+}
+#apPropertyDivMain .input-field.select{
+	padding: 0;
+}
+#apPropertyDivMain .input-field.select label {
+    left: 24px;
+}
+#apPropertyDivMain input[type=text]:focus {
+border-bottom: 1px dotted #2196F3;
+}
+#apPropertyDivMain>div label {
+	font-size:12px;
+	float:right;
+	color:#5b686d;
+}
+#apPropertyDivMain .baseinfo .row{
+	margin-bottom:12px;
+}
+#apPropertyDivMain .input-field label {
+	top: -0.4rem;
+}
+
+#apPropertyDivMain .input-field label.active {
+	font-size: 0.8rem;
+	top: -0.2rem;
+	-webkit-transform: translateY(-80%);
+	transform: translateY(-80%);
+}
+
+#apPropertyDivMain input[type=range] {
+	margin: 10px 0;
+}
+
+#apPropertyDivMain .select-wrapper input.select-dropdown {
+	margin: 0;
+	height: 32px;
+	width: 113px;
+	padding-left: 8px;
+	border: none;
+}
+
+#apPropertyDivMain .select-wrapper {
+	height: 32px;
+	width: 113px;
+    margin-left: 24px;
+    background:#fff;
+}
+#apPropertyDivMain .dropdown-content{
+	max-height:240px;
+	 width: 113px !important; 
+	 top: 32px !important;
+}
+#apPropertyDivMain .dropdown-content li {
+	min-height: 32px;
+	line-height: 32px;
+}
+
+#apPropertyDivMain .dropdown-content li>span {
+	height: 32px;
+	line-height: 32px;
+	padding: 0 16px;
+	font-size: 15px;
+}
+
+.atdel a {
+	font-size: 16px;
+	color: #ced7db;
+}
+
+.atdel a:hover {
+	color: #778f9b;
+}
+
+.atsel {
+	margin-top:8px;
+	height: 32px;
+	width: 100%;
+	border: 1px solid #ced7db;
+}
+
+.atsel:hover {
+	border: 1px solid #778f9b
+}
+
+.atsel a {
+	color: #ced7db;
+	font-size: 16px;
+	line-height: 32px;
+	height: 32px;
+	padding: 0 8px;
+}
+
+.atsel a i {
+	line-height: 32px;
+	padding-left: 120px;
+}
+
+.atsel .dropdown-content {
+	margin-top: 6px;
+	width: 255px;
+	border: 1px solid #ced7db;
+}
+
+.atsel .dropdown-content:hover {
+	border: 1px solid #778f9b
+}
+
+.atsel .dropdown-content .row {
+	margin: 8px;
+	border: 1px solid #ced7db;
+	padding: 4px 0;
+}
+
+#antenna24_0,#antenna5_0{
+	padding: 8px 0;
+	margin-top: -8px;
+}
+
+input[type=range] + .thumb {
+  background-color: #778f9b;
+}
+
+input[type=range] + .thumb .value {
+  color: #778f9b;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  background-color: #778f9b;
+}
+
+input[type=range]::-moz-range-thumb {
+  background: #778f9b;
+}
+
+input[type=range]::-ms-thumb {
+  background: #778f9b;
+}

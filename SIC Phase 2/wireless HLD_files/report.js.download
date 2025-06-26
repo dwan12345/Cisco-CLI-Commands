@@ -1,0 +1,423 @@
+/**
+ * 
+ */
+var report = {
+	floors : []
+};
+var current = {};
+function initReport(project) {
+	showDialog('waitingPModal');
+	$(".report_content>div").hide();
+	var param = {
+		"projectId" : global.currentProject.projectId
+	};
+	doActionParam(
+			loader.Request.GetAllFloors,
+			param,
+			function(data) {
+
+				if (!data || !data.success) {
+					closeDialog('waitingPModal');
+					return;
+				}
+				report.floors = [];
+				for (var i = 0; i < data.floorList.length; i++) {
+					if (data.floorList[i].floorType == 0) {
+						if (data.floorList[i].scale > 0.0) {
+							if (data.floorList[i].apList.length > 0) {
+								var isWDS = false, isMesh = false;
+								var meshGroups = [];
+								for (var j = 0; j < data.floorList[i].apList.length; j++) {
+									var app = data.floorList[i].apList[j];
+									for (var k = 0; k < app.bandList.length; k++) {
+										if (app.bandList[k].apMode == 'WDS') {
+											isWDS = true;
+										}
+										if (app.bandList[k].meshSSID
+												&& app.bandList[k].meshSSID != "") {
+											var hasExist = false;
+											for (var m = 0; m < meshGroups.length; m++) {
+												if (meshGroups[m].meshSSID == app.bandList[k].meshSSID) {
+													hasExist = true;
+													break;
+												}
+											}
+											if (!hasExist) {
+												meshGroups
+														.push({
+															meshSSID : app.bandList[k].meshSSID,
+															bandName : app.bandList[k].bandName
+														});
+											}
+											isMesh = true;
+										}
+									}
+								}
+								data.floorList[i].isWDS = isWDS;
+								data.floorList[i].isMesh = isMesh;
+								data.floorList[i].meshGroups = meshGroups;
+								report.floors.push(data.floorList[i]);
+							}
+
+						}
+					}
+					if (data.floorList[i].floorType == 1) {
+						if (data.floorList[i].apList.length > 0) {
+							report.floors.push(data.floorList[i]);
+						}
+
+					}
+
+				}
+				initReportImageData(report.floors,function(){
+					$("ul.floor-item>li:first>ul>li:first").trigger('click');
+				});
+				var len = report.floors.length;
+				$('#report_leftcountry').attr(
+						"src",
+						"resource/Country_Flags/"
+								+ global.currentProject.countryCode + ".svg")
+						.attr('title', global.currentProject.country);
+				if (len == 1) {
+					$("#report_left_bottom span").html(len + " Floor Plan");
+				} else {
+					$("#report_left_bottom span").html(len + " Floor Plans");
+				}
+				var html = "<ul class='floor-item'>";
+				for (var i = 0; i < len; i++) {
+					if (report.floors[i].floorType == 0) {
+						html += "<li><a onclick='report_toggleFloor(this);'><i class='fa fa-folder' ></i>"
+								+ report.floors[i].floorName + "</a>";
+						html += "<ul><li onclick='activeItem(this,\""
+								+ report.floors[i].floorId
+								+ "\",\"environment\")'>Environment Setting</li>"
+								+ "<li onclick='activeItem(this,\""
+								+ report.floors[i].floorId
+								+ "\",\"apLocation\")'>AP Location</li>"
+								+ "<li onclick='activeItem(this,\""
+								+ report.floors[i].floorId
+								+ "\",\"apList\")'>AP List</li>"
+								+ "<li onclick='activeItem(this,\""
+								+ report.floors[i].floorId
+								+ "\",\"signalCoverage\")'>Signal Coverage</li>";
+						if (report.floors[i].isWDS) {
+							html += "<li onclick='activeItem(this,\""
+									+ report.floors[i].floorId
+									+ "\",\"wdsMode\")'>WDS Mode</li>";
+						}
+						if (report.floors[i].isMesh) {
+							html += "<li onclick='activeItem(this,\""
+									+ report.floors[i].floorId
+									+ "\",\"meshMode\")'>Mesh Mode</li>";
+						}
+						html += "</ul></li>";
+					} else {
+						html += "<li><a onclick='report_toggleFloor(this);'><i class='fa fa-folder' ></i>"
+								+ report.floors[i].floorName
+								+ "<img src ='resource/image/icon_google map.svg' style='width:16px;height:16px;margin-left:16px'></a>";
+						html += "<ul>";
+						html += "<li onclick='activeItem(this,\""
+								+ report.floors[i].floorId
+								+ "\",\"outdoor\")'>AP List</li>";
+						html += "</ul></li>";
+					}
+
+				}
+				html += "</ul>";
+				$(".report_left .collection").html(html);			
+				closeDialog('waitingPModal');
+			});
+
+}
+function report_toggleFloor(sender) {
+	if ($(sender).find('i').hasClass('fa-folder-open')) {
+		$(sender).next().hide();
+		$(sender).find('i').removeClass('fa-folder-open').addClass('fa-folder');
+
+	} else {
+		$(sender).next().show();
+		$(sender).find('i').removeClass('fa-folder').addClass('fa-folder-open');
+	}
+
+}
+function activeItem(sender, floorId, flag) {
+	$("ul.floor-item>li>ul>li").removeClass('active');
+	$(sender).addClass('active');
+	for (var i = 0; i < report.floors.length; i++) {
+		if (report.floors[i].floorId == floorId) {
+			$(".report_top .top-title").html(
+					report.floors[i].floorName + ":" + showTitle[flag]);
+		}
+	}
+	$(".report_content>div").hide();
+	$("#" + flag).show();
+	current.flag = flag;
+	current.floorId = floorId;
+	show[flag](floorId);
+
+}
+
+function initReportImageData(floors,callback) {
+/*	for (var i = 0; i < floors.length; i++) {
+		getReportAPTable(floors[i], false);
+		getReportImage(floors[i], false);
+	}*/
+	for (var i = 0; i < floors.length; i++) {
+		var floor = floors[i];
+		(function(floor, i, callback) {
+			if (floor.isMesh) {
+				var param = {
+					"floorId" : floor.floorId
+				};
+				doActionParam(
+						loader.Request.FloorGetMeshGroups,
+						param,
+						function(result) {
+							if (result.data && result.data.length > 0) {
+								for (var m = 0; m < floor.meshGroups.length; m++) {
+									for (var k = 0; k < result.data.length; k++) {
+										if (floor.meshGroups[m].meshSSID == result.data[k].meshSSID) {
+											floor.meshGroups[m].meshId = result.data[k].id;
+										}
+									}
+								}
+							}
+							getReportAPTable(floor, false);
+							getReportImage(floor, false);
+							if (i == 0) {
+								callback();
+							}
+						});
+			}else{
+				getReportAPTable(floor, false);
+				getReportImage(floor, false);
+				if (i == 0) {
+					callback();
+				}
+			}
+
+		})(floor, i, callback)
+
+	}
+}
+
+function downloadPage() {
+	/*
+	 * $("#chromereport a").html( "<i class='fa fa-cloud-download' ></i>Downloading...").addClass(
+	 * 'disabled');
+	 */
+	showDialog('waitingPModal');
+	$("#loadPercent").html("loading...");
+	var floor = null;
+	for (var i = 0; i < report.floors.length; i++) {
+		if (report.floors[i].floorId == current.floorId) {
+			floor = report.floors[i];
+		}
+	}
+	function exportPdf() {
+		var jsondata = {
+			flag : current.flag,
+			floorId : current.floorId
+		};
+
+		doActionParam(loader.Request.GeneralSingleReport, jsondata, function(
+				result) {
+			var link = $("#downloadReportlink")[0];
+			link.href = result.data;
+			link.download = result.attached;
+			var event = document.createEvent('MouseEvents');
+			event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0,
+					false, false, false, false, 0, null);
+			link.dispatchEvent(event);
+			/*
+			 * $("#chromereport a").html( "<i class='fa fa-cloud-download' ></i>DOWNLOAD
+			 * as PDF") .removeClass('disabled');
+			 */
+			closeDialog('waitingPModal');
+		});
+	}
+	if (current.flag == "apList") {
+		exportPdf();
+	} else {
+		getReportImage(floor, true, current.flag, function() {
+			exportPdf();
+		});
+	}
+}
+// export PDF 弹窗
+function checkAllFloor() {
+	var flag = $("#floorckall").prop("checked");
+	if (flag) {
+		flag = true;
+	} else {
+		flag = false;
+	}
+	var ckbs = $("#exportPDFModal input[name=floorck]");
+	var len = ckbs.length;
+	for (var i = 0; i < len; i++) {
+		var ck = ckbs.eq(i);
+		var flag2 = ck.prop("checked");
+		if (flag2) {
+			flag2 = true;
+		} else {
+			flag2 = false;
+		}
+		if (flag != flag2) {
+			ck.prop("checked", flag);
+			floorItemCheck(ck.get(0), null, true);
+		}
+	}
+}
+function floorItemCheck(srcObj, e, isall) {
+
+	var ckbs = $("input[name=floorck]:checked");
+	if (ckbs.length > 0) {
+		$("#btnDownloadMenu").removeClass("disabled");
+	} else {
+		$("#btnDownloadMenu").addClass("disabled");
+	}
+	if (!isall) {
+		setCheckAll();
+	}
+}
+function setCheckAllFloor() {
+	var allckbs = $("#exportPDFModal input[name=floorck]");
+	var alllen = allckbs.length;
+	var flag2 = true;
+	for (var i = 0; i < alllen; i++) {
+		{
+			var ck = allckbs.eq(i);
+			flag2 = ck.prop("checked");
+			if (!flag2) {
+				$("#floorckall").prop("checked", false);
+				break;
+			}
+		}
+	}
+	if (flag2)
+		$("#floorckall").prop("checked", true);
+
+	var ckbs = $("input[name=floorck]:checked");
+	if (ckbs.length > 0) {
+		$("#btnDownloadMenu").removeClass("disabled");
+	} else {
+		$("#btnDownloadMenu").addClass("disabled");
+	}
+}
+function loadFloorchecklist() {
+	$("#company").val("");
+	$("#location").val("");
+	$("#floorckall").prop("checked", false);
+	var html = "";
+	for (var i = 0; i < report.floors.length; i++) {
+		html += "<p><input id='floorck_"
+				+ report.floors[i].floorId
+				+ "' type='checkbox' class='filled-in' value='"
+				+ report.floors[i].floorId
+				+ "' name='floorck' onclick='stopPP(arguments[0]);setCheckAllFloor();'/>";
+		html += "<label for='floorck_" + report.floors[i].floorId + "'>"
+				+ report.floors[i].floorName + "</label></p>";
+	}
+	$("#floorchecklist").html(html);
+}
+function showExportMenu() {
+	$("#dropdown_report_type").show();
+}
+function exportReport(reportType) {
+	var allckbs = $("#exportPDFModal input[name=floorck]");
+	var alllen = allckbs.length;
+	var idlist = [];
+	for (var i = 0; i < alllen; i++) {
+		var ck = allckbs.eq(i);
+		if (ck.prop("checked")) {
+			idlist.push(ck.val());
+		}
+	}
+	var totalCount = idlist.length * 5;
+	showDialog('waitingPModal');
+	/*
+	 * $("#report_download_div").hide(); $("#reportProcessingBtn").show();
+	 * $("#reportProcessingBtn").html("Generating...").addClass("disabled");
+	 * $("#reportWait").show();
+	 */
+
+	var floors = report.floors;
+	for (var i = 0; i < floors.length; i++) {
+		if (idlist.contains(floors[i].floorId)) {
+			if (floors[i].floorType == 0) {
+				getReportImage(floors[i], true, "environment", function() {
+					totalCount -= 1;
+				});
+				getReportImage(floors[i], true, "apLocation", function() {
+					totalCount -= 1;
+				});
+				getReportImage(floors[i], true, "signalCoverage", function() {
+					totalCount -= 1;
+				});
+				getReportImage(floors[i], true, "wdsMode", function() {
+					totalCount -= 1;
+				});
+				getReportImage(floors[i], true, "meshMode", function() {
+					totalCount -= 1;
+				});
+			} else {
+				totalCount -= 4;
+				getReportImage(floors[i], true, "outdoor", function() {
+					totalCount -= 1;
+				});
+			}
+
+		}
+	}
+	function waitCount() {
+		if (totalCount <= 0) {
+			var jsondata = {
+				company : $("#company").val(),
+				location : $("#location").val(),
+				projectId : global.currentProject.projectId,
+				floorIdList : idlist
+			};
+			// GeneralPDFReport
+			var actionUrl = loader.Request.GeneralPDFReport;
+			if (reportType == "word") {
+				actionUrl = loader.Request.GeneralWordReport;
+			}
+			console.log("report wait end, do general report");
+			doAction(actionUrl, jsondata, function(result) {
+				console.log("general report callback report url is :"
+						+ result.data);
+				/*
+				 * $("#reportProcessingBtn").html("Downloading...").addClass(
+				 * "disabled");
+				 */
+				var link = $("#downloadReportlink")[0];
+				link.href = result.data;
+				link.download = result.attached;
+				var event = document.createEvent('MouseEvents');
+				event.initMouseEvent('click', true, false, window, 0, 0, 0, 0,
+						0, false, false, false, false, 0, null);
+
+				link.dispatchEvent(event);
+				setTimeout(function() {
+					/*
+					 * $("#reportWait").hide();
+					 * $("#reportProcessingBtn").html("DOWNLOAD").removeClass(
+					 * 'disabled');
+					 */
+					closeDialog('waitingPModal');
+					closeDownloadReport();
+					/*
+					 * $("#report_download_div").show();
+					 * $("#reportProcessingBtn").hide();
+					 */
+				}, 1000);
+
+			});
+		} else {
+			setTimeout(waitCount, 200);
+		}
+
+	}
+	waitCount();
+
+}

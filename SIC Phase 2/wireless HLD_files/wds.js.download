@@ -1,0 +1,53 @@
+
+function showWdsCreateStart() {
+
+	if (wdsLine.polyline) {
+		wdsLine.polyline.setMap(null);
+		wdsLine.polyline = null;
+	}
+	wdsLine = {};
+}
+
+function showWdsDel() {
+	
+	
+}
+
+function createWDSLink() {
+
+	var params = {
+		apId1 : wdsLine.apId1,
+		apId2 : wdsLine.apId2,		
+		band : global.currentBand == "24" ? "2.4" : "5.0",
+		floorId : global.currentFloor.floorId
+	}
+	doAction(loader.Request.FloorInsertWds, params, function(data) {
+		
+		if (!data) {
+			alert("error!");
+			return;
+		}
+		if (data.data == -1) {
+			alert("The number of wds link has reached the maximum!");
+			return;
+		}  
+		refreshFloorDetail(function() {
+			showWdsCreateStart();
+		});	
+
+	});
+}
+
+function selWdsAP(apId) {
+	if (!wdsLine.apId1) {
+		wdsLine.apId1 = apId;
+		wdsLine.apMarker1 = getAPMarkerByAPId(apId);
+		addWdsSelIcon();
+	} else {
+		if (apId == wdsLine.apId1) {
+			return;
+		}
+		wdsLine.apId2 = apId;
+		createWDSLink();
+	}
+}

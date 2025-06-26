@@ -1,0 +1,490 @@
+/* **************************************************************
+ * 
+ * Author      : zhiyuan
+ * Create Date : 2017-2-5
+ * Summary     : map clip
+ * 
+ *************************************************************/
+
+var MapClip = function(divId, dragfileChangeCallback, dragEnteredCallback,
+		dragLeavedCallback) {
+
+	this.element = document.getElementById(divId);
+
+	this.canvasScale = 1;
+	this.translateOffX = 0;
+	this.translateOffY = 0;
+	this.workarea = {};
+	this.imagearea = {};
+
+	this.len = 4;
+	this.dragfileChangeCallback = dragfileChangeCallback;
+	this.dragEnteredCallback = dragEnteredCallback;
+	this.dragLeavedCallback = dragLeavedCallback;
+	this.createCanvas();
+	this.addMouseHandlers();
+
+};
+
+MapClip.prototype = {
+	clearCanvas : function() {
+		this.context.setTransform(1, 0, 0, 1, 0, 0);
+		this.context.clearRect(0, 0, this.context.canvas.width,
+				this.context.canvas.height);
+	},
+	dragEntered : function() {
+		this.clearCanvas();
+
+		this.context.canvas.style.background = "#ffffff";
+		this.context.canvas.style.border = "1px solid #aaaaaa";
+
+		this.context.font = "40px Arial";
+		this.context.fillStyle = "#ced7db";
+		this.context.textAlign = "start";
+		this.context.textBaseline = "middle";
+		var txt = "Drag & Drop";
+		var ww = this.context.measureText(txt).width;
+		this.context.fillText(txt, (this.context.canvas.width - ww) / 2, 149);
+
+		this.context.font = "24px Arial";
+		txt = "your Floor Plan HERE!";
+		ww = this.context.measureText(txt).width;
+		this.context.fillText(txt, (this.context.canvas.width - ww) / 2, 199);
+
+		this.context.font = "16px Arial";
+		txt = ".PNG .JPG .GIF (UP TO 10M)";
+		ww = this.context.measureText(txt).width;
+		this.context.fillText(txt, (this.context.canvas.width - ww) / 2, 352);
+
+		this.dragEnteredCallback();
+	},
+	dragLeaved : function() {
+
+		if (this.image) {
+			this.refresh();
+		} else {
+			this.clearCanvas();
+
+			this.context.canvas.style.background = "#ffffff";
+			this.context.canvas.style.border = "1px solid #aaaaaa";
+
+			this.context.font = "40px Arial";
+			this.context.fillStyle = "#778f9b";
+			this.context.textAlign = "start";
+			this.context.textBaseline = "middle";
+			var txt = "Drag & Drop";
+			var ww = this.context.measureText(txt).width;
+			this.context.fillText(txt, (this.context.canvas.width - ww) / 2,
+					149);
+
+			this.context.font = "24px Arial";
+			txt = "your Floor Plan HERE!";
+			ww = this.context.measureText(txt).width;
+			this.context.fillText(txt, (this.context.canvas.width - ww) / 2,
+					199);
+
+			this.context.font = "16px Arial";
+			txt = ".PNG .JPG .GIF (UP TO 10M)";
+			ww = this.context.measureText(txt).width;
+			this.context.fillText(txt, (this.context.canvas.width - ww) / 2,
+					352);
+		}
+
+		this.dragLeavedCallback(this.image);
+	},
+	imageLoaded : function(image) {
+		this.image = image;
+		this.initialCanvas();
+	},
+	createCanvas : function() {
+
+		var canvas = document.createElement('canvas');
+		canvas.width = 760;
+		canvas.height = 320;
+		canvas.style.background = "#ffffff";
+		canvas.style.border = "1px solid #aaaaaa";
+		canvas.style.borderRadius = "4px";
+		this.context = canvas.getContext('2d');
+		this.element.appendChild(canvas);
+
+		this.dragLeaved();
+	},
+	addMouseHandlers : function() {
+
+		this.context.canvas.style.cursor = "pointer";
+		this.action = "none";
+		this.canvasmousedown = {};
+		this.clone = {};
+
+		var _self = this;
+		this.context.canvas.ondragenter = function(e) {
+			_self.dragEntered();
+		}, this.context.canvas.ondragover = function(e) {
+
+			e.stopPropagation();
+			e.preventDefault();
+		}, this.context.canvas.ondragleave = function(e) {
+			if (_self.dragLeaved) {
+				_self.dragLeaved();
+			}
+
+		}, this.context.canvas.ondrop = function(e) {
+			var files = e.dataTransfer.files;
+			
+			if (_self.dragLeaved) {
+				_self.dragLeaved();
+			}
+			
+			if (_self.dragfileChangeCallback) {
+				_self.dragfileChangeCallback(files);
+			}
+
+			e.stopPropagation();
+			e.preventDefault();
+		},
+				this.context.canvas.onmousedown = function(e) {
+					e.preventDefault();
+
+					var loc = _self.getPointerPosition(e);
+
+					_self.clone.px = _self.workarea.px;
+					_self.clone.py = _self.workarea.py;
+					_self.clone.pw = _self.workarea.pw;
+					_self.clone.ph = _self.workarea.ph;
+
+					// 左上角
+					_self.context.beginPath();
+					_self.context.rect(_self.workarea.px - _self.len,
+							_self.workarea.py - _self.len, _self.len * 2,
+							_self.len * 2);
+					_self.context.closePath();
+					if (_self.context.isPointInPath(loc.x, loc.y)) {
+
+						_self.action = "resize";
+						_self.canvasmousedown.x = _self.workarea.px
+								+ _self.workarea.pw;
+						_self.canvasmousedown.y = _self.workarea.py
+								+ _self.workarea.ph;
+						return;
+					}
+
+					// 右上角
+					_self.context.beginPath();
+					_self.context.rect(_self.workarea.px + _self.workarea.pw
+							- _self.len, _self.workarea.py - _self.len,
+							_self.len * 2, _self.len * 2);
+					_self.context.closePath();
+					if (_self.context.isPointInPath(loc.x, loc.y)) {
+
+						_self.action = "resize";
+						_self.canvasmousedown.x = _self.workarea.px;
+						_self.canvasmousedown.y = _self.workarea.py
+								+ _self.workarea.ph;
+						return;
+					}
+
+					// 右下角
+					_self.context.beginPath();
+					_self.context.rect(_self.workarea.px + _self.workarea.pw
+							- _self.len, _self.workarea.py + _self.workarea.ph
+							- _self.len, _self.len * 2, _self.len * 2);
+					_self.context.closePath();
+					if (_self.context.isPointInPath(loc.x, loc.y)) {
+
+						_self.action = "resize";
+						_self.canvasmousedown.x = _self.workarea.px;
+						_self.canvasmousedown.y = _self.workarea.py;
+						return;
+					}
+
+					// 左下角
+					_self.context.beginPath();
+					_self.context.rect(_self.workarea.px - _self.len,
+							_self.workarea.py + _self.workarea.ph - _self.len,
+							_self.len * 2, _self.len * 2);
+					_self.context.closePath();
+					if (_self.context.isPointInPath(loc.x, loc.y)) {
+
+						_self.action = "resize";
+						_self.canvasmousedown.x = _self.workarea.px
+								+ _self.workarea.pw;
+						_self.canvasmousedown.y = _self.workarea.py;
+						return;
+					}
+
+				};
+		this.context.canvas.onmousemove = function(e) {
+			e.preventDefault();
+
+			var loc = _self.getPointerPosition(e);
+
+			refreshCursor();
+
+			if (_self.action === "resize") {
+
+				_self.workarea.pw = Math.abs(loc.x - _self.canvasmousedown.x);
+				_self.workarea.ph = Math.abs(loc.y - _self.canvasmousedown.y);
+				if (loc.x > _self.canvasmousedown.x)
+					_self.workarea.px = _self.canvasmousedown.x;
+				else
+					_self.workarea.px = loc.x;
+
+				if (loc.y > _self.canvasmousedown.y)
+					_self.workarea.py = _self.canvasmousedown.y;
+				else
+					_self.workarea.py = loc.y;
+				if (_self.workarea.px < _self.imagearea.px)
+					_self.workarea.px = _self.imagearea.px;
+				if (_self.workarea.py < _self.imagearea.py)
+					_self.workarea.py = _self.imagearea.py;
+				if (_self.workarea.pw + _self.workarea.px > _self.imagearea.pw
+						+ _self.imagearea.px) {
+					_self.workarea.pw = _self.imagearea.pw + _self.imagearea.px
+							- _self.workarea.px;
+				}
+				if (_self.workarea.ph + _self.workarea.py > _self.imagearea.ph
+						+ _self.imagearea.py) {
+					_self.workarea.ph = _self.imagearea.ph + _self.imagearea.py
+							- _self.workarea.py;
+				}
+				_self.refresh();
+
+			}
+
+			function refreshCursor() {
+
+				// 左上角
+				_self.context.beginPath();
+				_self.context.rect(_self.workarea.px - _self.len,
+						_self.workarea.py - _self.len, _self.len * 2,
+						_self.len * 2);
+				_self.context.closePath();
+				if (_self.context.isPointInPath(loc.x, loc.y)) {
+					_self.context.canvas.style.cursor = 'nw-resize';
+					return;
+				}
+
+				// 右上角
+				_self.context.beginPath();
+				_self.context.rect(_self.workarea.px + _self.workarea.pw
+						- _self.len, _self.workarea.py - _self.len,
+						_self.len * 2, _self.len * 2);
+				_self.context.closePath();
+				if (_self.context.isPointInPath(loc.x, loc.y)) {
+					_self.context.canvas.style.cursor = 'ne-resize';
+					return;
+				}
+
+				// 右下角
+				_self.context.beginPath();
+				_self.context.rect(_self.workarea.px + _self.workarea.pw
+						- _self.len, _self.workarea.py + _self.workarea.ph
+						- _self.len, _self.len * 2, _self.len * 2);
+				_self.context.closePath();
+				if (_self.context.isPointInPath(loc.x, loc.y)) {
+					_self.context.canvas.style.cursor = 'se-resize';
+					return;
+				}
+
+				// 左下角
+				_self.context.beginPath();
+				_self.context.rect(_self.workarea.px - _self.len,
+						_self.workarea.py + _self.workarea.ph - _self.len,
+						_self.len * 2, _self.len * 2);
+				_self.context.closePath();
+				if (_self.context.isPointInPath(loc.x, loc.y)) {
+					_self.context.canvas.style.cursor = 'sw-resize';
+					return;
+				}
+
+				if (_self.action == "resize")
+					return;
+
+				_self.context.beginPath();
+				_self.context.rect(_self.workarea.px, _self.workarea.py,
+						_self.workarea.pw, _self.workarea.ph);
+				_self.context.closePath();
+				if (_self.context.isPointInPath(loc.x, loc.y)) {
+					_self.context.canvas.style.cursor = 'move';
+					return;
+				}
+
+				_self.context.canvas.style.cursor = 'pointer';
+
+			}
+
+		};
+		this.context.canvas.onmouseup = function(e) {
+			e.preventDefault();
+
+			var loc = _self.getPointerPosition(e);
+			if (_self.action === "resize") {
+
+				_self.workarea.pw = Math.abs(loc.x - _self.canvasmousedown.x);
+				_self.workarea.ph = Math.abs(loc.y - _self.canvasmousedown.y);
+				if (loc.x > _self.canvasmousedown.x)
+					_self.workarea.px = _self.canvasmousedown.x;
+				else
+					_self.workarea.px = loc.x;
+
+				if (loc.y > _self.canvasmousedown.y)
+					_self.workarea.py = _self.canvasmousedown.y;
+				else
+					_self.workarea.py = loc.y;
+
+				if (_self.workarea.px < _self.imagearea.px)
+					_self.workarea.px = _self.imagearea.px;
+				if (_self.workarea.py < _self.imagearea.py)
+					_self.workarea.py = _self.imagearea.py;
+				if (_self.workarea.pw + _self.workarea.px > _self.imagearea.pw
+						+ _self.imagearea.px) {
+					_self.workarea.pw = _self.imagearea.pw + _self.imagearea.px
+							- _self.workarea.px;
+				}
+				if (_self.workarea.ph + _self.workarea.py > _self.imagearea.ph
+						+ _self.imagearea.py) {
+					_self.workarea.ph = _self.imagearea.ph + _self.imagearea.py
+							- _self.workarea.py;
+				}
+				_self.refresh();
+
+			}
+			_self.action = "none";
+		};
+	},
+	refresh : function() {
+
+		if (!this.image)
+			return;
+		this.clearCanvas();
+		this.context.canvas.style.background = "#ffffff";
+		this.context.canvas.style.border = "1px solid #aaa";
+
+		this.drawImage();
+		this.drawMaster();
+		this.drawRectangle();
+
+	},
+
+	initialCanvas : function() {
+
+		this.canvasScale = 1;
+		this.translateOffX = 0;
+		this.translateOffY = 0;
+
+		var px, py, pw, ph;
+		var cheight = this.context.canvas.height - this.len * 2;
+		var cwidth = this.context.canvas.width - this.len * 2;
+		var rate = cheight / this.image.height;
+		if (cwidth / cheight < this.image.width / this.image.height) {
+			rate = cwidth / this.image.width;
+			px = 0;
+			py = (cheight - this.image.height * rate) / 2;
+		} else {
+			px = (cwidth - this.image.width * rate) / 2;
+			py = 0;
+		}
+
+		pw = this.image.width * rate;
+		ph = this.image.height * rate;
+
+		px = px + this.len;
+		py = py + this.len;
+
+		this.rate = rate;
+
+		this.imagearea.px = px;
+		this.imagearea.py = py;
+		this.imagearea.pw = pw;
+		this.imagearea.ph = ph;
+
+		this.workarea.px = px;
+		this.workarea.py = py;
+		this.workarea.pw = pw;
+		this.workarea.ph = ph;
+
+		this.refresh();
+
+	},
+	drawImage : function() {
+
+		this.clearCanvas();
+
+		var a = this.canvasScale, b = 0, c = 0, d = this.canvasScale, e = this.translateOffX, f = this.translateOffY;
+		this.context.setTransform(a, b, c, d, e, f);
+		this.context.drawImage(this.image, this.imagearea.px,
+				this.imagearea.py, this.imagearea.pw, this.imagearea.ph);
+	},
+	drawMaster : function() {
+
+		this.context.setTransform(1, 0, 0, 1, 0, 0);
+
+		this.context.fillStyle = "rgba(0,0,0,0.4)";
+		this.context.beginPath();
+		this.context.rect(0, 0, this.context.canvas.width,
+				this.context.canvas.height);
+		this.context.lineTo(this.workarea.px, this.workarea.py);
+		this.context.lineTo(this.workarea.px, this.workarea.py
+				+ this.workarea.ph);
+		this.context.lineTo(this.workarea.px + this.workarea.pw,
+				this.workarea.py + this.workarea.ph);
+		this.context.lineTo(this.workarea.px + this.workarea.pw,
+				this.workarea.py);
+		this.context.lineTo(this.workarea.px, this.workarea.py);
+		this.context.closePath();
+		this.context.fill();
+
+	},
+	drawRectangle : function() {
+
+		this.context.fillStyle = "blue";
+		this.context.strokeStyle = "blue";
+		this.context.beginPath();
+		this.context.rect(this.workarea.px - this.len, this.workarea.py
+				- this.len, this.len * 2, this.len * 2);
+		this.context.rect(this.workarea.px + this.workarea.pw - this.len,
+				this.workarea.py - this.len, this.len * 2, this.len * 2);
+		this.context.rect(this.workarea.px + this.workarea.pw - this.len,
+				this.workarea.py + this.workarea.ph - this.len, this.len * 2,
+				this.len * 2);
+		this.context.rect(this.workarea.px - this.len, this.workarea.py
+				+ this.workarea.ph - this.len, this.len * 2, this.len * 2);
+		this.context.closePath();
+		this.context.stroke();
+		this.context.fill();
+
+	},
+	getImageDataURL : function() {
+
+		var offscreenCanvas = document.createElement('canvas');
+		offscreenCanvas.width = this.workarea.pw / this.rate;
+		offscreenCanvas.height = this.workarea.ph / this.rate;
+		var offscreenContext = offscreenCanvas.getContext('2d');
+
+		offscreenContext.drawImage(this.image,
+				(this.workarea.px - this.imagearea.px) / this.rate,
+				(this.workarea.py - this.imagearea.py) / this.rate,
+				this.workarea.pw / this.rate, this.workarea.ph / this.rate, 0,
+				0, offscreenCanvas.width, offscreenCanvas.height);
+		var dataUrl = offscreenCanvas.toDataURL("image/jpeg");
+		return dataUrl;
+	}
+
+};
+
+MapClip.prototype.getPointerPosition = function(e) {
+	e = e || getEventObject(e);
+	var x = e.pageX
+			|| (e.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft));
+	var y = e.pageY
+			|| (e.clientY + (document.documentElement.scrollTop || document.body.scrollTop));
+
+	var bbox = this.context.canvas.getBoundingClientRect();
+
+	return {
+		x : (x - (bbox.left + (document.documentElement.scrollLeft || document.body.scrollLeft)))
+				* (this.context.canvas.width / bbox.width),
+		y : (y - (bbox.top + (document.documentElement.scrollTop || document.body.scrollTop)))
+				* (this.context.canvas.height / bbox.height)
+	};
+};

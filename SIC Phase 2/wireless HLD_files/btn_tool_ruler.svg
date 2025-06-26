@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
+    <defs>
+        <style>
+            .cls-1{fill:#5b686d}.cls-2{fill:#2196f3}.cls-3{fill:none}
+        </style>
+    </defs>
+    <g id="btn_tool_ruler" transform="translate(-783 -76)">
+        <g id="scale" transform="rotate(90 388.246 418.914)">
+            <g id="Group_181" data-name="Group 181" transform="translate(50.333)">
+                <g id="Group_180" data-name="Group 180">
+                    <path id="Path_177" d="M57.606.013h-6.612a.661.661 0 0 0-.661.661v19.837a.661.661 0 0 0 .661.661h6.612a.661.661 0 0 0 .661-.661V.674a.661.661 0 0 0-.661-.661zm-.661 19.837h-5.29v-1.984h3.306v-1.322h-3.306V14.56h1.984v-1.323h-1.984v-1.983h3.306V9.931h-3.306V7.948h1.984V6.625h-1.984V4.642h3.306V3.319h-3.306V1.335h5.29z" class="cls-1" data-name="Path 177" transform="translate(-50.333 -.012)"/>
+                    <path id="Path_178" d="M285.592 16.729L283.41 18.9V2.255l2.175 2.175.932-.932-3.306-3.306a.661.661 0 0 0-.932 0L278.973 3.5l.932.932 2.182-2.175V18.9l-2.175-2.175-.932.932 3.306 3.306a.661.661 0 0 0 .932 0l3.306-3.306z" class="cls-2" data-name="Path 178" transform="translate(-268.524)"/>
+                </g>
+            </g>
+        </g>
+        <path id="Rectangle_1018" d="M0 0h28v28H0z" class="cls-3" data-name="Rectangle 1018" transform="translate(783 76)"/>
+    </g>
+</svg>

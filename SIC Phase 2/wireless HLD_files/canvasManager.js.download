@@ -1,0 +1,110 @@
+/**
+ * 
+ */
+
+function FloorInsertOb(obstruction, callback) {
+	doAction(loader.Request.FloorInsertOb, obstruction, function(data) {
+		if (callback != null)
+			callback();
+		refreshWds();
+		changeShowHeatMap();
+	});
+
+	
+}
+
+function FloorInsertAp(ap, callback) {
+	doAction(loader.Request.FloorInsertAp, ap, function(data) {
+		if (!data || !data.success) {
+			return;
+		}
+		global.apCount+=1;
+		global.currentFloor.apCount+=1;
+		if (callback != null)
+			callback(data.data);
+		changeShowHeatMap();
+	});
+
+	
+}
+
+function FloorDeleteOb(obId, obType, obField, callback) {
+
+	var jsondata = {
+		obId : obId
+	};
+	doAction(loader.Request.FloorDeleteOb, jsondata, function(data) {
+
+		if (callback != null)
+			callback();
+		refreshWds();
+		changeShowHeatMap();
+	});
+
+	
+}
+
+function FloorDeleteAp(apId, callback) {
+	var jsondata = {
+		apId: apId
+	};
+	doAction(loader.Request.FloorDeleteAp, jsondata, function(data) {
+		global.apCount -= 1;
+		global.currentFloor.apCount -= 1;
+		if (callback != null)
+			callback(data);
+
+		if (global.currentFloor.apCount)
+			changeShowHeatMap();
+		else
+			changeShowHeatMap('Off');
+	});
+}
+
+function FloorDeleteAt(atId, apId, callback) {
+
+	var jsondata = {
+		atId : atId,
+		apId : apId
+	};
+	doAction(loader.Request.FloorDeleteAt, jsondata, function(data) {
+		changeMenuStatus();
+		if (callback != null)
+			callback(data);
+		refreshWds();
+		changeShowHeatMap();
+
+	});
+	
+}
+
+function FloorUpdateOb(obstruction) {
+	doAction(loader.Request.FloorUpdateOb, obstruction,function(){
+		refreshWds();
+		changeShowHeatMap();
+	});
+	
+}
+
+function FloorUpdateAp(ap, callback) {
+	ap.options = "";
+
+	doAction(loader.Request.FloorUpdateAp, ap, function(data) {
+		if (callback != null)
+			callback();
+		refreshWds();
+		changeShowHeatMap();
+	});
+	
+}
+
+function FloorUpdateAt(at, callback) {
+	at.options = "";
+	doAction(loader.Request.FloorUpdateAt, at, function(data) {
+		if (callback != null)
+			callback();
+		refreshWds();
+		changeShowHeatMap();
+	});
+	
+}
