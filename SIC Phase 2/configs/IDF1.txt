@@ -1,0 +1,88 @@
+enable
+conf t
+hostname IDF1
+no ip routing
+end
+
+
+! configures portfast and BPDU default
+conf t
+spanning-tree portfast default
+spanning-tree portfast bpduguard default
+end
+
+
+! creating vlans
+conf t
+vlan 10
+vlan 20
+vlan 30
+vlan 40
+vlan 50
+vlan 60
+end
+
+
+! Creates SVI
+conf t
+int vlan 10
+ip address 10.10.0.14 255.255.255.0
+shut
+no shut
+ip default-gateway 10.10.0.1
+end
+
+
+! configures LACP on some interfaces
+conf t
+int range g0/0
+channel-group 1 mode active
+int g0/1
+channel-group 2 mode active
+end
+
+
+! disable portfast and BPDU guard
+conf t
+int po1
+	no spanning-tree portfast
+	no spanning-tree bpduguard
+	end
+conf t
+int po2
+	no spanning-tree portfast
+	no spanning-tree bpduguard
+	end
+	
+
+! setting up a trunk
+conf t
+int po1
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,40
+end
+conf t
+int po2
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,40
+end
+
+
+! setting up some access ports
+conf t
+int g0/2
+switchport mode access
+switchport access vlan 30
+int g0/3
+switchport mode access
+switchport access vlan 20
+int g1/0
+switchport mode access
+switchport access vlan 40
+end
+
+
+
+

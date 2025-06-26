@@ -1,0 +1,200 @@
+enable
+conf t
+hostname Nexus2
+ip routing
+end
+
+
+! creating vlans
+conf t
+vlan 10
+vlan 20
+vlan 30
+vlan 40
+vlan 50
+vlan 60
+vlan 70
+end
+
+
+! Creates SVI
+conf t
+int vlan 10
+ip address 10.10.0.3 255.255.255.0
+shut
+no shut
+int vlan 20
+ip address 10.20.0.3 255.255.255.0
+ip helper-address 10.10.0.7
+shut
+no shut
+int vlan 40
+ip address 10.40.0.3 255.255.254.0
+ip helper-address 10.10.0.7
+shut
+no shut
+int vlan 70
+ip address 10.70.0.6 255.255.255.0
+shut
+no shut
+end
+
+
+! loopback address
+conf t
+int loopback 0
+ip address 10.12.0.3 255.255.255.255
+end
+
+
+! normal routed interface
+conf t
+int g3/3
+no switchport
+ip address 10.11.0.5 255.255.255.0
+shut
+no shut
+end
+
+
+! normal routed interface
+conf t
+int g3/2
+no switchport
+ip address 10.11.0.9 255.255.255.0
+shut
+no shut
+end
+
+
+! configures LACP on some interfaces
+conf t
+int range g0/0
+channel-group 2 mode active
+int range g0/1
+channel-group 4 mode active
+int range g0/2
+channel-group 6 mode active
+int range g0/3
+channel-group 8 mode active
+int range g1/0-1
+channel-group 9 mode active
+end
+
+
+! creates trunks
+conf t
+int range po2,po6,po8
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,40
+int po4
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,50,60
+int po9
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,40,50,60,70
+end
+
+
+! sets up HSRP
+conf t
+int vlan 10
+standby version 2
+standby 10 ip 10.10.0.1
+standby 10 priority 90
+! standby 10 preempt
+end
+! sets up HSRP
+conf t
+int vlan 20
+standby version 2
+standby 20 ip 10.20.0.1
+standby 20 priority 90
+end
+! sets up HSRP
+conf t
+int vlan 40
+standby version 2
+standby 40 ip 10.40.0.1
+standby 40 priority 110
+standby 40 preempt
+end
+! sets up HSRP
+conf t
+int vlan 70
+standby version 2
+standby 70 ip 10.70.0.4
+standby 70 priority 110
+standby 70 preempt
+end
+
+
+! sets up OSPF
+conf t
+router ospf 1
+! add multiple network commands to advertise more networks
+network 10.0.0.0 0.255.255.255 area 0
+end
+
+
+conf t
+spanning-tree vlan 40 root primary
+spanning-tree vlan 50 root primary
+spanning-tree vlan 60 root primary
+spanning-tree vlan 70 root primary
+end
+
+
+! setting up a trunk
+conf t
+int g1/2
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 30
+end
+
+! setting up a trunk
+conf t
+int g1/3
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 70
+end
+
+! setting up a trunk
+conf t
+int g2/0
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 50,60
+end
+
+! setting up some access ports
+conf t
+int range g2/1
+switchport mode access
+switchport access vlan 10
+end
+
+! setting up some access ports
+conf t
+int range g2/2
+switchport mode access
+switchport access vlan 10
+end
+
+! setting up a trunk
+conf t
+int g2/3
+switchport trunk encapsulation dot1q
+switchport mode access
+switchport access vlan 10
+end
+
+
+
+
+

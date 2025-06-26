@@ -1,0 +1,35 @@
+enable
+conf t
+hostname TheInternet
+end
+
+! loopback address
+conf t
+int loopback 0
+ip address 8.8.8.8 255.255.255.255
+int loopback 1
+ip address 9.9.9.9 255.255.255.255
+end
+
+! standard routed interface
+conf t
+int g0/3
+ip address 1.0.0.1 255.255.255.252
+no shut
+int g0/2
+ip address 1.0.0.5 255.255.255.252
+shut
+no shut
+end
+
+! creates a static route
+conf t
+ip route 68.136.143.64 255.255.255.252 1.0.0.2
+end
+
+! creates a static route
+conf t
+ip route 152.162.97.180 255.255.255.252 1.0.0.6
+end
+
+write mem

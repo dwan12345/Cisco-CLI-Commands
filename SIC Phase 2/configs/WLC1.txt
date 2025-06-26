@@ -1,0 +1,29 @@
+enable
+conf t
+hostname WLC1
+end
+
+
+! standard routed interface
+conf t
+int g0/0
+ip address 10.10.0.12 255.255.255.0
+shut
+no shut
+end
+
+
+! creates a static route
+conf t
+ip route 0.0.0.0 0.0.0.0 10.10.0.1
+end
+
+
+! sets up HSRP
+conf t
+int g0/0
+standby version 2
+standby 171 ip 10.10.0.11
+standby 171 priority 110
+standby 171 preempt
+end

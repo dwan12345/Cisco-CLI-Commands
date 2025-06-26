@@ -1,0 +1,74 @@
+enable
+conf t
+hostname FSP1
+end
+
+
+! loopback address
+conf t
+int loopback 0
+ip address 10.12.0.4 255.255.255.255
+ip nat inside
+end
+
+
+! standard routed interface
+conf t
+int g0/0
+no shut
+int g0/0.70
+encapsulation dot1q 70
+ip address 10.70.0.2 255.255.255.0
+ip nat outside
+int g0/1
+no shut
+int g0/1.50
+encapsulation dot1q 50
+ip address 10.50.0.2 255.255.255.0
+ip nat inside
+ip helper-address 10.10.0.7
+int g0/1.60
+encapsulation dot1q 60
+ip address 10.60.0.2 255.255.255.0
+ip nat inside
+ip helper-address 10.10.0.7
+end
+
+
+! sets up OSPF
+conf t
+router ospf 1
+! add multiple network commands to advertise more networks
+network 10.0.0.0 0.255.255.255 area 0
+end
+
+
+! sets up HSRP
+conf t
+int g0/0.70
+standby version 2
+standby 71 ip 10.70.0.1
+standby 71 priority 110
+standby 71 preempt
+end
+! sets up HSRP
+conf t
+int g0/1.50
+standby version 2
+standby 50 ip 10.50.0.1
+standby 50 priority 110
+standby 50 preempt
+end
+! sets up HSRP
+conf t
+int g0/1.60
+standby version 2
+standby 60 ip 10.60.0.1
+standby 60 priority 110
+standby 60 preempt
+end
+
+
+
+
+

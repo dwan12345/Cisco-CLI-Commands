@@ -1,0 +1,87 @@
+enable
+conf t
+hostname DHCP1
+end
+
+
+! standard routed interface
+conf t
+int g0/0
+ip address 10.10.0.5 255.255.255.0
+shut
+no shut
+end
+
+
+! creates a static route
+conf t
+ip route 0.0.0.0 0.0.0.0 10.10.0.1
+end
+
+
+! sets up HSRP
+conf t
+int g0/0
+standby version 2
+standby 101 ip 10.10.0.7
+standby 101 priority 110
+standby 101 preempt
+end
+
+
+! reserve from IP addresses from being used in DHCP
+conf t
+ip dhcp excluded-address 10.20.0.0 10.20.0.3
+ip dhcp excluded-address 10.30.0.0 10.30.0.6
+ip dhcp excluded-address 10.40.0.0 10.40.0.3
+ip dhcp excluded-address 10.50.0.0 10.50.0.3
+ip dhcp excluded-address 10.60.0.0 10.60.0.3
+end
+
+
+! makes this router act as dhcp server
+conf t
+service dhcp
+ip dhcp pool CAMPUS_DATA
+	network 10.20.0.0 255.255.255.0
+	dns-server 10.10.0.8
+	domain-name seaicecreamery.com
+	default-router 10.20.0.1
+	lease 0 12 0
+	end
+conf t
+service dhcp
+ip dhcp pool CAMPUS_VOICE
+	network 10.30.0.0 255.255.255.0
+	dns-server 10.10.0.8
+	domain-name seaicecreamery.com
+	default-router 10.30.0.1
+	lease 0 12 0
+	end
+conf t
+service dhcp
+ip dhcp pool WIRELESS
+	network 10.40.0.0 255.255.254.0
+	dns-server 10.10.0.8
+	domain-name seaicecreamery.com
+	default-router 10.40.0.1
+	lease 0 12 0
+	end
+conf t
+service dhcp
+ip dhcp pool FINANCE_DATA
+	network 10.50.0.0 255.255.255.0
+	dns-server 10.10.0.8
+	domain-name seaicecreamery.com
+	default-router 10.50.0.1
+	lease 0 12 0
+	end
+conf t
+service dhcp
+ip dhcp pool FINANCE_VOICE
+	network 10.60.0.0 255.255.255.0
+	dns-server 10.10.0.8
+	domain-name seaicecreamery.com
+	default-router 10.60.0.1
+	lease 0 12 0
+	end

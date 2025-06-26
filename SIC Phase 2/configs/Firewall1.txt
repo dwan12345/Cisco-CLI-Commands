@@ -1,0 +1,109 @@
+enable
+conf t
+hostname Firewall1
+end
+
+
+! loopback address
+conf t
+int loopback 0
+ip address 10.12.0.0 255.255.255.255
+ip nat inside
+end
+
+
+! standard routed interface
+conf t
+int g0/0
+desc TO_COMCAST
+ip address 68.136.143.66 255.255.255.252
+shut
+no shut
+int g0/1
+desc TO_NEXUS1
+ip address 10.11.0.2 255.255.255.252
+shut
+no shut
+int g0/2
+desc TO_NEXUS2
+ip address 10.11.0.10 255.255.255.252
+shut
+no shut
+end
+
+
+! creates BGP neighbor
+conf t
+router bgp 6211
+neighbor 68.136.143.65 remote-as 65000
+neighbor 68.136.143.65 password 7 0961612A542702010202013938
+neighbor 68.136.143.65 soft-reconfiguration inbound
+end
+
+
+! sets up OSPF
+conf t
+router ospf 1
+! add multiple network commands to advertise more networks
+network 10.0.0.0 0.255.255.255 area 0
+end
+
+
+! configures OSPF passive interface
+conf t
+router ospf 1
+passive-int loopback0
+passive-int g0/0
+end
+
+
+! sets the inside and outside interfaces
+conf t
+int range g0/1-2, loopback0
+ip nat inside
+int range g0/0
+ip nat outside
+end
+
+
+! creates ACL
+access-list 1 permit 10.0.0.0 0.255.255.255
+
+
+! configures PAT with an interface
+conf t
+ip nat inside source list 1 int g0/0 overload
+end
+
+
+! configures a prefix list
+conf t
+ip prefix-list FROM_COMCAST seq 1 permit 0.0.0.0/0
+end
+
+
+! creates a route map
+conf t
+route-map FROM_COMCAST permit 1
+match ip address prefix-list FROM_COMCAST
+end
+
+
+! applies a route map
+conf t
+router bgp 6211
+neighbor 68.136.143.65 route-map FROM_COMCAST in
+end
+
+
+! advertise the default route
+conf t
+router ospf 1
+default-info originate
+end
+
+
+
+
+
+

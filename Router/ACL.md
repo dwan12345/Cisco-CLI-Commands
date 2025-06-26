@@ -46,8 +46,10 @@ end
 
 ## Standard Numbered ACL
 ```js
-! 
+! configures ACL
+conf t
 access-list <acl-number> {permit | deny} <source-ip> [wildcard-mask]
+end
 ```
 
 ## Show

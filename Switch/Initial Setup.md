@@ -35,6 +35,7 @@ end
 
 ## SVI
 - Make the VLan first
+- the ip default-gateway is for layer 2 switches only
 ```js
 ! Creates SVI
 conf t
@@ -43,7 +44,7 @@ desc <Management interface name>
 ip address <ip address> <subnet mask>
 shut
 no shut
-ip default-gateway <default gateway of management vlan>
+[ip default-gateway <default gateway of management vlan>]
 end
 ```
 

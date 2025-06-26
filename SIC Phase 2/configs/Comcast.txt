@@ -1,0 +1,49 @@
+enable
+conf t
+hostname Comcast
+end
+
+
+! standard routed interface
+conf t
+int g0/3
+ip address 1.0.0.2 255.255.255.252
+no shut
+int g0/0
+ip address 68.136.143.65 255.255.255.252
+shut
+no shut
+end
+
+
+! creates a static route
+conf t
+no ip route 8.8.8.8 255.255.255.255 1.0.0.1
+ip route 0.0.0.0 0.0.0.0 1.0.0.1
+end
+
+
+! creates BGP neighbor
+conf t
+router bgp 65000
+neighbor 68.136.143.66 remote-as 6211
+neighbor 68.136.143.66 soft-reconfiguration inbound
+end
+
+
+! advertise bgp network
+conf t
+router bgp 65000
+network 0.0.0.0 mask 0.0.0.0
+exit
+no ip route 0.0.0.0 0.0.0.0 null0
+end
+
+
+conf t
+router bgp 65000
+	neighbor 68.136.143.66 password 7 0961612A542702010202013938
+	end
+	
+
+write mem

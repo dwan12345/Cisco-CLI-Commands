@@ -1,0 +1,28 @@
+enable
+conf t
+hostname DNS2
+end
+
+
+! standard routed interface
+conf t
+int g0/0
+ip address 10.10.0.10 255.255.255.0
+shut
+no shut
+end
+
+
+! creates a static route
+conf t
+ip route 0.0.0.0 0.0.0.0 10.10.0.1
+end
+
+
+! sets up HSRP
+conf t
+int g0/0
+standby version 2
+standby 115 ip 10.10.0.8
+standby 115 priority 90
+end

@@ -1,0 +1,49 @@
+enable
+conf t
+hostname CenturyLink
+end
+
+
+! standard routed interface
+conf t
+int g0/3
+ip address 1.0.0.6 255.255.255.252
+no shut
+int g0/0 
+ip address 152.162.97.181 255.255.255.252
+shut
+no shut
+end
+
+
+! creates a static route
+conf t
+no ip route 8.8.8.8 255.255.255.255 1.0.0.5
+ip route 0.0.0.0 0.0.0.0 1.0.0.5
+end
+
+
+! creates BGP neighbor
+conf t
+router bgp 65510
+neighbor 152.162.97.182 remote-as 6214
+neighbor 152.162.97.182 soft-reconfiguration inbound
+end
+
+
+! advertise bgp network
+conf t
+router bgp 65510
+network 0.0.0.0 mask 0.0.0.0
+exit
+no ip route 0.0.0.0 0.0.0.0 null0
+end
+
+
+conf t
+router bgp 65510
+	neighbor 152.162.97.182 password 7 09617E2A5423051D05180D2F39
+	end
+	
+
+write mem

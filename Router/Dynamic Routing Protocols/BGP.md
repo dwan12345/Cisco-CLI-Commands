@@ -8,11 +8,13 @@ end
 
 ## Creates BGP Neighbor
 - soft-reconfig inbound makes it so you do not have to clear ip bgp for reconfigurations to take effect immediately
+- password uses MD5, and it must match on both ends.
 ```js
 ! creates BGP neighbor
 conf t
 router bgp <AS number>
 neighbor <neighbor ip> remote-as <neighbor AS number>
+[neighbor <neighbor ip address> password <your password>]
 neighbor <neighbor ip> soft-reconfiguration inbound
 end
 ```
@@ -38,7 +40,6 @@ router bgp <AS number>
 bgp router-id <router ID>
 end
 ```
-
 
 ## Apply Route Map
 ```js
