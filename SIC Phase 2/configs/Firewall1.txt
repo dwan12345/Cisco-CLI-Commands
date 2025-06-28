@@ -99,11 +99,50 @@ end
 ! advertise the default route
 conf t
 router ospf 1
-default-info originate
+no default-info originate
+end
+
+
+! standard routed interface
+conf t
+int g0/3
+ip address 10.11.0.17 255.255.255.248
+shut
+no shut
+end
+
+
+! sets up HSRP
+conf t
+int g0/3
+standby version 2
+standby 67 ip 10.11.0.19
+standby 67 priority 110
+standby 67 preempt
+end
+
+
+conf t
+ip route 152.162.97.180 255.255.255.252 10.12.0.1
 end
 
 
 
+conf t
+ip sla 1
+	icmp-echo 68.136.143.65
+		frequency 5
+		timeout 2000
+		threshold 1000
+		exit
+ip sla schedule 1 start-time now life forever
+end
+conf t
+track 1 ip sla 1 reachability
+end
 
-
-
+! use floating static routers and IP SLA
+conf t
+ip route 0.0.0.0 0.0.0.0 68.136.143.65 track 1
+ip route 0.0.0.0 0.0.0.0 10.12.0.1 10
+end

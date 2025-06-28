@@ -106,7 +106,47 @@ default-info originate
 end
 
 
+! standard routed interface
+conf t
+int g0/3
+ip address 10.11.0.18 255.255.255.248
+shut
+no shut
+end
 
 
+! sets up HSRP
+conf t
+int g0/3
+standby version 2
+standby 67 ip 10.11.0.19
+standby 67 priority 90
+end
+
+
+conf t
+ip route 68.136.143.64 255.255.255.252 10.12.0.0
+end
+
+
+
+conf t
+ip sla 1
+	icmp-echo 68.136.143.65
+		frequency 5
+		timeout 2000
+		threshold 1000
+		exit
+ip sla schedule 1 start-time now life forever
+end
+conf t
+track 1 ip sla 1 reachability
+end
+
+! use floating static routers and IP SLA
+conf t
+ip route 0.0.0.0 0.0.0.0 10.12.0.0 track 1
+ip route 0.0.0.0 0.0.0.0 152.162.97.181 10
+end
 
 

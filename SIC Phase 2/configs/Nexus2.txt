@@ -51,7 +51,7 @@ end
 conf t
 int g3/3
 no switchport
-ip address 10.11.0.5 255.255.255.0
+ip address 10.11.0.5 255.255.255.252
 shut
 no shut
 end
@@ -61,7 +61,7 @@ end
 conf t
 int g3/2
 no switchport
-ip address 10.11.0.9 255.255.255.0
+ip address 10.11.0.9 255.255.255.252
 shut
 no shut
 end
@@ -153,8 +153,9 @@ conf t
 int g1/2
 switchport trunk encapsulation dot1q
 switchport mode trunk
-switchport trunk allowed vlan 30
+switchport trunk allowed vlan 30/70
 end
+
 
 ! setting up a trunk
 conf t
@@ -195,6 +196,8 @@ switchport access vlan 10
 end
 
 
-
+conf t
+ip route 0.0.0.0 0.0.0.0 10.11.0.19
+end
 
 

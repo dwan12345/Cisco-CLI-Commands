@@ -31,8 +31,8 @@ Note: Each ISP has been asked to only share a default route
 4. How does the voice data from the financial department move through the network? Is it supposed to reach the voice gateway? Or does it get processed by the FSP?  It is routed from its default gateway on the FSP to the appropriate voice gateway.
 5. What is the domain name of your company. @seaicecreamery.com
 
-6. Does your company have an established naming scheme for your network devices?
-7. 
+6. Does your company have an established naming scheme for your network devices? nope
+7. Do you guys plan to use the edge firewalls in an active/active or active/passive setup.
 
 
 
@@ -44,7 +44,7 @@ Note: Each ISP has been asked to only share a default route
 - I have my wireless vlan and my mangement vlan, from which vlan should my APs get their ip addresses from? wireless vlan
 - So I created a floor plan in ezWifiPlanner, added the obstables, used a similar strengthed ECW AP to my cisco AP to have it automatically place the APs. Is there anything else that should be on the wireless HLD?
 - 
-- what do I do for DNS?
+- what do I do for DNS? not actually any function
 - 
 - 
 - 

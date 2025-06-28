@@ -32,4 +32,31 @@ conf t
 ip route 152.162.97.180 255.255.255.252 1.0.0.6
 end
 
-write mem
+
+
+
+
+
+! configures ACL
+conf t
+access-list 1 deny 68.136.143.64 0.0.0.3
+access-list 1 permit any
+end
+
+! apply ACL to a port
+conf t
+int g0/2
+ip access-group 1 out
+end
+
+
+conf t
+access-list 2 deny 152.162.97.180 0.0.0.3
+access-list 2 permit any
+end
+! apply ACL to a port
+conf t
+int g0/3
+ip access-group 2 out
+end
+

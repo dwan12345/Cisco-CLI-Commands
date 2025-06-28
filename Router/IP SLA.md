@@ -1,19 +1,4 @@
 - monitors the network by constantly simulating traffic, such as pings
-
-conf t
-ip sla 1
-icmp-echo 8.8.8.8
-timeout 2000
-threshold 500
-frequency 5
-exit
-ip sla schedule 1 start-time now life forever
-track 1 ip sla 1 reachability
-no ip route 0.0.0.0 0.0.0.0 76.113.49.1
-ip route 0.0.0.0 0.0.0.0 76.113.49.1 track 1
-ip route 0.0.0.0 0.0.0.0 91.33.56.1 10 
-
-
 ## Set Up IP SLA
 - frequency (5) is how often to send out pings, timeout (2000) is timeout, threshold (500) is if exceed -> triggers reaction even.
 ```js
@@ -40,9 +25,11 @@ end
 
 ## Automatic Static Route Failover
 ```js
+! use floating static routers and IP SLA
 conf t
 ip route 0.0.0.0 0.0.0.0 <main gateway> track 1
 ip route 0.0.0.0 0.0.0.0 <backup gateway> 10
+end
 ```
 
 

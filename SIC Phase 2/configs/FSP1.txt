@@ -69,6 +69,26 @@ standby 60 preempt
 end
 
 
+! define an extended ACL
+conf t
+ip access-list extended NO_NINES
+end
+
+! add rules to extended ACL
+conf t
+ip access-list extended NO_NINES
+deny ip 10.50.0.0 0.255.255.255 9.9.9.9 0.0.0.0
+deny ip 10.60.0.0 0.255.255.255 9.9.9.9 0.0.0.0
+permit ip any any 
+end
+
+! apply ACL to a port
+conf t
+int g0/0.70
+ip access-group NO_NINES out
+end
 
 
-
+conf t
+ip route 0.0.0.0 0.0.0.0 10.70.0.4
+end

@@ -151,7 +151,7 @@ conf t
 int g1/2
 switchport trunk encapsulation dot1q
 switchport mode trunk
-switchport trunk allowed vlan 30
+switchport trunk allowed vlan 30,70
 end
 
 ! setting up a trunk
@@ -193,7 +193,9 @@ switchport access vlan 10
 end
 
 
-
+conf t
+ip route 0.0.0.0 0.0.0.0 10.11.0.19
+end
 
 
 

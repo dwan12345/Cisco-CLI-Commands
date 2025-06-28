@@ -1,0 +1,55 @@
+enable
+conf t
+hostname Voice2
+end
+
+! loopback address
+conf t
+int loopback 0
+ip address 10.12.0.6 255.255.255.255
+end
+
+
+! creates a static route
+conf t
+ip route 0.0.0.0 0.0.0.0 10.70.0.4
+end
+
+
+! sets up router on a stick
+conf t
+int g1
+no ip address
+shut
+no shut
+! repeat next section for however many subinterfaces
+int g1.30
+encapsulation dot1q 30
+ip address 10.30.0.3 255.255.255.0
+ip helper-address 10.10.0.7
+shut
+no shut
+int g1.70
+encapsulation dot1q 70
+ip address 10.70.0.8 255.255.255.0
+shut
+no shut
+! end of section
+end
+
+
+! sets up HSRP
+conf t
+int g1.30
+standby version 2
+standby 30 ip 10.30.0.1
+standby 30 priority 90
+end
+
+
+! sets up OSPF
+conf t
+router ospf 1
+! add multiple network commands to advertise more networks
+network 10.0.0.0 0.255.255.255 area 0
+end
