@@ -32,7 +32,9 @@ Note: Each ISP has been asked to only share a default route
 5. What is the domain name of your company. @seaicecreamery.com
 
 6. Does your company have an established naming scheme for your network devices? nope
-7. Do you guys plan to use the edge firewalls in an active/active or active/passive setup.
+7. Do you guys plan to use the edge firewalls in an active/active or active/passive setup. up to me
+
+8. Do you guys plan to have a guest network?
 
 
 
