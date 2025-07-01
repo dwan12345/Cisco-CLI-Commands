@@ -1,0 +1,2 @@
+- Band steering: steers clients to use 5g and 6g. Steers more people to use 5g and 6g which is less congested, which improves wifi speed anjd reduces interference.
+- To steer them: may slow down 2.4 response times, stop responding to 2.4, weaken 2.4 signal strength.
