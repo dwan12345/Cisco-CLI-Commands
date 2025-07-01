@@ -9,6 +9,13 @@
 8. There are many redundancy considerations in this design: the network services are configured in HA pairs, there are 2 distribution layer switches configured with HSRP, there are 2 edge firewalls configured in a HA pair, port channels are used to add extra redundancy.
 9. The edge firewalls will use bgp to connect to the ISPs. For automatic failover, link and path monitoring should be configured.
 
+# Access Switches
+- Disable unused services: cdp, 
+- DHCP snooping: rate limit dhcp discover messages, prevent unathorized dhcp releases, have untrusted ports where DHCP server messages are dropped: on downlink ports.
+- Dynamic ARP inspection: dhcp binding table has info about mac, ip, and source port. untrusted ports are ports that connect to downlink. When ARP is received, it checks it against the dhcp binding table, if the info is inconsistent, the traffic is dropped. Prevents ARP poisoning.
+# Wireless
+- WPA2 enterprise - provides the encryption and authenticates from a RADIUS server, the RADIUS then checks with AD. cisco ISE is a RADIUS server.
+
 # Why Voice Gateway
 - Key purpose: There is the public switched telephone network and the regular internet network. They use completely different protocols/technologies to communicate. Voice Gateways bridges the two networks, allowing voice traffic to flow seamlessly across the two networks.
 
@@ -27,7 +34,7 @@
 - Specific questions regarding the edge firewalls should be directed to the firewall team since I am not aware of the specific security posture of Sea Ice Creamery.
 
 # Wireless Deflection
-- Specific implementations and configurations of the wireless topology will be explored in the next part of the project.
+- Specific implementations and configurations of the wireless topology will be explored in the next phase of the project.
 
 # General Deflection
 - That is a great question, I can get back to you on that after this presentation.
