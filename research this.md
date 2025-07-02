@@ -1,4 +1,11 @@
-- IPSLA: monitor something past ISP
 - VXLan
-- BFD: use instead of IPSLA (bidirectional forwarding detection)
-- 
+- vwire
+- AWS
+- load balancing in AWS
+- fire power
+- fortigate and palo alto: bump in the wire, sniffer mode
+- Point of Presense (PoP)
+- peering agreement, maybe for ISPs and large companies in particular
+- EAP chaining for cisco ISE
+- Viptella
+- 802.1x protocol

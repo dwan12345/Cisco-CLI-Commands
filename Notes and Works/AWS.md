@@ -1,0 +1,8 @@
+- VPC (virtual private cloud) - Your own private network. Encompasses everything else.
+- EC2 (Elastic Compute Cloud) - essentially a server. Configure with desired OS, CPU, memory, storage, etc. 
+	- Use cases: web hosting, training AI models, analyzing large amount of data, ran complex simulations.
+	- EBS(Elastic Block Store) - persistent storage for your EC2
+- S3 (Simple Storage Service) - storage device. Used like a hard drive.
+- ELB (Elastic Load Balancing) - distributes incoming traffic to multiple EC2s.
+- IAM (Identity and Access Management) - have users, groups, roles like in AD. Configured with specific permissions to the AWS account.
+- 
