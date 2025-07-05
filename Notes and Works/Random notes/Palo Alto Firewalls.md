@@ -1,6 +1,19 @@
 - Panorama - a device that you buy to centrally manage multiple firewalls. Recommended for 6+ firewalls.
 
 
+# Management Profile
+- Applied to interfaces. Used to permit network services on that interfaces, such as HTTPS, SSH, Ping. 
+- Network -> Network Profiles -> Interface Mgmt
+- A firewall should never be able to be managed from an untrusted port, this increases attack surface. The standard way of remote management is to use a VPN into the private subnet.
+
+# Admin Roles
+- Define a role that is applied to an administrator (some user account). Choose specifically which part of the GUI the role can access.
+- Device -> Admin Roles
+
+# Address Objects and Groups
+- 
+
+
 # Layer 3
 - Security policy - a set of rules with corresponding actions. Traffic is matched with first rule, then action is taken on that traffic. If no matches, implicit deny. The action can be block, allow, log this traffic, use threat prevention
 - Zones - group of interfaces that share a common security policy, can be virtual interfaces. Example zones: DMZ, Untrust, Trust, Wireless. interfaces must belong to a zone
