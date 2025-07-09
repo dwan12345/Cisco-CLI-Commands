@@ -5,8 +5,7 @@
 - enabled by default
 
 ## DTP Configs
-- desirable active tries to form a trunk, it will form trunk with trunk, dynamic desirable, auto
-- auto mode is more passive, it only form trunk with trunk or dynamic desirable
+- Trunk port and desirable port will actively send out DTP frames to form trunk. Auto mode does not, but it will accept the DTP frames. Access mode does not accept the frames.
 ```js
 ! set the DTP mode
 conf t 

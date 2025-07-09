@@ -16,6 +16,18 @@
 	- learning (15s) - blocked, but populating max table
 	- forward  - normal forwarding state
 
+# RSTP
+- Multiple Spanning Tree (MSTP) and Rapid PVST+
+- Nominates root bridge, root ports, etc the same way as STP
+- The only port states are Discarding, Learning, and Forwarding. 
+- When a switch's port goes down, it immediately sends out BPDU and Topology Change (TC) bit set. The switch flushes its MAC address table and any switch receiving the TC BPDU flushes their table as well.
+- If a switch misses 3 Hello Packets, it assumes the link is down and initiates convergence. Instead of about 20 seconds, it takes 6 seconds to initiate convergence
+- Alternate Port: new port role. If the root port goes down, the alternate port immediately becomes root port. 
+- Link types:
+	- edge: to end host. Same thing as portfast. Does not go through the port states process
+	- point to point: from switch to switch
+	- Shared: only for links connected to hubs
+
 ## Configure STP Priority
 - change primary to secondary to configure secondary root bridge
 - Can do STP load balancing by configuring different root bridges for the vlans
@@ -57,6 +69,17 @@ int <interface>
 	end
 ```
 
+
+# BPDU Filter
+- Prevents a port from sending BPDUs. The port will also ignore nay BPDUs
+- Generally avoided because it turns on STP on that port, meaning it can cause loops.
+```js
+!
+conf t
+int <interface>
+	spanning-tree bpdufilter enable
+	end
+```
 
 ## Root Guard
 - if switch received superior BPDU on an int, the switch will not accept the new switch as the root switch and disables the interface

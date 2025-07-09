@@ -1,5 +1,4 @@
 - VXLan
-- vwire
 - AWS
 - load balancing in AWS
 - fire power
@@ -10,3 +9,4 @@
 - Viptella
 - 802.1x protocol
 - stateless and stateful firewall
+- f5 load balancer: LTM, GTM, SSL offloading, 

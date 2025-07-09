@@ -1,3 +1,6 @@
+- accurate time is for accurate logs for troubleshooting
+- a
+
 
 ## Get Info From Another NTP Server
 - Can specify multiple in case one goes down. The router will use the most reliable server
@@ -28,10 +31,23 @@ clock set <hh:mm:ss> <day of month> <month> <year>
 calendar set <hh:mm:ss> <day of month> <month> <year>
 ```
 
-## Update Hardware Clock to Software Clock
+## Update the Software Clock to/from Hardware Clock
+- clock update-calendar: update hardware clock from software clock
+- clock read-calendar: update software clock from hardware clock
 ```js
 clock update-calendar
+clock read-calendar
 ```
+
+## Sync Hardware Clock with NTP
+```js
+!
+conf t
+ntp update-calendar
+end
+```
+
+
 ## Show
 ```js
 show clock

@@ -67,21 +67,26 @@
 - When setting up the v-wire, check mark Link State Pass through. Basically, if one side goes down, the firewall will force the other side to go down. Avoids unexpected behavior and blackholes.
 - If there are subinterfaces on v-wires, you need to connect the parent interfaces and the subinterfaces.
 
-
-
-
-
-
-
-
-
-
-
 # Security Policies
+- Policies -> Security
 - A set of rules with corresponding actions. First rule to be matched triggers the action. Implicit deny at the end. 
 - Rules can be: source zone, source IP, destination zone, destination IP, App-ID, TCP and UDP ports, URL category (games, malware, gambling, etc).
 - Actions: allow. deny (drop traffic, but sends no response to the client). Drop (block traffic and sends TCP reset to the client).
 - There are 2 default security policies: allow same zone to same zone traffic, deny different zone traffic. Meaning you must explicitly allow traffic for users to have internet.
+- Within service and URL category, you can select the "application-default". This means that the traffic is allowed if the service is using the expected/default port. 
+- Source address can be a region instead, so you can block all traffic from Africa for example.
+
+# Virtual Router
+- Network -> Virtual Routers
+- Assign some interfaces to virtual router. Each virtual router maintains its own routing table. They do not share routing info with each other.
+- Traffic between virtual routers must be explicitly allowed via static routes, PBF
+- Used primarily for network segmentation: guest and internal, different customers, different departments. 
+- Can make it easier to troubleshoot. Can hide info such as OSPF advertisements
+
+# NAT
+- 
+
+
 
 
 # Layer 3

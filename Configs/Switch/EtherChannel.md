@@ -1,5 +1,6 @@
 ## LACP
 - Link Aggregation Control Protocol
+- Open standard, and the industry standard
 ```js
 ! configures LACP on some interfaces
 conf t

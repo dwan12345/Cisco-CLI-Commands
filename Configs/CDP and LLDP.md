@@ -1,0 +1,33 @@
+# CDP
+- Cisco proprietary
+- enabled by default
+- should be disabled for security reasons
+- Default send out CDP packet every 60 seconds
+- show cdp neighbors
+	- Device ID: hostname
+	- Local Interface: the interface connected to the CDP neighbor
+	- Hold time: resets to 180 when received CDP packet. Removes CDP entry when 0.
+	- Capability: B->Source Root Bridge, R->Router, S->Switch.
+	- Platform: the model of the neighbor device
+	- Port ID: the interface on the neighbor device
+- show cdp neighbors detail
+	- shows IOS version
+	- Native VLAN
+	- IP address of neighbor interface
+	- a bunch of other info
+
+# LLDP
+- industry standard and open source
+- disabled by default
+- Messages sent every 30 seconds
+- Holdtime of 120 seconds
+- lldp run
+	- to enable in global conf mode
+- lldp transmit
+	- done in interface conf mode, starts transmitting lldp packets
+- lldp receive
+	- done in interface conf mode, can receive lldp packets
+- show lldp neighbors
+	- same thing as show cdp neighbors, except B->switch instead of S->switch
+- show lldp neighbors detail
+	- same thing as show cdp neighbors detail

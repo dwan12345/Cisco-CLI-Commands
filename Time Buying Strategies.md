@@ -1,0 +1,5 @@
+- That is a great question
+- Clarifying questions: double edged sword, can backfire if the guy is technical
+- Is that something you are deploying or struggling with?: shows interviewer that I am trying to help or engage
+- Can you repeat the question: really bad one
+- 

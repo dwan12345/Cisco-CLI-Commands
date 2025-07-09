@@ -6,13 +6,8 @@ I had significant experience configuring and managing core network services incl
 On the **Microsoft side**, I regularly managed DNS records, and Active Directory objects, including user accounts, and group policies. I also configured and maintained NTP services on our domain controllers, ensuring accurate time synchronization across the network, which is vital for Kerberos authentication and overall system integrity.
 
 # SIC
-I have direct experience designing highly redundant networks for critical environments, most notably for a client's corporate headquarters
+I have direct experience designing highly redundant networks for a client's head quarters. It was a 2 tier design to reduce costs. Special considerations were made to ensure that there were no single point of failure. To ensure this, I used protocols such as HSRP, etherchannel, and palo alto HA. Of course I also had to take into account the specific needs of the client, such as having edge firewalls, their existing network appliances, and confining their finance department. The network used Palo Alto Edge firewalls, so I used a virtual router for the finance department to isolate their subnet. 
 
-My approach always begins with understanding the client's **tolerance for downtime and their specific traffic profiles**. For this HQ project, the client required near 100% uptime, which dictated a **full meshed redundancy strategy** at the core and distribution layers, including redundant switching hardware, dual power supplies, and diverse fiber paths. 
-
-Throughout the design phase, I'm always reviewing the **bill of materials to stay within budget**, often presenting trade-offs between different vendor solutions and performance tiers to the client. I worked closely with their IT team to ensure the proposed design would **integrate smoothly with their existing IP schema, security appliances, and application servers**, preventing any compatibility issues. 
-
-For example, their finance department required specific parameters to ensure security. I designed a dedicated network segment (VLAN) for their systems and implemented specific routing policies on our core network devices. This ensured that all traffic originating from that VLAN was forced through their finance proxy server, which allowed us to configure more granular security policies.
 
 
 # AWS

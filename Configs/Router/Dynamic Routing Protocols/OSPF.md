@@ -8,9 +8,10 @@
 - Election of DR and BRD is based on:
 	- Priority: higher wins. Default is 1. Set priority to 0 to make sure this router is not DR
 	- Router ID: higher wins.
+- Link State Advertisement(LSA) - contains info about router ID, destination network address, cost. It is flooded until all routers have the same Link State Database (LSDB)
 - LSA types:
 	- Type 1: router LSA. contains info about directly connected routes. It is a self description. every router creates one and floods it to the area
-	- Type 2: network LSA. Only from DR. Floods to area. It describes the network. This simplifies the LSDB and SPF algorithm.
+	- Type 2: network LSA. Only from DR. Floods to area. When multiple routers are connected to a switch, they have a DR, BDR, and DROthers. The DR generates the type 2 LSA (which describes just this network subnet) and floods it. 
 	- Type 3: Summary LSA or inter-area LSA. Floods an entire area, a type 3 LSA from area 0 would flood area 1. Only from ABRs. Summarizes the area by advertising the network prefixes so that LSDBs in other areas are smaller.
 	- Type 4: ASBR summary LSA. Tells routers where the ASBR is.
 	- Type 5: external LSA. From ASBRs. For advertising prefixes from other routing protocols. Floods through area. 
@@ -20,7 +21,9 @@
 	- Totally stubby area: cisco proprietary, more restrictive than stub area. Type 3, 4, 5 LSAs are blocked. Default route to ABR is injected.
 	- Not so stubby area (NSSA): a stub area that is then connected to another AS that is running another routing protocol. The routers will use type 7 LSA to get the external routes to the other areas.
 	- Totally NSSA: ????
-
+- Neighbor: are part of the same subnet (connected to the same LAN) but not necessarily exchanging LSAs directly.
+- Adjacent Neighbor: usually the DR and BDR. Full Adjacency, and are active exchanging LSAs
+- For neighborship to form: MTU on interface must match, hello and dead timers must match, and other obvious ones.
 
 
 ## Basic Setup
@@ -96,13 +99,23 @@ end
 ```
 
 ## Configure OSPF Priority
-- Done in interface config mod for some reason
+- Priority for electing the DR and BDR within the subnet that the interface resides in
 ```js
 ! configure the OSPF priority
 conf t
 int <interface>
 	ip ospf priority <0-255>
 	end
+```
+
+## Configure Password
+```js
+! configure plain text password
+conf t
+int <interface>
+ip ospf authentication
+ip ospf authentication-key <plain text pw>
+end
 ```
 
 ## Show

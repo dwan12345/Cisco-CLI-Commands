@@ -1,4 +1,7 @@
 - The first 64 bits are network address, the last 64 bits are host address
+	- Global routing prefix: the first 48 bits. Assigned by the ISP, like a public internet address. 
+	- Subnet Identifier: the last 16 bits of the network address. Used by enterprises for subnetting.
+	- Interface identifier: the last 64 bits. For the hosts. 
 - EUI64 (Extended Unique Identifier): convert 48 bit mac address to 64 bit interface ID. This 64 bit ID is then used for the host port of the ipv6 address
 	- To create: insert FFFE right in the middle of the mac address, then invert the seventh bit
 		- mac address: 1234 5678 90AB converts to EUI64: 1034 56FF FE78 90AB
