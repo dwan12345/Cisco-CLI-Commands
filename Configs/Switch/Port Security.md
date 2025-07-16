@@ -1,9 +1,10 @@
 
 ## Configure Port Security
+- Port security can only be enabled when a port is manually assigned access or trunk port status
 - maximum: how many different MAC addresses are allowed
 - violation: choose the violation mode
-	- protect: drop bad frames, does not disable port, creates syslog message
-	- restrict: drop bad frames, does not disable port, creates syslog message
+	- protect: drop unauthorized traffic, does not disable port, does not generate syslog message. increments violation counter by 1
+	- restrict: drop unauthorized traffic, does not disable port, creates syslog message
 	- shutdown: default, port is disabled, creates syslog message.
 - mac-address: statically specify the mac address
 - mac-address sticky: the first mac address learned is now added to the running config, meaning it essentially becomes a statically configured mac address. Since it is only added to running config, must save the config for it to save. 

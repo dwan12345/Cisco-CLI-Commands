@@ -1,0 +1,17 @@
+- Manage devices - devices being managed such as routers and switches. Tells the NMS of events on managed devices, such as port going down.
+- Network Management Station (NMS) - the device that does the managing, the SNMP server. Can ask managed devices about their status, such as their CPU usage. Change configs of managed devices
+- SNMP Manager - the software that runs on NMS
+- SNMP Application - the GUI interface used by network administrators
+- SNMP Agent - the software on the managed devices
+- Management Info Base (MIB) - contains the variables that is managed by SNMP. 
+	- Object ID - the identifier for each variable managed by SNMP
+	- Example variables: interface status, traffic throughput, CPU usage, temperature
+- Versions:
+	- SNMPv1 - the original. Has password/community string
+	- SNMPv2c - allows NMS to get a lot of info from a single request for efficiency. Has password/community string
+	- SNMPv3 - has encryption and authentication. Should be using this.
+- Message class:
+	- Read - sent by NMS to get info from managed devices. Message type: Get, GetNext, Set.
+	- Write - sent by NMS to change config on managed device. Message type: set
+	- Notification - send by managed devices to alert NMS of events. Message type: trap, inform
+	- Response - sent by managed devices in response to previous messages/requests from NMS. Message type: response
