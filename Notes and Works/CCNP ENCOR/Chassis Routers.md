@@ -1,0 +1,7 @@
+- modular routers where you add whatever modules that suits your needs.
+- Line Cards - the modules that provide network interfaces
+- Router Switch Processor (RSP) - the modules that provide the processing power. management interfaces and console ports are here. also called supervisor card
+	- also called supervisor card or supervisor engine
+- fan trays
+- power modules
+- backplane - the circuitry in the chassis that allows the different modules to communicate. this part is not FRU

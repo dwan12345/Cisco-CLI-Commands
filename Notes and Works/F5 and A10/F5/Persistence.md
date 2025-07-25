@@ -1,0 +1,7 @@
+- for applications that are stateful, you may want clients to access the same server for every request. Thus, persistence
+- when a client hits the F5 initially, the F5 creates a persistence record which will help the F5 direct the client's traffic to the same server
+	- persistence record can be the source IP, session ID, or cookie
+	- using the source IP can be bad because of PAT, many clients will use the same source IP, causing all of them to hit a single server
+- this is applied using a persistence profile
+- local traffic -> virtual servers -> *click on your VS* -> resources -> default persistence profile
+- 

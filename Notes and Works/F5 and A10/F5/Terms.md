@@ -1,0 +1,74 @@
+- Application Delivery Controller (ADC) - sits between user and server. Optimizes delivery of applications to users. Performs smarter actions than traditional load balancers, such as WAF, caching, SSL offloading.
+- BIG-IP - a platform where different software/licenses can be used based on your needs. Some of them include LTM, ASM, GTM, etc. This can be a physical device, but can also be virtualized and run in like VMWARE
+- Traffic Management OS (TMOS) - the proprietary OS used by all BIP-IP things developed by F5
+- Local Traffic Manager (LTM) - most widely used BIG-IP. intelligently manage and optimize the flow of network traffic to and from servers and users.
+	- load balancing - self explanatory
+	- health monitors - actively monitors health of servers to not send to dead servers.
+	- failover - LTM devices can be configured in HA pair.
+	- SSL/TSL offloading - encrypting and decrypting SSL can be CPU intensive, so the LTM does this instead of the servers, then it just sends plain text to the server.
+	- HTTP optimization - can compress and cache traffic
+	- TCP optimization - reuse existing server side connections for multiple client requests (connection pool). Reduces overhead of creating a new connection.
+	- Network firewall - provides basic network layer protection
+	- SSL/TSL management - centralizes SSL certificate management 
+	- rate limiting - self explanatory
+	- iRules - implement security policies
+- Global Traffic Manager (GTM) - also known as BIG-IP DNS. provides DNS services at a global level. It routes user traffic to different data centers, regions, hybrid environments, cloud, etc. Where LTM is load balancing locally, this manages traffic globally.
+- Advanced WAF - protect applications from a wide range of application layer attacks, such as SQL injection, XSS, etc. Also has DLP. sits between the LTM and the servers
+- Access Policy Manager (APM) - secure and context aware access management.
+- Advanced Firewall Manager (AFM) - layer 3 and 4 firewall. Stateful firewall.
+- iRules - a script that controls how BIG-IP processes traffic. 
+	- Custom load balancing: maybe send users from this geographic location to a specific pool of servers.
+	- content rewriting: rewriting URLs on the fly, injecting custom headers.
+	- advanced security: custom blocking rules not covered by WAF, throttling connections from suspicious IPs
+	- perform redirects
+	- Troubleshooting and logging: add custom logging to troubleshoot. inject debug headers into responses.
+	- integrating with external systems: make API calls from iRules
+- F5 OneConnect - LTMs operate as a full proxy, meaning that it maintains 2 independent connections, 1 to the client, 1 to the server. 
+	- Problem to solve: a new TCP connection needs to be established for each distinct request. this is processor intensive. By default, the load balancer will send all client requests to a specific server instead of spreading it out.
+	- Solution: have a reuse pool of idle TCP connections that the LTM will use, so new TCP connections do not need to be established. Now the load balancer can spread out the user requests to many servers.
+- Pool - logical grouping of multiple servers. What the F5 will be load balancing across.
+- Node - the actual server. Needs to have a physical or virtual IP address. Can only be used when added to a pool
+- Static load balancing - load balancing without taking into account the load on the servers. Example is round robin.
+- dynamic load balancing - load balancing but take into account the load of the servers. Keeps track of the servers' active connections, CPU utilization, memory usage, bandwidth utilization, etc. 
+	- Least connections (LC) - sends to server with the least active connections
+	- Weight least connections (WLC) - different servers have different processing powers, so assign a different weight to each server.
+	- Fastest Response Time (Fasted) - send to server with fasted response time
+	- Observed (Member/Node) - counts the number of active L4 connections, then compare it to the average of the other members over time. assigns the weight based on that.
+	- Predictive (Member/Node) - counts the number of active L4 connections, compares it to the previous number of active L4 connections and the connections over time. If the number of connections are decreasing, it means the servers performance is getting better, also it will receive higher weight in load balancing.
+	- Dynamic ratio (Member/Node) - like weighted round robin, but weights are changed by external agents like SNMP server based on CPU usage, memory, etc.
+- Profiles - template of settings/parameters that can be applied to pools, servers, clients, etc. Makes configuration more efficient and easier to understand. An object can have multiple profiles, for example a server can have an HTTP, SSL, TCP profile
+	- TCP Profile
+	- UDP profile
+	- HTTP profile
+	- Client SSL profile
+	- server SSL profile
+	- oneconnect profile
+	- persistence profile: ensure that a client's multiple connections are served by the same backend server. Important for stateful applications
+	- health monitor profile
+- Priority Group - assigned within a pool, assign some nodes to be in a higher priority group. The load balancer will only forward to the highest priority group until a Priority group activation is triggered. higher priority group number is prioritized
+	- priority group activation - say there are 3 servers in priority group 1. We say if there is 1 or less healthy server in this priority group, then start using priority group 2
+	- provides controlled failover
+	- you can have backup cloud resources that are only used when on-prem resources are exhausted 
+- SSL offloading - the F5 handles SSL/TSL process instead of the servers.
+	- SSL Process:
+		1. key exchange. Asymmetric keys used to exchange symmetric keys. 
+		2. Server proves it legit using a TSL certificate
+		3. Now all traffic must be encrypted and decrypted using the symmetric keys
+	- SSL process is CPU intensive, so we do not have servers handling it
+	- Server must provide the a valid certificate. If we have 100s of servers, then this is horrific. So better to have the load balancer do it with only 1 certificate
+	- enhances scalability
+- Virtual Server (VS) - the entry point for client connections. Must have a VIP and port for which it listens for traffic
+	1. client makes request. They resolve our name to get the VIP of our VS.
+	2. VS receives the traffic, then applies profiles, iRules, polices
+		- SSL offloading profile
+		- other profiles such as TCP, HTTP, persistence, oneconnect, etc.
+		- security policies from WAF and AFM
+		- iRules applied
+	3. load balance traffic to pool
+	4. respond back to client
+- Secure NAT (SNAT) - when the F5 sends its traffic to the server, the traffic will have a source IP of the SNAT IP, this will make the server respond back to the SNAT IP. Now the F5 can respond back to the client. This prevents the server from responding directly to the client using its default gateway, otherwise the TCP connection will break because the client sees a different IP responding, and otherwise it is insecure.
+- X-Forward-For (XFF) - when load balancers are in between the client and the server, it can be hard to keep track of the session based on the IP and to accurately log, because the server will see the load balancer's IP as the source IP. 
+	- XFF is a header inserted into the HTTP request by the load balancer, it contains the client's original IP and the intermediary proxies the traffic passed through.
+	- this is set within the HTTP profile settings, the setting is called: Insert XForward For
+- Device Group - logical group of F5s to sync configs, and work together. used for syncing configs and for HA clustering. 
+- Traffic Group - a portable container of network addresses and configurations that allows us to have a floating IP address, like a VIP in a FHRP.
