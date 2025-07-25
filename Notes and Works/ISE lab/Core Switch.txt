@@ -1,0 +1,52 @@
+hostname CORE-SW
+
+!
+
+interface GigabitEthernet0/0
+
+ no switchport
+
+ ip address 172.18.101.2 255.255.255.252
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet0/1
+
+ no switchport
+
+ ip address 10.16.242.10 255.255.255.0
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet0/2
+
+ switchport trunk allowed vlan 110
+
+ switchport trunk encapsulation dot1q
+
+ switchport mode trunk
+
+ negotiation auto
+
+!
+
+interface Vlan110
+
+ ip address 172.17.110.1 255.255.255.0
+ no shut
+
+!
+
+ip route 0.0.0.0 0.0.0.0 172.18.101.1
+
+ip route 10.0.0.0 255.0.0.0 10.16.242.1
+
+ip route 172.16.0.0 255.255.0.0 172.17.110.2
+
+ip route 172.17.0.0 255.255.0.0 172.17.110.2
+
+!

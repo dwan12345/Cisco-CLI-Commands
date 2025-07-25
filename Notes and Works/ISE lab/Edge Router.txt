@@ -1,0 +1,53 @@
+## EDGERTR Config
+
+ 
+
+hostname EDGERTR
+
+ 
+
+interface GigabitEthernet0/0
+
+ ip address dhcp
+
+ ip nat outside
+
+!
+
+interface GigabitEthernet0/1
+
+ ip address 172.18.101.1 255.255.255.252
+
+ ip nat inside
+ 
+ no shut
+
+!
+
+interface GigabitEthernet0/2
+
+!
+
+ip nat inside source list nat interface GigabitEthernet0/0 overload
+
+ip route 10.0.0.0 255.0.0.0 172.18.101.2
+
+ip route 172.17.0.0 255.255.0.0 172.18.101.2
+
+ip route 192.168.0.0 255.255.0.0 172.18.101.2
+
+no shut
+
+!
+
+ip access-list extended nat
+
+ permit ip 10.0.0.0 0.255.255.255 any
+
+ permit ip 172.17.0.0 0.0.255.255 any
+
+ permit ip 172.18.101.0 0.0.0.255 any
+
+ permit ip 192.168.0.0 0.0.255.255 any
+
+!

@@ -1,0 +1,509 @@
+## ACCESS-SW1 configuration
+
+ conf t
+
+hostname ACCESS-SW1
+
+ 
+
+logging monitor informational
+
+enable secret 5 cisco
+
+!
+
+username admin privilege 15 password cisco
+
+!
+
+ip domain-name lab.astontech.com
+
+ip name-server 10.16.242.12
+
+!
+
+interface Loopback0
+
+ no ip address
+
+!
+
+interface GigabitEthernet0/0
+
+ switchport trunk allowed vlan 110
+
+ switchport trunk encapsulation dot1q
+
+ switchport mode trunk
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet0/1
+
+ switchport access vlan 101
+
+ switchport mode access
+
+!
+
+interface GigabitEthernet0/2
+
+ switchport access vlan 102
+
+ switchport mode access
+
+!
+
+interface GigabitEthernet0/3
+
+ switchport access vlan 103
+
+ switchport mode access
+
+!
+
+interface GigabitEthernet1/0
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet1/1
+
+ switchport access vlan 200
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet1/2
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet1/3
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet2/0
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet2/1
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet2/2
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet2/3
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet3/0
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet3/1
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet3/2
+
+ negotiation auto
+
+!
+
+interface GigabitEthernet3/3
+
+ negotiation auto
+
+!
+
+interface Vlan101
+
+ ip address 172.17.101.1 255.255.255.0
+
+ ip helper-address 10.16.242.12
+
+ no shutdown
+
+!
+
+interface Vlan102
+
+ ip address 172.17.102.1 255.255.255.0
+
+ ip helper-address 10.16.242.12
+
+ no shutdown
+
+!
+
+interface Vlan103
+
+ ip address 172.17.103.1 255.255.255.0
+
+ ip helper-address 10.16.242.12
+
+ no shutdown
+
+!
+
+interface Vlan104
+
+ ip address 172.17.104.1 255.255.255.0
+
+ no shutdown
+
+!
+
+interface Vlan110
+
+ ip address 172.17.110.2 255.255.255.0
+
+ no shutdown
+
+!
+
+interface Vlan200
+
+ ip address 172.17.109.1 255.255.255.0
+
+ ip helper-address 10.16.242.12
+
+ no shutdown
+
+!
+
+ip route 0.0.0.0 0.0.0.0 172.17.110.1
+
+!
+
+line con 0
+
+ login local
+
+line aux 0
+
+line vty 0 4
+
+ login local
+
+line vty 5 15
+
+ login local
+
+ 
+
+!
+
+ntp server 216.239.35.0
+
+
+logging monitor informational
+aaa new-model
+aaa group server radius ISE-GROUP
+ server name ISE
+aaa authentication login VTY local
+aaa authentication login CONSOLE local
+aaa authentication enable default enable
+aaa authentication dot1x default group ISE-GROUP
+aaa authorization exec default local
+aaa authorization exec VTY local
+aaa authorization network default group ISE-GROUP
+aaa authorization auth-proxy default group ISE-GROUP
+aaa accounting update periodic 5
+aaa accounting auth-proxy default start-stop group ISE-GROUP
+aaa accounting dot1x default start-stop group ISE-GROUP
+aaa server radius dynamic-author
+ client 10.16.242.11 server-key cisco123
+ server-key cisco123
+aaa session-id common
+device-sensor accounting
+device-sensor notify all-changes
+ip dhcp snooping vlan 101,102,103,104,200
+no ip dhcp snooping information option
+ip dhcp snooping
+device-tracking tracking auto-source override
+authentication mac-move permit
+epm logging
+dot1x system-auth-control
+lldp run
+ip route 0.0.0.0 0.0.0.0 172.17.110.1
+interface Vlan101
+ ip helper-address 10.16.242.11
+interface Vlan102
+ ip helper-address 10.16.242.11
+interface Vlan103
+ ip helper-address 10.16.242.11
+interface Vlan104
+ ip helper-address 10.16.242.11
+interface Vlan200
+ ip helper-address 10.16.242.11
+ip radius source-interface vlan110
+
+logging origin-id ip
+
+logging source-interface vlan110
+
+logging host 10.16.242.11 transport udp port 20514
+
+ 
+
+logging monitor informational
+
+ 
+
+access-list 10 permit 10.16.242.0 0.0.0.255
+
+ 
+
+access-list 10 deny  any log
+snmp-server community iselab-ro RO 10
+
+ 
+
+snmp-server trap-source vlan110
+
+ 
+
+snmp-server source-interface informs vlan110
+
+ 
+
+snmp-server enable traps snmp linkdown linkup
+snmp-server host 10.16.242.11 version 2c iselab-ro
+radius-server vsa send accounting
+
+ 
+
+radius-server vsa send authentication
+
+ 
+
+radius-server attribute 6 on-for-login-auth
+
+ 
+
+radius-server attribute 6 support-multiple
+
+ 
+
+radius-server attribute 8 include-in-access-req
+
+ 
+
+radius-server attribute 25 access-request include
+
+ 
+
+radius-server attribute 31 mac format ietf upper-case
+
+ 
+
+radius-server attribute 31 send nas-port-detail
+
+ 
+
+radius-server dead-criteria tries 3
+
+ 
+
+radius-server deadtime 30
+radius server ISE
+ address ipv4 10.16.242.11 auth-port 1812 acct-port 1813
+
+ 
+
+ key cisco123
+
+
+line con 0
+
+ 
+
+ login authentication CONSOLE
+
+ 
+
+line aux 0
+
+ 
+
+line vty 0 4
+
+ 
+
+ login authentication VTY
+
+ 
+
+line vty 5 15
+
+ 
+
+ login authentication VTY
+
+end
+
+
+
+
+
+
+
+
+
+terminal monitor
+
+ 
+
+!
+
+ 
+
+conf t
+
+ 
+
+!
+
+ 
+
+ip access-list extended ACL-DEFAULT
+
+ 
+
+permit udp any eq bootpc any eq bootps
+
+ 
+
+permit udp any any eq domain
+
+ 
+
+permit icmp any any
+
+ 
+
+permit udp any any eq tftp
+
+ 
+
+deny   ip any any
+
+ 
+
+!
+
+ 
+
+interface range GigabitEthernet 0/1-2
+
+ 
+
+ip access-group ACL-DEFAULT in
+
+ 
+
+authentication event fail action next-method
+
+ 
+
+authentication event server dead action reinitialize vlan 55
+
+ 
+
+authentication event server dead action authorize voice
+
+ 
+
+authentication host-mode multi-domain
+
+ 
+
+authentication open
+
+ 
+
+authentication order dot1x mab
+
+ 
+
+authentication priority dot1x mab
+
+ 
+
+authentication port-control auto
+
+ 
+
+authentication periodic
+
+ 
+
+authentication timer reauthenticate server
+
+ 
+
+authentication timer inactivity server
+
+ 
+
+authentication violation restrict
+
+ 
+
+mab
+
+ 
+
+dot1x pae authenticator
+
+ 
+
+dot1x timeout tx-period 10
+
+ 
+
+spanning-tree portfast
+
+ 
+
+spanning-tree bpduguard enable
+
+ 
+
+end
+
+
+
+conf t
+vlan 110
+vlan 104
+int g3/3
+switchport mode access
+switchport access vlan 110
+int g3/2
+switchport mode access
+switchport access vlan 104
+end
