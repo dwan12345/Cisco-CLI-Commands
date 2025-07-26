@@ -22,4 +22,4 @@
 	- :p captures the packets that fit our filter and the corresponding packets on the other end of F5's full proxy. gives us a better picture of the entire flow
 	- -s0 captures the entire packet to see the full packet headers and payload
 	- -c limits the number of packets
- 
+	 - $(date +%Y%m%d%H%M) stores the file in YYYYMMDDHHMM format
