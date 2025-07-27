@@ -11,4 +11,26 @@
 	- use built in features first
 	- use "return" or "event disable" commands to stop further processing of an iRule once the condition has been met
 	- test in lab environment to make sure there are no side effects or performance impacts
-- 
+- create iRules:
+	- local traffic -> iRules -> iRules list -> create
+
+# Syntax
+- the format of iRules:
+```js
+when <event> {
+	if {<conditional>} {
+		<action>
+	}
+}
+```
+- example events
+	- CLIENT_ACCEPTED: when TCP 3 way handshake is done
+	- CLIENT_CLOSED: when a client side TCP is closed
+	- HTTP_REQUEST: when F5 gets the complete HTTP header from client
+	- HTTP_RESPONSE: when F5 gets response back from server
+	- CLIENTSSL_HANDSHAKE: after a successful SSL handshake
+
+
+- apply iRule: 
+	- local traffic -> virtual server -> virtual server list -> *click on VS* -> resources -> *manage iRules*
+	- 
