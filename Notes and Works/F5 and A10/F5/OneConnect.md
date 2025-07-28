@@ -17,7 +17,6 @@
 
 
 
-HA cluster
 
 
 
