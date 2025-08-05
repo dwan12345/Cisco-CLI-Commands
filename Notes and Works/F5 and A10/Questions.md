@@ -1,5 +1,0 @@
-- Explain a Pool in the context of the GTM
-- Is a Pool a representation of a data center in a geographic sense
-- a Wide IP chooses which pool to have the client use, meaning that it tells the client which data center to use
-- A pool is a group of Virtual Servers, which it will load balance across
-- A Virtual Server load balances across its own pool of nodes

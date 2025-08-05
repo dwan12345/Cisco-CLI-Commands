@@ -1,0 +1,19 @@
+- SSL forward proxy - when internal clients accesses a website, in order for the PA to decrypt the traffic, it will sit in the middle. The PA will give the client a certificate signed by our enterprise CA, and establish a session with the client, which means that the client must trust our enterprise CA. The PA will also establish a session with the website, and forward traffic between the two. This way, the PA can perform DPI
+	- Forward Untrust CA Certificate - the certificate that the PA sends to the client if the website is not trustworthy. This means that the Untrust Certificate should not be trusted by the client
+	- Forward Trust CA Certificate - the certificate that the PA forwards to the client when it visits a trustworthy site. It should be trusted by the client
+- Inbound SSL Inspection - when external clients access our web servers. the certificates for the webservers are also placed on the PA. Now the PA can intercept the traffic, decrypt it, inspect it, re-encrypt it, then forward it. 
+- Perfect Forward Secrecy - a protocol used to protect information encrypted in the past when using the same private key even when the key is compromised. Works by creating an ephemeral private key for each session
+	- can be configured on PAs
+- slow path - the initial processing of a flow when the PA receives the first packet
+	- 6 tuple session matching: the PA will see if there is a existing matching session using the first packet's information. source IP, dest IP, source port, dest port, protocol, ingress zone
+	- if there is no existing session, the slow path is initiated
+	- the egress interface is determined
+	- user ID lookup to see who the traffic belongs to
+	- NAT policy is determined
+	- see if traffic is allowed by security policy
+	- creates the session
+	- transitions to fast path
+- fast path - after the slow path, fast path is used to speed up processing for existing sessions
+	- the overhead is reduced because the PA stores certain lookups for that session
+	- the security policy, NAT, user ID, etc are not processed again because they were already done in the slow path
+- 

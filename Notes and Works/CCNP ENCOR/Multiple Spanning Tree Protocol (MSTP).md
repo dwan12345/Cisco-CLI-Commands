@@ -5,7 +5,14 @@
 	- all vlans not assigned to another MSTI is assign to MSTI 0 so that all vlans can at least communicate
 	- acts as the representative of the MST region when communicated to other STP protocols
 	- only this MSTI sends BPDUs
-- 
+- Regions - each region logically runs its own MSTP. it has its own IST.
+- Internal Spanning Tree (IST) - within a region, any vlans not part of another MSTI will be assigned to the IST. This is also referred to as MSTI 0
+- Common Spanning Tree (CST) - when different regions connect to each other, the entire region is treated as a single switch. This topology is called the CST. It also includes switches with other STP protocols.
+	- the root bridge is determined by the region with the bridge that has the best BID
+	- root port is based on lowest path cost to the root region. If tied, then the lowest BID of the non-designated region's switch
+- Common and Internal Spanning Tree (CIST) - combination of the CST and IST.
+- Region name - the name must match for switches to be in the same region
+- Revision number - default 0. the revision number must match for switches to be in the same region. Kind of useless because we can just use region name
 
 
 # Commands
@@ -49,6 +56,18 @@ spanning-tree mst forward-time <seconds>
 spanning-tree mst max-age <seconds>
 end
 ```
+
+```js
+! configure MSTP region name and revision number
+conf t
+spanning-tree mst config
+name <region name>
+revision <num>
+end
+```
+
+
+
 # Show
 ```js
 show spanning-tree mst

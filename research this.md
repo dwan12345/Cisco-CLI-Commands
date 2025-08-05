@@ -1,29 +1,18 @@
 - VXLan
-- AWS
-- load balancing in AWS
-- fire power
-- fortigate and palo alto: bump in the wire, sniffer mode
-- Point of Presense (PoP)
 - peering agreement, maybe for ISPs and large companies in particular
-- EAP chaining for cisco ISE
-- Viptella
-- 802.1x protocol
-- stateless and stateful firewall
-- f5 load balancer: LTM, GTM, SSL offloading, 
 - MPLS
-- certificate signing with linux server, using SSL
-- SOA record for DNS
-- chasis switches
-- eigrp metric calculation, metric
+- f5 DNS cache, F5 acceleration
+- When asked about experience, use the STAR method (Situation, Task, Action, Result) to provide concrete examples.
+- arista
+- terraform
+- iPerf - throughput tester
+- for tcp, the maximum theoretical throughput for a certain amount of delay and why
+- the weird domain names when you nslookup an IP from wireshark
+- how to read throughput graph on wireshark
+- internet backbone, Point of Presense (PoP), path diversity
 
 
-
-
-
-q12, 22, 25 (0-40 mins)
-5, 10, 11, 18, 25 (40-1:36)
-11, 12, 17, 24,  (1:50-2:20)
-2, 6, 13, 17, 27, 32 (2:30-3:30)
-3, 6, 22 (3:40-4:45)
-4, 27 (4:50-5:52)
-ssh
+# Questions
+- PA inbound packet inspection, how does it work with SSL offloading. does that mean that the PA does the SSL offloading?
+- PA virtual system vs virtual router
+- in our GNS3, my laptop can ping outside, but outside cannot ping inside, why?

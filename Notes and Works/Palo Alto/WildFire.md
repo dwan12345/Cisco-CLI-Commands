@@ -1,0 +1,7 @@
+- used to identify and protect against "zero-day" threats. The unknown threats
+- when a PA encounters a file that it does not recognize, such as new executable, PDF, or macro in a doc, it can send this file to the WildFire Cloud
+- the unknown file in the WildFire Cloud will be tested extensively in their sandbox environment to determine if it is harmful or not
+- if harmful, a signature will be generated 
+- this new signature will be immediately forwarded to all PA firewalls with a WildFire subscription
+- if you do not have the WildFire subscription, you will get the signatures in 2 days
+- 
