@@ -1,0 +1,16 @@
+- firewalls can be assigned to templates
+- templates manage the network and device tab of the firewalls
+- in panor, click on network, then you can select which template you want to work with. 
+- in panor, push to firewalls to commit templates. 
+- template variables - a place holder for a template value that must be manually added for each firewall.
+	- define template variables for each template or template stack
+	- template variables must be defined in this format: $\<variable name>
+	- use variables when configuring the templates. For example, in configuring layer 3 interfaces, you can assign the template variables as the IP addresses
+	- you can use CSVs to define a bunch of template variables. do more research into this
+	- within template stacks, the lower template's variables will override the upper template's variables with the same name
+- template stack
+	- firewalls can be configured to use a template stack
+	- the templates in a template stack are processed from top to bottom, where overlapping configurations are over written
+	- so at the top will be a global template. then maybe a data center template.
+	- this allows us to more easily manage templates
+	- for example, you can have a global template where every firewall will have these configurations. you can have 2 data center templates for 2 data centers. each firewall will have a template stack of global->datacenter1 or 2.

@@ -1,0 +1,8 @@
+- configure layer 3 interfaces
+	- network -> interfaces -> *click on your interface*
+	- set the interface type to layer 3
+	- assign the IP and net mask
+- configure the virtual router
+	- network -> virtual routers -> *click your virtual router*
+	- add a unique router ID
+	- add the interfaces 

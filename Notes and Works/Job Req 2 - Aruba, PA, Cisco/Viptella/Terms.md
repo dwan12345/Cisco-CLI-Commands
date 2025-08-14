@@ -1,0 +1,36 @@
+- Datagram Transport Layer Security (DTLS) - purpose is like TLS to provide secure communication, but adapted to use UDP instead
+	- used for control and management plane data
+	- DTLS tunnel is formed between vSmart and vEdge to exchange configs and routing info
+- Overlay Management Protocol (OMP) - the routing protocol of Viptela. Like BGP in a traditional network. operates over DTLS, DTLS is the tunnel and OMP is the protocol
+	- vEdges advertise the prefixes of their local networks to vSmart via OMP
+	- vSmart uses OMP to tell vEdge which route to use
+	- advertises TLOCs
+	- has attributes that dictate traffic flow like in BGP
+		- TLOC
+		- System IP
+		- Preference
+		- and more
+- Transport Locations (TLOCs) - represents the next hop within the SD-WAN overlay network
+	- composed of:
+		- system IP - the unique identifier for the vEdge. very similar to router ID in routing protocols
+		- color - identifies the type of the underlay network, such as MPLS, LTE, broadband. helps the vSmart make intelligent decisions
+		- Encapsulation - the tunneling protocol used over this specific WAN interface. usually just IPsec
+	- vEdge advertises a TLOC to the vSmart for each WAN interface it has.
+	- Centralized policies then determine which of these TLOCs (and thus which underlying transport) is used based on the application, current link performance, or other criteria. Color is also used. Example would be used MPLS color for voice traffic
+- Centralized Policy - used to enforce network wide behavior
+	- Centralized Control Policy - used to influence routing decisions by controlling OMP routes
+	- Centralized Data Policy - handle how packets are handled after they are routed. used in AAR, QoS, traffic engineering.
+- Local Policy - only on the local vEdge. commonly used for ACL, NAT, QoS.
+- Application Aware Routing (AAR) - select network paths based on the application and the performance requirements of the WAN links.
+	- DPI for determining the application
+	- Monitors latency, packet loss, and jitter of WAN links
+	- color used to determine the unlay type
+	- example: use the broadband color link as long as jitter is below 25 ms, packet loss is below 1%. otherwise, use the MPLS link
+- Bidirectional Forwarding Detection (BFD) - detects link failures super fast so that we can take immediate action, such as vEdge using another WAN link.
+	- in SD-WAN, used to monitor the health of IPsec tunnels
+- VPN0 - the transport VPN. where the WAN interfaces are configured. this is used to build and manage the overlay. there is no user data over this. 
+- VPN512 - specifically designed for out of band management. no user data or overlay tunneling. this should be connected to your management vlan with the appropriate IP
+- feature template - a reusable template for a configurable feature, such as OSPF, interfaces, device name. makes use of template variables
+- device template - made up of feature templates. this is a complete template that has the full device configurations.
+- SLA classes - configure this to use as a criteria when doing AAR. configure loss, jitter, and latency
+

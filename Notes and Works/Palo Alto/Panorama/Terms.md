@@ -1,0 +1,8 @@
+- templates - templates used for managing similar PAs. pushed to PAs. can be stacked for more flexible configuration
+- device groups - logical units containing PAs. can be assigned based on geography, function, network segment, etc. used for targeted policy deployment
+- log collector - collects logs from all of the PAs
+- deployment modes
+	- panorama mode - panorama handles both policy management and log collecting
+	- management only mode - only policy management
+	- log collector mode - only collect logs
+- 

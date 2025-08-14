@@ -1,7 +1,6 @@
 - VXLan
 - peering agreement, maybe for ISPs and large companies in particular
 - MPLS
-- f5 DNS cache, F5 acceleration
 - When asked about experience, use the STAR method (Situation, Task, Action, Result) to provide concrete examples.
 - arista
 - terraform
@@ -10,9 +9,32 @@
 - the weird domain names when you nslookup an IP from wireshark
 - how to read throughput graph on wireshark
 - internet backbone, Point of Presense (PoP), path diversity
+- Palo Alto Prisma
+- panorama: device groups, shared policy, 
+- nexus switches, vxlan
+- gloablprotect 
+- network documentation
+- asymmetric routing explained, in the context of palo altos
+
 
 
 # Questions
-- PA inbound packet inspection, how does it work with SSL offloading. does that mean that the PA does the SSL offloading?
-- PA virtual system vs virtual router
-- in our GNS3, my laptop can ping outside, but outside cannot ping inside, why?
+- does network documentation ever come up during interviews? should I be familiar with network documentation tools? 
+- how do I answer why I am looking for this job when I already have a job?
+- am i applying for the senior network engineer position?
+- vxlan
+
+
+# Notes from conversation with marcus
+- marcus did his interview via persidio, no interview with client. the other guy got rolled off. something about his planning/documentation was not good enough, Marcus did not know the specifics. my interview will most likely be with the client
+- CAB is a big deal. CAB meeting is much shorter, you just tell them what you are changing and people ask you questions. 
+- they are manufacturing industry, so for any changes, bring the devices up in parallel, so there is very minimal downtime
+- they are looking for someone with technical communication skills. talk about what I have done in a technical way
+- project is: refreshing switches, access points. not much firewall stuff for me/marcus
+- the devices are cisco 9600 for the core. 9500 at distribution. 9200/9300 at access, nexus 9k
+- know about OSPF, STP, port channels
+- know stuff about documentation, communication, planning
+- probably talking with one of the managers. the manager will probably ask about my resume
+
+
+

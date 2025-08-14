@@ -1,0 +1,8 @@
+- super high throughput for data centers
+- features such as vPC work robustly with virtualization technologies such as vSphere
+- features, such as OSPF, STP, HSRP, run in different processes, so if one of them crashes, it will not affect the rest. for reliability
+- configuration rollback system
+- vPC
+- fabric extenders
+- automation and programmability with REST API, built in python interpreter, seamless integration with tools like ansible and chef.
+- redundant power supplies, some provide redundant supervisor engines (the CPU of the system)

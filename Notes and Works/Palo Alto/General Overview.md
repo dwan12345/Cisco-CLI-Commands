@@ -83,10 +83,6 @@
 - Used primarily for network segmentation: guest and internal, different customers, different departments. 
 - Can make it easier to troubleshoot. Can hide info such as OSPF advertisements
 
-# NAT
-- 
-
-
 
 
 # Layer 3

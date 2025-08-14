@@ -1,0 +1,10 @@
+- manages the security policies and objects
+- device group hierarchy 
+	- parent child model
+	- the security policies in the parents are evaluated first
+	- all other settings are children wins. such as IP objects
+- Rule types (they are just security policies)
+	- pre rule - they are put into the shared group (the global group). they are evaluation before any other rule
+	- default rules - regular rules defined in device groups
+	- post rules - put into the shared group. evaluated after every other rule
+- 
