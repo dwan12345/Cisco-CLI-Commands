@@ -15,14 +15,15 @@
 - gloablprotect 
 - network documentation
 - asymmetric routing explained, in the context of palo altos
-
+- 
 
 
 # Questions
-- does network documentation ever come up during interviews? should I be familiar with network documentation tools? 
-- how do I answer why I am looking for this job when I already have a job?
-- am i applying for the senior network engineer position?
-- vxlan
+- what automation tools do they use?
+- nuances of cutovers: switches, aruba APs
+- A-net
+- Ekahau
+- how common are there topologies with more than 2 switches in HA?
 
 
 # Notes from conversation with marcus
@@ -37,4 +38,7 @@
 - probably talking with one of the managers. the manager will probably ask about my resume
 
 
-
+- doing the cut over
+- STP in the context of change. implications of this
+- understand their topology.
+- 

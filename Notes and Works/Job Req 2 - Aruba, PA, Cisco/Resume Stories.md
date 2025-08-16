@@ -68,8 +68,11 @@
 	- in general, for a lot of security compliance, the minimum is implementing network segmentation, have NAC, have encryption, logging, and secure configurations. network segmentation can be implemented using VLANs, VRFs, virtual systems. NAC is implemented using AD server with some kind of NAC solution, such as cisco ISE, then syncing that with your networking devices. Encryption typically involves using VPNs and IPsec tunnels to communicate to the outside. Logging involves setting up a syslog server and pointing our network devices there. Secure configurations involve following best practices from vendors as well as changing the default logins. 
 - 
 - operation turnover documents, how does excel work in network, 
-- what are ways to remotely access the vEdge if the overlay goes down?
 - 
+
+
+
+
 
 
 
