@@ -21,9 +21,9 @@
 # Questions
 - what automation tools do they use?
 - nuances of cutovers: switches, aruba APs
-- A-net
 - Ekahau
 - how common are there topologies with more than 2 switches in HA?
+- what other protocols should be considered when cutting over?
 
 
 # Notes from conversation with marcus
