@@ -19,11 +19,13 @@
 
 
 # Questions
-- what automation tools do they use?
 - nuances of cutovers: switches, aruba APs
-- Ekahau
-- how common are there topologies with more than 2 switches in HA?
 - what other protocols should be considered when cutting over?
+- how are rogue APs dealt with?
+- SNMP. solarwinds. how does SNMP and syslog interact
+
+# Lambo Questions	
+
 
 
 # Notes from conversation with marcus
@@ -38,7 +40,3 @@
 - probably talking with one of the managers. the manager will probably ask about my resume
 
 
-- doing the cut over
-- STP in the context of change. implications of this
-- understand their topology.
-- 
