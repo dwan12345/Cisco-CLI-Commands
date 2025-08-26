@@ -1,0 +1,6 @@
+- create separate diagrams for L2 and L3. This way, it removes clutter and makes it easier to read
+- for multi-site enterprises, separate diagrams by sites, often delimited by the WAN link.
+- since WIFI is a half duplex medium, the more clients associated with the same AP, the slower the performance. This is because only 1 client can transmit at a time. The solution is to increase AP density in high density areas, but decrease their power so that their "cell" of coverage is smaller
+- for WIFI, do not place APs in hall ways. this can cause many clients to continue to associate with this AP even though they are far away due to the lack of attenuation. this causes too many clients associating with a single AP
+- it is important to tune the signal strength so that clients roam properly, so that the load if shred across many APs
+- 

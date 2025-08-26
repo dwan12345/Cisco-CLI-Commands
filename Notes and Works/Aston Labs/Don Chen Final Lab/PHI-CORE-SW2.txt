@@ -1,0 +1,148 @@
+! initial setup
+enable
+conf t
+enable secret cisco
+username cisco secret cisco
+line con 0
+logging synchronous
+login local
+exit
+line vty 0 4
+logging synchronous
+login local
+exit
+hostname PHI-CORE-SW2
+ip routing
+end
+
+
+! creating vlans
+conf t
+vlan 69
+name MANAGEMENT
+vlan 202
+name USERS
+end
+
+
+! Creates SVI
+conf t
+int vlan 69
+desc VLAN69_DEFAULT_GATEWAY
+ip address 192.168.0.3 255.255.255.240
+shut
+no shut
+end
+
+! Creates SVI
+conf t
+int vlan 202
+desc VLAN202_DEFAULT_GATEWAY
+ip address 192.168.0.19 255.255.255.240
+shut
+no shut
+end
+
+
+! normal routed interface
+conf t
+int fa0/1
+no switchport
+desc TO_CORE-RTR1
+ip address 192.168.0.133 255.255.255.252
+shut
+no shut
+end
+
+
+! setting up a trunk
+conf t
+int fa0/5
+desc TO_ACC-SW2
+switchport trunk encapsulation dot1q
+switchport mode trunk
+end
+
+! setting up a trunk
+conf t
+int fa0/6
+desc TO_ACC-SW1
+switchport trunk encapsulation dot1q
+switchport mode trunk
+end
+
+
+! configures LACP on some interfaces
+conf t
+int range fa0/7-8
+channel-group 1 mode active
+end
+
+
+! sets up HSRP
+conf t
+int vlan 69
+standby version 2
+standby 69 ip 192.168.0.1
+standby 69 priority 110
+standby 69 preempt
+end
+
+! sets up HSRP
+conf t
+int vlan 202
+standby version 2
+standby 202 ip 192.168.0.17
+standby 202 priority 110
+standby 202 preempt
+end
+
+
+! sets up OSPF
+conf t
+router ospf 100
+! add multiple network commands to advertise more networks
+network 192.168.0.0 0.0.0.255 area 0
+end
+
+
+! configures OSPF passive interface
+conf t
+router ospf 100
+passive-int fa0/5
+passive-int fa0/6
+passive-int vlan 69
+passive-int vlan 202
+end
+
+
+! configures relay agent on a port
+conf t
+int vlan 69
+	ip helper-address 192.168.0.66
+	end
+
+! configures relay agent on a port
+conf t
+int vlan 202
+	ip helper-address 192.168.0.66
+	end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,224 @@
+! initial router setup
+enable
+conf t
+enable secret cisco
+username cisco secret cisco
+line console 0
+exec-timeout 5
+logging synchronous
+login local
+exit
+line vty 0 4
+exec-timeout 5
+logging synchronous
+login local
+exit
+hostname PHI-CORE-RTR1
+end
+
+
+! loopback address
+conf t
+int loopback 0
+ip address 192.168.0.66 255.255.255.255
+desc LOOPBACK0
+! ip nat inside
+end
+
+
+! standard routed interface
+conf t
+int fa0/2/0
+desc TO_CORE-SW1
+ip address 192.168.0.130 255.255.255.252
+shut
+no shut
+end
+
+! standard routed interface
+conf t
+int fa0/2/1
+desc TO_CORE-SW2
+ip address 192.168.0.134 255.255.255.252
+shut
+no shut
+end
+
+! standard routed interface
+conf t
+int fa0/0/0
+desc TO_ISP
+ip address 192.168.0.73 255.255.255.252
+shut
+no shut
+end
+
+! standard routed interface
+conf t
+int fa0/0/1
+desc TO_WAN
+ip address 192.168.0.69 255.255.255.252
+shut
+no shut
+end
+
+
+! sets up OSPF
+conf t
+router ospf 100
+! add multiple network commands to advertise more networks
+network 192.168.0.0 0.0.0.255 area 0
+end
+
+! advertise the default route
+conf t
+router ospf 100
+default-info originate
+end
+
+
+! enables bgp routing
+conf t
+router bgp 832
+end
+
+
+! advertises routes learned from BGP
+conf t
+router ospf 100
+redistribute bgp 832 subnets
+end
+
+
+! creates BGP neighbor
+conf t
+router bgp 832
+neighbor 192.168.0.74 remote-as 831
+neighbor 192.168.0.74 soft-reconfiguration inbound
+end
+
+! creates BGP neighbor
+conf t
+router bgp 832
+neighbor 192.168.0.70 remote-as 661
+neighbor 192.168.0.70 soft-reconfiguration inbound
+end
+
+
+! advertise bgp network
+conf t
+router bgp 832
+network 192.168.0.0 mask 255.255.255.0
+exit
+ip route 192.168.0.0 255.255.255.0 null0
+end
+
+
+! advertise bgp networks
+conf t
+router bgp 832
+network 10.0.0.0 mask 255.255.0.0
+network 172.16.0.0 mask 255.255.255.0
+network 10.1.0.0 mask 255.255.0.0
+end
+
+
+! redistribute OSPF into BGP
+conf t
+router bgp 832
+redistribute ospf 100
+end
+
+
+! configures a prefix list
+conf t
+ip prefix-list TO_ISP seq 10 permit 192.168.0.0/24
+ip prefix-list TO_ISP seq 20 permit 10.0.0.0/16
+ip prefix-list TO_ISP seq 30 permit 172.16.0.0/24
+ip prefix-list TO_ISP seq 40 permit 10.1.0.0/16
+end
+! configures a prefix list
+conf t
+ip prefix-list FROM_ISP seq 10 permit 0.0.0.0/0
+end
+
+
+! configures a prefix list
+conf t
+ip prefix-list TO_WAN seq 10 permit 192.168.0.0/24
+end
+! configures a prefix list
+conf t
+ip prefix-list FROM_WAN seq 10 permit 0.0.0.0/0
+ip prefix-list FROM_WAN seq 20 permit 172.16.0.0/24
+ip prefix-list FROM_WAN seq 30 permit 10.0.0.0/16
+ip prefix-list FROM_WAN seq 40 permit 10.1.0.0/16
+end
+
+
+! creates a route map
+conf t
+route-map TO_ISP permit 10
+match ip address prefix-list TO_ISP
+end
+! creates a route map
+conf t
+route-map FROM_ISP permit 10
+match ip address prefix-list FROM_ISP
+end
+
+
+! creates a route map
+conf t
+route-map TO_WAN permit 10
+match ip address prefix-list TO_WAN
+end
+! creates a route map
+conf t
+route-map FROM_WAN permit 10
+match ip address prefix-list FROM_WAN
+end
+
+
+! applies a route map
+conf t
+router bgp 832
+neighbor 192.168.0.70 route-map TO_WAN out
+end
+! applies a route map
+conf t
+router bgp 832
+neighbor 192.168.0.70 route-map FROM_WAN in
+end
+
+
+! applies a route map
+conf t
+router bgp 832
+neighbor 192.168.0.74 route-map TO_ISP out
+end
+! applies a route map
+conf t
+router bgp 832
+neighbor 192.168.0.74 route-map FROM_ISP in
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

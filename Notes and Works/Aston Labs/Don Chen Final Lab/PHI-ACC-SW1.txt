@@ -1,0 +1,97 @@
+! initial setup
+enable
+conf t
+enable secret cisco
+username cisco secret cisco
+line con 0
+logging synchronous
+login local
+exit
+line vty 0 4
+logging synchronous
+login local
+exit
+hostname PHI-ACC-SW1
+no ip routing
+end
+
+
+! creating vlans
+conf t
+vlan 69
+name MANAGEMENT
+vlan 202
+name USERS
+end
+
+
+! Creates SVI
+conf t
+int vlan 69
+desc MANAGEMENT_INTERFACE
+ip address 192.168.0.5 255.255.255.240
+shut
+no shut
+end
+
+
+! setting up some access ports
+conf t
+int range fa0/2
+desc END_HOSTS
+switchport mode access
+switchport access vlan 69
+shut
+no shut
+end
+
+! setting up some access ports
+conf t
+int range fa0/3
+desc END_HOSTS
+switchport mode access
+switchport access vlan 202
+shut
+no shut
+end
+
+
+! enables portfast and BPDU guard on an interface
+conf t
+int fa0/2
+	spanning-tree portfast
+	spanning-tree bpduguard enable
+	end
+
+! enables portfast and BPDU guard on an interface
+conf t
+int fa0/3
+	spanning-tree portfast
+	spanning-tree bpduguard enable
+	end
+
+
+! setting up a trunk
+conf t
+int fa0/5
+desc TO_CORE-SW1
+switchport trunk encapsulation dot1q
+switchport mode trunk
+end
+
+! setting up a trunk
+conf t
+int fa0/6
+desc TO_CORE-SW2
+switchport trunk encapsulation dot1q
+switchport mode trunk
+end
+
+
+
+
+
+
+
+
+

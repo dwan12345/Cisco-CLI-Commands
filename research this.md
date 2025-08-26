@@ -1,31 +1,26 @@
 - VXLan
 - peering agreement, maybe for ISPs and large companies in particular
 - MPLS
-- When asked about experience, use the STAR method (Situation, Task, Action, Result) to provide concrete examples.
 - arista
 - terraform
 - iPerf - throughput tester
 - for tcp, the maximum theoretical throughput for a certain amount of delay and why
 - the weird domain names when you nslookup an IP from wireshark
-- how to read throughput graph on wireshark
-- internet backbone, Point of Presense (PoP), path diversity
-- Palo Alto Prisma
-- panorama: device groups, shared policy, 
 - nexus switches, vxlan
-- gloablprotect 
-- network documentation
 - asymmetric routing explained, in the context of palo altos
-- 
+- cisco best practice guide
 
 
 # Questions
 - nuances of cutovers: switches, aruba APs
 - what other protocols should be considered when cutting over?
-- how are rogue APs dealt with?
-- SNMP. solarwinds. how does SNMP and syslog interact
+- containerization in switches
+- how to deploy a docker to a switch
 
 # Lambo Questions	
-
+- what are the characteristics of MPLS circuits? why do we still use them when we have SD-WAN? Are they more secure than regular circuits? can you access the internet through them?
+- is it common to deploy custom containerized software to networking devices?
+- what is DNA center? How common is it?
 
 
 # Notes from conversation with marcus

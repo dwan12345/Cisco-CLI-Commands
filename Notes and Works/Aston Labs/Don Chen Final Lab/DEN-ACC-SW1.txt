@@ -1,0 +1,89 @@
+! initial setup
+enable
+conf t
+enable secret cisco
+username cisco secret cisco
+line con 0
+logging synchronous
+login local
+exit
+line vty 0 4
+logging synchronous
+login local
+exit
+hostname DEN-ACC-SW1
+no ip routing
+end
+
+
+! creating vlans
+conf t
+vlan 25
+name MANAGEMENT
+vlan 115
+name USERS
+end
+
+
+! Creates SVI
+conf t
+int vlan 25
+desc MANAGEMENT_INTERFACE
+ip address 10.0.0.5 255.255.255.240
+shut
+no shut
+end
+
+
+! setting up some access ports
+conf t
+int range fa0/2
+desc END_HOSTS
+switchport mode access
+switchport access vlan 25
+shut
+no shut
+end
+
+! setting up some access ports
+conf t
+int range fa0/3
+desc END_HOSTS
+switchport mode access
+switchport access vlan 115
+shut
+no shut
+end
+
+
+! enables portfast and BPDU guard on an interface
+conf t
+int fa0/2
+	spanning-tree portfast
+	spanning-tree bpduguard enable
+	end
+	
+! enables portfast and BPDU guard on an interface
+conf t
+int fa0/3
+	spanning-tree portfast
+	spanning-tree bpduguard enable
+	end
+
+
+! setting up a trunk
+conf t
+int fa0/1
+desc TO_DEN-RTR1
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 25,115
+end
+
+
+
+
+
+
+
+

@@ -1,0 +1,154 @@
+! initial router setup
+enable
+conf t
+enable secret cisco
+username cisco secret cisco
+line console 0
+exec-timeout 5
+logging synchronous
+login local
+exit
+line vty 0 4
+exec-timeout 5
+logging synchronous
+login local
+exit
+hostname DEN-RTR1
+end
+
+
+! loopback address
+conf t
+int loopback 0
+ip address 10.0.0.66 255.255.255.255
+desc LOOPBACK0
+! ip nat inside
+end
+
+
+! sets up router on a stick
+conf t
+int fa0/1
+desciption SUBINTERFACES_FROM_SW1
+no ip address
+shut
+no shut
+! repeat next section for however many subinterfaces
+int fa0/1.25
+desc VLAN25_DEFAULT_GATEWAY
+encapsulation dot1q 25
+ip address 10.0.0.2 255.255.255.240
+shut
+no shut
+int fa0/1.115
+desc VLAN115_DEFAULT_GATEWAY
+encapsulation dot1q 115
+ip address 10.0.0.18 255.255.255.240
+shut
+no shut
+! end of section
+end
+
+
+! configures relay agent on a port
+conf t
+int fa0/1.25
+	ip helper-address 192.168.0.66
+	end
+	
+! configures relay agent on a port
+conf t
+int fa0/1.115
+	ip helper-address 192.168.0.66
+	end
+	
+	
+! standard routed interface
+conf t
+int fa0/2
+desc TO_ISP
+ip address 10.0.0.69 255.255.255.252
+shut
+no shut
+end
+
+
+! configures a prefix list
+conf t
+ip prefix-list TO_ISP seq 10 permit 10.0.0.0/16
+end
+
+! configures a prefix list
+conf t
+ip prefix-list FROM_ISP seq 10 permit 0.0.0.0/0
+ip prefix-list FROM_ISP seq 20 permit 172.16.0.0/24
+ip prefix-list FROM_ISP seq 30 permit 10.1.0.0/16
+ip prefix-list FROM_ISP seq 40 permit 192.168.0.0/24
+end
+
+
+! creates a route map
+conf t
+route-map TO_ISP permit 10
+match ip address prefix-list TO_ISP
+end
+
+! creates a route map
+conf t
+route-map FROM_ISP permit 10
+match ip address prefix-list FROM_ISP
+end
+
+
+! enables bgp routing
+conf t
+router bgp 719
+end
+
+
+! creates BGP neighbor
+conf t
+router bgp 719
+neighbor 10.0.0.70 remote-as 661
+neighbor 10.0.0.70 soft-reconfiguration inbound
+end
+
+
+! advertise bgp network
+conf t
+router bgp 719
+network 10.0.0.0 mask 255.255.0.0
+exit
+ip route 10.0.0.0 255.255.0.0 null0
+end
+
+
+! applies a route map
+conf t
+router bgp 719
+neighbor 10.0.0.70 route-map TO_ISP out
+end
+
+! applies a route map
+conf t
+router bgp 719
+neighbor 10.0.0.70 route-map FROM_ISP in
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
