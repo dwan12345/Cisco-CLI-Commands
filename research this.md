@@ -1,7 +1,6 @@
 - VXLan
 - peering agreement, maybe for ISPs and large companies in particular
 - MPLS
-- arista
 - terraform
 - iPerf - throughput tester
 - for tcp, the maximum theoretical throughput for a certain amount of delay and why
@@ -24,5 +23,5 @@
 - what is the management port on network devices? is it different than the console port? is it a regular RJ45?
 
 
-
+- laptop tracking number: 883904175591
 
