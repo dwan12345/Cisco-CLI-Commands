@@ -18,10 +18,9 @@
 - how to deploy a docker to a switch
 
 # Lambo Questions	
-- what are the characteristics of MPLS circuits? why do we still use them when we have SD-WAN? Are they more secure than regular circuits? can you access the internet through them?
-- is it common to deploy custom containerized software to networking devices?
+- is it common to deploy custom containerized software to networking devices? 
 - what is DNA center? How common is it?
-
+- in the diagram, how are the are the left firewalls connected? how are firepower HA links connected?
 
 # Notes from conversation with marcus
 - marcus did his interview via persidio, no interview with client. the other guy got rolled off. something about his planning/documentation was not good enough, Marcus did not know the specifics. my interview will most likely be with the client
